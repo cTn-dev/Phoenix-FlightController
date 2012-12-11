@@ -11,7 +11,8 @@
 
 // Custom definitions
 //#define RX_GRAPH
-#define SENSOR_GRAPH
+//#define SENSOR_GRAPH
+//#define DISPLAY_ITTERATIONS
 
 // main loop variables
 uint8_t itterations = 0;
@@ -292,8 +293,10 @@ void process10HzTask() {
     blinkState = !blinkState;
     digitalWrite(LED_PIN, blinkState);
     
+    #ifdef DISPLAY_ITTERATIONS
     // Print itterations per 100ms
-    //Serial.println(itterations);
+    Serial.println(itterations);
+    #endif
     
     // Reset Itterations
     itterations = 0;    
