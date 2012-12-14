@@ -150,7 +150,9 @@ void process100HzTask() {
         Serial.print(TX_mode);
         Serial.write('\t'); 
         Serial.print(TX_heading);
-        Serial.write('\t');             
+        Serial.write('\t');
+        Serial.print(PPM_error);
+        Serial.write('\t');
         Serial.println();
     #endif
     

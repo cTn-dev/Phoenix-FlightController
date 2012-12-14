@@ -9,6 +9,7 @@ volatile uint16_t startPulse = 0;
 #define PPM_CHANNELS 8
 volatile int PPM[PPM_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
 volatile byte ppmCounter = PPM_CHANNELS;
+volatile uint16_t PPM_error = 0;
 
 extern "C" void ftm1_isr(void) {
     // save current interrupt count/time
@@ -19,6 +20,10 @@ extern "C" void ftm1_isr(void) {
     
     uint16_t pulseWidth = stopPulse - startPulse;
 
+    if (pulseWidth < 2700 || (pulseWidth > 6100 && pulseWidth < 12000)) {
+        PPM_error++;
+    }
+    
     if (pulseWidth > 7500) {  // Verify if this is the sync pulse (2.5ms)
         ppmCounter = 0;       // restart the channel counter
     } else {
@@ -32,6 +37,10 @@ extern "C" void ftm1_isr(void) {
 }
 
 void setupFTM1() {
+    // FLEX Timer1 input filter configuration
+    // 4+4×val clock cycles, 48MHz = 4+4*7 = 32 clock cycles = 0.75us
+    FTM1_FILTER = 0x7;
+    
     // FLEX Timer1 configuration
     FTM1_SC = 0x0c;    // TOF=0 TOIE=0 CPWMS=0 CLKS=01 (system clock) PS=100 (divide by 16)
     FTM1_MOD = 0xffff; // modulo to max
