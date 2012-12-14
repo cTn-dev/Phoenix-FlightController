@@ -26,12 +26,8 @@ void setupFTM0() {
 }
 
 void updateMotors() {
-    cli(); // disable interrupts
-    
     FTM0_C0V = MotorOut[0] * 3;
     FTM0_C1V = MotorOut[1] * 3;
     FTM0_C2V = MotorOut[2] * 3;
     FTM0_C3V = MotorOut[3] * 3;
-    
-    sei(); // enable interrupts
 }
