@@ -11,7 +11,7 @@
 #include "esc.h"
 
 // Custom definitions
-//#define RX_GRAPH
+#define RX_GRAPH
 //#define SENSOR_GRAPH
 //#define DISPLAY_ITTERATIONS
 
@@ -128,13 +128,16 @@ void loop() {
 
 void process100HzTask() {    
     // read data into variables
+    
+    cli(); // disable interrupts
     int16_t TX_roll = PPM[0];     // CH-1 AIL
     int16_t TX_pitch = PPM[1];    // CH-2 ELE
     int16_t TX_throttle = PPM[2]; // CH-3 THR
     int16_t TX_yaw = PPM[3];      // CH-4 RUD
     int16_t TX_mode = PPM[4];     // CH-5 FULL ELE switch (off = rate, on = attitude)
     int16_t TX_heading = PPM[5];  // CH-6 FULL THROTTLE switch (off = gyro heading, on = gyro + mag heading)
-
+    sei(); // enable interrupts
+    
     #ifdef RX_GRAPH
         Serial.print(TX_roll);
         Serial.write('\t');

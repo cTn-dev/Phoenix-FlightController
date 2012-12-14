@@ -8,7 +8,7 @@ unsigned int MotorOut[4] = {1000, 1000, 1000, 1000};
 void setupFTM0() {
     // Flex timer0 configuration
     FTM0_SC = 0x0c;   // TOF=0 TOIE=0 CPWMS=0 CLKS=01 PS=100 (divide by 16)
-    FTM0_MOD = 7500; // 4ms, 12000 = 250hz, 7500 = 400hz
+    FTM0_MOD = 7500; // 12000 = 250hz = 4ms, 7500 = 400hz
     FTM0_C0SC = 0x28;
     
     // Initial values (3000 = 1ms)
