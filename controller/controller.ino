@@ -1,5 +1,5 @@
 // Arduino standard library imports
-#include <arduino.h>
+#include <Arduino.h>
 #include <Wire.h>
 
 // Custom imports
@@ -7,10 +7,11 @@
 //#include "kinematics_ARG.h"
 #include "kinematics_CMP.h"
 #include "mpu6050.h"
-#include "ppm_esc.h"
+#include "receiver.h"
+#include "esc.h"
 
 // Custom definitions
-//#define RX_GRAPH
+#define RX_GRAPH
 //#define SENSOR_GRAPH
 //#define DISPLAY_ITTERATIONS
 
@@ -59,14 +60,12 @@ void setup() {
  
     // Join i2c bus as master
     Wire.begin();
-    
-    // set ESC pins to output
-    for (int i = 0; i < MOTORS; i++) {
-        pinMode(motorPins[i], OUTPUT);
-    }  
 
-    // Attach external interrupt to pin 8 and setup timer1
-    //setupTimer1();    
+    // ESC timer setup
+    setupFTM0();
+    
+    // RX timer setup
+    setupFTM1();    
  
     // Define the integrated LED pin as output
     pinMode(LED_PIN, OUTPUT);
@@ -131,12 +130,12 @@ void process100HzTask() {
     cli(); // disable interrupts
     
     // read data into variables
-    int TX_roll = PPM[0];     // CH-1 AIL
-    int TX_pitch = PPM[1];    // CH-2 ELE
-    int TX_throttle = PPM[2]; // CH-3 THR
-    int TX_yaw = PPM[3];      // CH-4 RUD
-    int TX_mode = PPM[4];     // CH-5 FULL ELE switch (off = rate, on = attitude)
-    int TX_heading = PPM[5];  // CH-6 FULL THROTTLE switch (off = gyro heading, on = gyro + mag heading)
+    int16_t TX_roll = PPM[0];     // CH-1 AIL
+    int16_t TX_pitch = PPM[1];    // CH-2 ELE
+    int16_t TX_throttle = PPM[2]; // CH-3 THR
+    int16_t TX_yaw = PPM[3];      // CH-4 RUD
+    int16_t TX_mode = PPM[4];     // CH-5 FULL ELE switch (off = rate, on = attitude)
+    int16_t TX_heading = PPM[5];  // CH-6 FULL THROTTLE switch (off = gyro heading, on = gyro + mag heading)
     
     sei(); // enable interrupts
 
@@ -260,31 +259,20 @@ void process100HzTask() {
         Serial.println();    
     #endif    
     
-    if (armed) {        
-        cli(); // disable interrupts
-
-        /*
-        MotorOut[0] = constrain(TX_throttle - PitchMotorSpeed - RollMotorSpeed, 1000, 2000);
-        MotorOut[1] = constrain(TX_throttle - PitchMotorSpeed + RollMotorSpeed, 1000, 2000);
-        MotorOut[2] = constrain(TX_throttle + PitchMotorSpeed + RollMotorSpeed, 1000, 2000);
-        MotorOut[3] = constrain(TX_throttle + PitchMotorSpeed - RollMotorSpeed, 1000, 2000);         
-        */
-        
+    if (armed) {               
         MotorOut[0] = constrain(TX_throttle + PitchMotorSpeed + RollMotorSpeed + YawMotorSpeed, 1000, 2000);
         MotorOut[1] = constrain(TX_throttle + PitchMotorSpeed - RollMotorSpeed - YawMotorSpeed, 1000, 2000);
         MotorOut[2] = constrain(TX_throttle - PitchMotorSpeed - RollMotorSpeed + YawMotorSpeed, 1000, 2000);
-        MotorOut[3] = constrain(TX_throttle - PitchMotorSpeed + RollMotorSpeed - YawMotorSpeed, 1000, 2000);         
-        
-        sei(); // enable interrupts
+        MotorOut[3] = constrain(TX_throttle - PitchMotorSpeed + RollMotorSpeed - YawMotorSpeed, 1000, 2000);
+
+        updateMotors();
     } else {
-        cli(); // disable interrupts
-        
         MotorOut[0] = 1000;
         MotorOut[1] = 1000;
         MotorOut[2] = 1000;
         MotorOut[3] = 1000;
         
-        sei(); // enable interrupts
+        updateMotors();
     } 
 }
 
