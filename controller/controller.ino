@@ -11,7 +11,7 @@
 #include "esc.h"
 
 // Custom definitions
-#define RX_GRAPH
+//#define RX_GRAPH
 //#define SENSOR_GRAPH
 //#define DISPLAY_ITTERATIONS
 

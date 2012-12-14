@@ -42,5 +42,6 @@ void setupFTM1() {
     
     // PIN configuration (teensy 3.0 pin3 = PTA12)
     // we are using pin alternative function 3 
-    PORTA_PCR12 |= PORT_PCR_MUX(3); // 0x300
+    // PORT_PCR_MUX(3) works in this case, but we will set it manually anyway
+    PORTA_PCR12 |= 0x300; // 0x300
 }
