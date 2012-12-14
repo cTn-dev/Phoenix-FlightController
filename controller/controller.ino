@@ -136,6 +136,8 @@ void process100HzTask() {
     int16_t TX_yaw = PPM[3];      // CH-4 RUD
     int16_t TX_mode = PPM[4];     // CH-5 FULL ELE switch (off = rate, on = attitude)
     int16_t TX_heading = PPM[5];  // CH-6 FULL THROTTLE switch (off = gyro heading, on = gyro + mag heading)
+    int16_t TX_cam = PPM[6];      // CH-7
+    int16_t TX_last = PPM[7];     // CH-8
     sei(); // enable interrupts
     
     #ifdef RX_GRAPH
@@ -151,8 +153,12 @@ void process100HzTask() {
         Serial.write('\t'); 
         Serial.print(TX_heading);
         Serial.write('\t');
-        Serial.print(PPM_error);
+        Serial.print(TX_cam);
+        Serial.write('\t');       
+        Serial.print(TX_last);
         Serial.write('\t');
+        Serial.print(PPM_error);
+        Serial.write('\t');        
         Serial.println();
     #endif
     

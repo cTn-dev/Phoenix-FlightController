@@ -2,13 +2,11 @@
     Big thanks to kha from #aeroquad and Ragnorok from #arduino for helping me get this up and running.
 */
 
-// Arduino standard library imports
-#include <Arduino.h>
-
-volatile uint16_t startPulse = 0;
 #define PPM_CHANNELS 8
-volatile int PPM[PPM_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
-volatile byte ppmCounter = PPM_CHANNELS;
+volatile uint16_t startPulse = 0;
+volatile uint16_t PPM[PPM_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+volatile uint16_t PPM_temp[PPM_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+volatile uint8_t ppmCounter = PPM_CHANNELS;
 volatile uint16_t PPM_error = 0;
 
 extern "C" void ftm1_isr(void) {
@@ -22,14 +20,26 @@ extern "C" void ftm1_isr(void) {
 
     if (pulseWidth < 2700 || (pulseWidth > 6100 && pulseWidth < 12000)) {
         PPM_error++;
+        
+        // set ppmCounter out of range so rest and (later on) whole frame is dropped
+        ppmCounter = PPM_CHANNELS + 1;
     }
     
-    if (pulseWidth > 7500) {  // Verify if this is the sync pulse (2.5ms)
-        ppmCounter = 0;       // restart the channel counter
+    if (pulseWidth > 12000) {  // Verify if this is the sync pulse (4ms >)
+        if (ppmCounter == PPM_CHANNELS) {
+            // This indicates that we received an correct frame = push to the "main" PPM array
+            // if we received an broken frame, it will get ignored here and later get over-written
+            // by new data, that will also be checked for sanity.
+            
+            for (uint8_t i = 0; i < PPM_CHANNELS; i++) {
+                PPM[i] = PPM_temp[i];
+            }
+        }
+        ppmCounter = 0; // restart the channel counter
     } else {
-        if (ppmCounter < PPM_CHANNELS) {      // extra channels will get ignored here
-            PPM[ppmCounter] = pulseWidth / 3; // Store measured pulse length in us
-            ppmCounter++;                     // Advance to next channel
+        if (ppmCounter < PPM_CHANNELS) {           // extra channels will get ignored here
+            PPM_temp[ppmCounter] = pulseWidth / 3; // Store measured pulse length in us
+            ppmCounter++;                          // Advance to next channel
         }
     }
     
