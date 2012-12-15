@@ -3,15 +3,16 @@
 #include <Wire.h>
 
 // Custom imports
+#include "receiver.h"
+#include "esc.h"
 #include "PID.h"
+
 //#include "kinematics_ARG.h"
 #include "kinematics_CMP.h"
 #include "mpu6050.h"
-#include "receiver.h"
-#include "esc.h"
 
 // Custom definitions
-#define RX_GRAPH
+//#define RX_GRAPH
 //#define SENSOR_GRAPH
 //#define DISPLAY_ITTERATIONS
 
@@ -61,16 +62,16 @@ void setup() {
     // Join i2c bus as master
     Wire.begin();
 
-    // ESC timer setup
+    // ESC timer and PIN setup
     setupFTM0();
     
-    // RX timer setup
+    // RX timer and PIN setup
     setupFTM1();    
  
-    // Define the integrated LED pin as output
+    // Define the integrated LED pin (usually pin 13) as output
     pinMode(LED_PIN, OUTPUT);
     
-    // Initialize IMU unit
+    // Initialize sensors
     mpu.initialize();
     mpu.calibrate_gyro();
     
@@ -289,8 +290,8 @@ void process10HzTask() {
     digitalWrite(LED_PIN, blinkState);
     
     #ifdef DISPLAY_ITTERATIONS
-    // Print itterations per 100ms
-    Serial.println(itterations);
+        // Print itterations per 100ms
+        Serial.println(itterations);
     #endif
     
     // Reset Itterations
