@@ -1,5 +1,22 @@
-/*
-    Big thanks to kha from #aeroquad and Ragnorok from #arduino for helping me get this up and running.
+/* PPM (pulse position modulation) sampling done in hardware via FLEX timer.
+
+   Code below supports frame buffering, which is used to protect the controller from
+   errors introduced (from simple noise to complete RX failure), if any of the channels in a single
+   PPM frame triggered the sanity check, whole frame will be droped and PPM signal values will remain
+   unchanged until a valid frame can be sampled.
+    
+   PPM_error variable will be increased every time a corrupted frame was detected.
+   
+   RX_signalReceived flag is set to 0 every time a valid frame is processed, this variables is used to
+   "tell" software there was an error in communication (anything from a corrupted frame to a complete 
+   receiver failure), this flag is increased by 1 every 10ms, if it reaches 100 (represnting 1 second)
+   an subroutine is triggered that should handle this failure condition, from the most simple routines
+   that will just disarm the craft (making it fall from the sky like a boiled potato) to more adnvaced 
+   auto-descent routines.
+   
+   Please remember that this failsafe is here to prevent craft from "flying away on its own" and
+   potentionaly harming someone in the proces (damaged craft from a crash is still better then cutting
+   someones head off with uncontrollable craft).
 */
 
 #define PPM_CHANNELS 8
@@ -8,6 +25,8 @@ volatile uint16_t PPM[PPM_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000,
 volatile uint16_t PPM_temp[PPM_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
 volatile uint8_t ppmCounter = PPM_CHANNELS;
 volatile uint16_t PPM_error = 0;
+
+volatile uint8_t RX_signalReceived = 0;
 
 extern "C" void ftm1_isr(void) {
     // save current interrupt count/time
@@ -34,6 +53,9 @@ extern "C" void ftm1_isr(void) {
             for (uint8_t i = 0; i < PPM_CHANNELS; i++) {
                 PPM[i] = PPM_temp[i];
             }
+            
+            // Set signal received flag to 0 every time we accept a valid frame
+            RX_signalReceived = 0;
         }
         ppmCounter = 0; // restart the channel counter
     } else {
@@ -64,3 +86,5 @@ void setupFTM1() {
     // PORT_PCR_MUX(3) works in this case, but we will set it manually anyway
     PORTA_PCR12 |= 0x300; // 0x300
 }
+
+// Big thanks to kha from #aeroquad and Ragnorok from #arduino for helping me get this up and running.
