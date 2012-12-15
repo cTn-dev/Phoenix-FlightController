@@ -1,5 +1,8 @@
 /* PPM (pulse position modulation) sampling done in hardware via FLEX timer.
 
+   We are using flex timer1 which supports only 2 channels.
+   This code only utilizes single edge capture which is more then enough in terms of accuracy.
+
    Code below supports frame buffering, which is used to protect the controller from
    errors introduced (from simple noise to complete RX failure), if any of the channels in a single
    PPM frame triggered the sanity check, whole frame will be droped and PPM signal values will remain

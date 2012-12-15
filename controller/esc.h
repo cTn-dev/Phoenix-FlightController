@@ -1,5 +1,12 @@
-/*
-    Big thanks to kha from #aeroquad for helping me get this up and running.
+/* ESC / Servo signal generation done in hardware by FLEX timer, without ISR (yay!)
+   
+   We are using flex timer0 which supports 8 channels.
+   
+   Currently generating 400 Hz PWM signal that is fed into electronic speed controllers
+   corresponding to each rotor.
+   
+   This code will probably be expanded to also generate servo signal for
+   gimbal stabilization (hopefully in near future).
 */
     
 // PWM servo signal generation using Edge aligned PWM mode (250hz)
@@ -8,7 +15,7 @@ unsigned int MotorOut[4] = {1000, 1000, 1000, 1000};
 void setupFTM0() {
     // Flex timer0 configuration
     FTM0_SC = 0x0c;   // TOF=0 TOIE=0 CPWMS=0 CLKS=01 PS=100 (divide by 16)
-    FTM0_MOD = 7500; // 12000 = 250hz = 4ms, 7500 = 400hz
+    FTM0_MOD = 7500; // 12000 = 4ms = 250 Hz, 7500 = 400 Hz
     FTM0_C0SC = 0x28;
     
     // Initial values (3000 = 1ms)
@@ -37,3 +44,5 @@ void updateMotors() {
     FTM0_C2V = MotorOut[2] * 3;
     FTM0_C3V = MotorOut[3] * 3;
 }
+
+// Big thanks to kha from #aeroquad for helping me get this up and running.
