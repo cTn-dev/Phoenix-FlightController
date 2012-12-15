@@ -8,22 +8,24 @@ double kinematicsAngleX = 0.0;
 double kinematicsAngleY = 0.0;
 double kinematicsAngleZ = 0.0;
 
-unsigned long complementary_timer;
+unsigned long kinematics_timer;
 
 // Function where all the magic happen
-void kinematics_update(double* KaccelX, double* KaccelY, double* KaccelZ, double* KgyroX, double* KgyroY, double* KgyroZ) {
+// Accel units doesn't matter because they are normalized, but gyro units have to be properly scaled
+// before they are fed into kinematics.
+void kinematics_update(double* accelX, double* accelY, double* accelZ, double* gyroX, double* gyroY, double* gyroZ) {
 
     // Calculate accelerometer angles (roll/pitch)
-    double KaccelXangle = atan2(*KaccelY, *KaccelZ);
-    double KaccelYangle = atan2(*KaccelX, *KaccelZ);
+    double accelXangle = atan2(*accelY, *accelZ);
+    double accelYangle = atan2(*accelX, *accelZ);
     
     // Calculate Angles using complementary filter
     unsigned long now = micros();
     
-    kinematicsAngleX = (0.99 * (kinematicsAngleX + (*KgyroX * (double)(now - complementary_timer) / 1000000))) + (0.01 * KaccelXangle);
-    kinematicsAngleY = (0.99 * (kinematicsAngleY + (*KgyroY * (double)(now - complementary_timer) / 1000000))) + (0.01 * KaccelYangle);
-    kinematicsAngleZ = kinematicsAngleZ + (*KgyroZ * (double)(now - complementary_timer) / 1000000);
+    kinematicsAngleX = (0.99 * (kinematicsAngleX + (*gyroX * (double)(now - kinematics_timer) / 1000000))) + (0.01 * accelXangle);
+    kinematicsAngleY = (0.99 * (kinematicsAngleY + (*gyroY * (double)(now - kinematics_timer) / 1000000))) + (0.01 * accelYangle);
+    kinematicsAngleZ = kinematicsAngleZ + (*gyroZ * (double)(now - kinematics_timer) / 1000000);
     
     // Saves time for next comparison
-    complementary_timer = micros();    
+    kinematics_timer = micros();    
 }
