@@ -1,6 +1,6 @@
 double commandYaw, commandPitch, commandRoll;
 
-int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_mode, TX_heading, TX_cam, TX_last;
+int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_mode, TX_baro, TX_cam, TX_last;
 
 void processPilotCommands() {
     // read data into variables
@@ -10,7 +10,7 @@ void processPilotCommands() {
     TX_throttle = PPM[2]; // CH-3 THR
     TX_yaw = PPM[3];      // CH-4 RUD
     TX_mode = PPM[4];     // CH-5 FULL ELE switch (off = rate, on = attitude)
-    TX_heading = PPM[5];  // CH-6 FULL THROTTLE switch (off = gyro heading, on = gyro + mag heading)
+    TX_baro = PPM[5];     // CH-6 FULL AIL switch (off = standard altitude control by stick, on = altitude controled via barometer)
     TX_cam = PPM[6];      // CH-7
     TX_last = PPM[7];     // CH-8
     sei(); // enable interrupts
@@ -26,7 +26,7 @@ void processPilotCommands() {
         Serial.write('\t');  
         Serial.print(TX_mode);
         Serial.write('\t'); 
-        Serial.print(TX_heading);
+        Serial.print(TX_baro);
         Serial.write('\t');
         Serial.print(TX_cam);
         Serial.write('\t');       
@@ -55,6 +55,12 @@ void processPilotCommands() {
     } else if (TX_mode > 1900) {
         // ATTITUDE mode
         flightMode = true;
+    }
+    
+    if (TX_baro < 1100) {
+        // throttle controlled by stick
+    } else if (TX_baro > 1900) {
+        // throttle controlled by baro
     }
     
     // Ignore TX_yaw while throttle is below 1100
