@@ -3,6 +3,7 @@
 #include <Wire.h>
 
 // Custom imports
+#include "controller.h"
 #include "receiver.h"
 #include "esc.h"
 #include "PID.h"
@@ -11,36 +12,8 @@
 #include "kinematics_CMP.h"
 #include "mpu6050.h"
 
-// Custom definitions
-#define RX_GRAPH
-//#define SENSOR_GRAPH
-//#define DISPLAY_ITTERATIONS
-
-// main loop variables
-uint8_t itterations = 0;
-unsigned long currentTime = 0;
-unsigned long previousTime = 0;
-unsigned long sensorPreviousTime = 0;
-uint8_t frameCounter = 0;
-bool all_ready = false;
-bool armed = false;
-bool flightMode = false;
-
-// Blinking LED to indicate activity
-#define LED_PIN 13
-bool blinkState = false;
-
-// Modulo definitions (integer remainder)
-#define TASK_10HZ 10
-
 // MPU definitions
 MPU6050 mpu;
-
-double gyroXsum, gyroYsum, gyroZsum;
-double accelXsum, accelYsum, accelZsum;
-double gyroXsumRate, gyroYsumRate, gyroZsumRate;
-unsigned long gyroRateTimer;
-uint8_t SensorSamples;
 
 // PID definitions
 double YawCommandPIDSpeed, PitchCommandPIDSpeed, RollCommandPIDSpeed;
@@ -212,9 +185,9 @@ void process100HzTask() {
     gyroYsumRate = -((gyroYsum / SensorSamples) * gyroScaleFactor);
     gyroZsumRate = (gyroZsum / SensorSamples) * gyroScaleFactor;
     
-    double accelXsumAvr = accelXsum / SensorSamples;
-    double accelYsumAvr = accelYsum / SensorSamples;
-    double accelZsumAvr = accelZsum / SensorSamples;
+    accelXsumAvr = accelXsum / SensorSamples;
+    accelYsumAvr = accelYsum / SensorSamples;
+    accelZsumAvr = accelZsum / SensorSamples;
 
     // Reset SUM variables and Sample counter
     gyroXsum = 0;
@@ -284,27 +257,8 @@ void process100HzTask() {
 }
 
 void process10HzTask() {
-    // if this flag reaches 10, an auto-descent routine will be triggered.
-    RX_signalReceived++;
-    
-    if (RX_signalReceived > 10) {
-        RX_signalReceived = 10; // don't let the variable overflow
-        
-        // Bear in mind that this is here just to "slow" the fall, if you have lets say 500m altitude,
-        // this probably won't help you much (sorry).
-        // This will slowly (-2 every 100ms) bring the throttle to 1000 (still saved in the PPM array)
-        // 1000 = 0 throttle;
-        // Descending from FULL throttle 2000 (most unlikely) would take about 1 minute and 40 seconds
-        // Descending from HALF throttle 1500 (more likely) would take about 50 seconds
-        PPM[2] -= 2;
-        
-        if (PPM[2] < 1000) {
-            PPM[2] = 1000; // don't let the value fall below 1000
-            
-            // at this point, we will also disarm
-            armed = false;
-        }    
-    }
+    // Trigger RX failsafe function every 100ms
+    RX_failSafe();
 
     // Blink LED to indicated activity
     blinkState = !blinkState;

@@ -62,6 +62,12 @@ int16_t accelX, accelY, accelZ;
 int16_t gyro_temperature;
 double gyroScaleFactor;
 
+double gyroXsum, gyroYsum, gyroZsum;
+double accelXsum, accelYsum, accelZsum;
+
+double gyroXsumRate, gyroYsumRate, gyroZsumRate;
+double accelXsumAvr, accelYsumAvr, accelZsumAvr;
+
 class MPU6050 {
     public: 
         // Constructor
