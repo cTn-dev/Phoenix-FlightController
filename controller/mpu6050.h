@@ -76,6 +76,11 @@ class MPU6050 {
             // 16 bit scale (2^16) = 65536
             // to get the scale factor in radians = radians(2000.0 / 65536.0)
             gyroScaleFactor = radians(2000.0 / 65536.0);
+            
+            // Manually defined accel offset
+            accel_offset[0] = -110;
+            accel_offset[1] = 60;
+            accel_offset[2] = 0;
         };
         
         void initialize() {
@@ -156,6 +161,14 @@ class MPU6050 {
             gyroZ += gyro_offset[2];
         };
         
+        void readAccelCalibrated() {
+            readAccelRaw();
+            
+            accelX += accel_offset[0];
+            accelY += accel_offset[1];
+            accelZ += accel_offset[2];
+        };
+        
         void readGyroTemperatutre() {
             Wire.beginTransmission(MPU6050_ADDRESS);
             Wire.write(MPUREG_TEMP_OUT_H);
@@ -176,4 +189,5 @@ class MPU6050 {
         
     private:
         int16_t gyro_offset[3];
+        int16_t accel_offset[3];
 };

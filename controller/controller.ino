@@ -65,7 +65,7 @@ void loop() {
     // Read data (not faster then every 1ms)
     if (currentTime - sensorPreviousTime >= 1000) {
         mpu.readGyroCalibrated();
-        mpu.readAccelRaw();        
+        mpu.readAccelCalibrated();        
         
         gyroXsum += gyroX;
         gyroYsum += gyroY;
@@ -154,7 +154,23 @@ void process100HzTask() {
         roll_motor_pid.Compute();         
     }
     
-    #ifdef SENSOR_GRAPH
+    #ifdef SENSOR_DATA_RAW
+        Serial.print(accelX);
+        Serial.write('\t');    
+        Serial.print(accelY);
+        Serial.write('\t');   
+        Serial.print(accelZ);
+        Serial.write('\t');   
+        Serial.print(gyroX);
+        Serial.write('\t');   
+        Serial.print(gyroY);
+        Serial.write('\t');   
+        Serial.print(gyroZ);
+        Serial.write('\t');  
+        Serial.println();          
+    #endif
+    
+    #ifdef KINEMATICS_GRAPH
         Serial.print(kinematicsAngleX * RAD_TO_DEG + 180.0);
         Serial.write('\t');      
         Serial.print(kinematicsAngleY * RAD_TO_DEG + 180.0);
