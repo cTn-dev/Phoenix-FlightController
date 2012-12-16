@@ -3,11 +3,6 @@
     by cTn
 */
 
-// Complementary Filter global variables
-double kinematicsAngleX = 0.0;
-double kinematicsAngleY = 0.0;
-double kinematicsAngleZ = 0.0;
-
 unsigned long kinematics_timer;
 
 // Function where all the magic happen

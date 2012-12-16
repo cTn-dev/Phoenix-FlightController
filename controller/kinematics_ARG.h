@@ -9,18 +9,6 @@
 // and accelerometer ('ax', 'ay', 'ay') data.  Gyroscope units are radians/second, accelerometer 
 // units are irrelevant as the vector is normalised.
 
-boolean isSwitched(float previousError, float currentError) {
-    if ( (previousError > 0 &&  currentError < 0) || (previousError < 0 &&  currentError > 0)) {
-        return true;
-    }
-    return false;
-}
-
-
-double kinematicsAngleX = 0.0;
-double kinematicsAngleY = 0.0;
-double kinematicsAngleZ = 0.0;
-
 float q0 = 1.0;
 float q1 = 0.0;
 float q2 = 0.0;
@@ -36,7 +24,14 @@ float previousEz = 0;
 float Kp = 0.2;
 float Ki = 0.0005;
 
-unsigned long f_timer;
+unsigned long kinematics_timer;
+
+boolean isSwitched(float previousError, float currentError) {
+    if ( (previousError > 0 &&  currentError < 0) || (previousError < 0 &&  currentError > 0)) {
+        return true;
+    }
+    return false;
+}
 
 void argUpdate(float gx, float gy, float gz, float ax, float ay, float az, float G_Dt) {
 
@@ -111,9 +106,9 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
     float accelYlat = -*accelY;
     float accelZvert = -*accelZ;
     
-    float G_Dt = (micros() - f_timer) / 1000000.0;
+    float G_Dt = (micros() - kinematics_timer) / 1000000.0;
     argUpdate(*gyroX, *gyroY, *gyroZ, accelXlong, accelYlat, accelZvert, G_Dt);
-    f_timer = micros();
+    kinematics_timer = micros();
     
     kinematicsAngleX = atan2(2 * (q0 * q1 + q2 * q3), 1 - 2 * (q1 * q1 + q2 * q2));
     kinematicsAngleY = asin(2 * (q0 * q2 - q1 * q3));

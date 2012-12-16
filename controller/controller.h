@@ -16,6 +16,11 @@ bool blinkState = false;
 // Modulo definitions (integer remainder)
 #define TASK_10HZ 10
 
+// Kinematics variable defnitions
+double kinematicsAngleX = 0.0;
+double kinematicsAngleY = 0.0;
+double kinematicsAngleZ = 0.0;
+
 // Custom definitions
 #define RX_GRAPH
 //#define SENSOR_GRAPH
