@@ -298,7 +298,12 @@ void process10HzTask() {
         // Descending from HALF throttle 1500 (more likely) would take about 50 seconds
         PPM[2] -= 2;
         
-        if (PPM[2] < 1000) PPM[2] = 1000; // don't let the value fall below 1000
+        if (PPM[2] < 1000) {
+            PPM[2] = 1000; // don't let the value fall below 1000
+            
+            // at this point, we will also disarm
+            armed = false;
+        }    
     }
 
     // Blink LED to indicated activity
