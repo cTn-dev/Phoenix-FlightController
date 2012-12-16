@@ -104,6 +104,7 @@ void RX_failSafe() {
         // Descending from FULL throttle 2000 (most unlikely) would take about 1 minute and 40 seconds
         // Descending from HALF throttle 1500 (more likely) would take about 50 seconds
         PPM[2] -= 2;
+        PPM[4] = 2000; // force attitude mode
         
         if (PPM[2] < 1000) {
             PPM[2] = 1000; // don't let the value fall below 1000
