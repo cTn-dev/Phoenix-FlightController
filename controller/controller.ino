@@ -62,20 +62,11 @@ void loop() {
     // Timer
     currentTime = micros();
     
-    // Read data (not faster then every 1ms)
+    // Read data (not faster then every 1 ms)
+    // This is as fast as we can go on standard i2c bus (we could go much faster on SPI)
     if (currentTime - sensorPreviousTime >= 1000) {
-        mpu.readGyroCalibrated();
-        mpu.readAccelCalibrated();        
-        
-        gyroXsum += gyroX;
-        gyroYsum += gyroY;
-        gyroZsum += gyroZ;
-        
-        accelXsum += accelX;
-        accelYsum += accelY;
-        accelZsum += accelZ;
-        
-        SensorSamples++;
+        mpu.readGyroSum();
+        mpu.readAccelSum();        
         
         sensorPreviousTime = currentTime;
     }    
@@ -84,13 +75,22 @@ void loop() {
     if (currentTime - previousTime > 10000) {
         frameCounter++;
         
-        // 100 Hz task (10ms)
         process100HzTask();
+        
+        // 50 Hz tak (20 ms)
+        if (frameCounter % TASK_50HZ == 0) {
+            process50HzTask();
+        }
         
         // 10 Hz task (100 ms)
         if (frameCounter % TASK_10HZ == 0) {
             process10HzTask();
         }  
+        
+        // 1 Hz task (1000 ms)
+        if (frameCounter % TASK_1HZ == 0) {
+            process1HzTask();
+        }
         
         previousTime = currentTime;
     }
@@ -100,30 +100,25 @@ void loop() {
     }
 }
 
-void process100HzTask() {
-    processPilotCommands();  
-    
-    // Calculate accel & gyro average (during previous 10ms)
-    // Gyro is also properly scaled and converrted from dps to rps
-    
-    gyroXsumRate = (gyroXsum / SensorSamples) * gyroScaleFactor;
-    gyroYsumRate = -((gyroYsum / SensorSamples) * gyroScaleFactor);
-    gyroZsumRate = (gyroZsum / SensorSamples) * gyroScaleFactor;
-    
-    accelXsumAvr = accelXsum / SensorSamples;
-    accelYsumAvr = accelYsum / SensorSamples;
-    accelZsumAvr = accelZsum / SensorSamples;
+void process100HzTask() {    
+    mpu.evaluateGyro();
+    mpu.evaluateAccel();
 
-    // Reset SUM variables and Sample counter
-    gyroXsum = 0;
-    gyroYsum = 0;
-    gyroZsum = 0;
-    
-    accelXsum = 0;
-    accelYsum = 0;
-    accelZsum = 0;
-    
-    SensorSamples = 0;
+    #ifdef SENSOR_DATA
+        Serial.print(accelXsumAvr);
+        Serial.write('\t');    
+        Serial.print(accelYsumAvr);
+        Serial.write('\t');   
+        Serial.print(accelZsumAvr);
+        Serial.write('\t');   
+        Serial.print(gyroXsumRate);
+        Serial.write('\t');   
+        Serial.print(gyroYsumRate);
+        Serial.write('\t');   
+        Serial.print(gyroZsumRate);
+        Serial.write('\t');  
+        Serial.println();          
+    #endif    
     
     // Update kinematics with latest data
     kinematics_update(&accelXsumAvr, &accelYsumAvr, &accelZsumAvr, &gyroXsumRate, &gyroYsumRate, &gyroZsumRate);
@@ -152,33 +147,7 @@ void process100HzTask() {
         yaw_motor_pid.Compute();
         pitch_motor_pid.Compute();
         roll_motor_pid.Compute();         
-    }
-    
-    #ifdef SENSOR_DATA_RAW
-        Serial.print(accelX);
-        Serial.write('\t');    
-        Serial.print(accelY);
-        Serial.write('\t');   
-        Serial.print(accelZ);
-        Serial.write('\t');   
-        Serial.print(gyroX);
-        Serial.write('\t');   
-        Serial.print(gyroY);
-        Serial.write('\t');   
-        Serial.print(gyroZ);
-        Serial.write('\t');  
-        Serial.println();          
-    #endif
-    
-    #ifdef KINEMATICS_GRAPH
-        Serial.print(kinematicsAngleX * RAD_TO_DEG + 180.0);
-        Serial.write('\t');      
-        Serial.print(kinematicsAngleY * RAD_TO_DEG + 180.0);
-        Serial.write('\t');      
-        Serial.print(kinematicsAngleZ * RAD_TO_DEG + 180.0);
-        Serial.write('\t');              
-        Serial.println();    
-    #endif    
+    }   
     
     if (armed) {               
         MotorOut[0] = constrain(TX_throttle + PitchMotorSpeed + RollMotorSpeed + YawMotorSpeed, 1000, 2000);
@@ -197,6 +166,10 @@ void process100HzTask() {
     } 
 }
 
+void process50HzTask() {
+    processPilotCommands();
+}
+
 void process10HzTask() {
     // Trigger RX failsafe function every 100ms
     RX_failSafe();
@@ -212,4 +185,8 @@ void process10HzTask() {
     
     // Reset Itterations
     itterations = 0;    
+}
+
+void process1HzTask() {
+    // empty for now
 }

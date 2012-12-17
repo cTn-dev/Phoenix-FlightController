@@ -68,6 +68,9 @@ double accelXsum, accelYsum, accelZsum;
 double gyroXsumRate, gyroYsumRate, gyroZsumRate;
 double accelXsumAvr, accelYsumAvr, accelZsumAvr;
 
+uint8_t gyroSamples = 0;
+uint8_t accelSamples = 0;
+
 class MPU6050 {
     public: 
         // Constructor
@@ -78,7 +81,7 @@ class MPU6050 {
             gyroScaleFactor = radians(2000.0 / 65536.0);
             
             // Manually defined accel offset
-            accel_offset[0] = -110;
+            accel_offset[0] = -120;
             accel_offset[1] = 60;
             accel_offset[2] = 0;
         };
@@ -108,7 +111,7 @@ class MPU6050 {
 
             // Initial delay after proper configuration
             // let sensors heat up (especially gyro)
-            delay(1000);
+            delay(1500);
         };
         
         // ~640ms
@@ -140,7 +143,7 @@ class MPU6050 {
             gyroY = (Wire.read() << 8) | Wire.read();
             gyroZ = (Wire.read() << 8) | Wire.read();
         };
-
+        
         void readAccelRaw() {
             Wire.beginTransmission(MPU6050_ADDRESS);
             Wire.write(MPUREG_ACCEL_XOUT_H);
@@ -152,6 +155,67 @@ class MPU6050 {
             accelY = (Wire.read() << 8) | Wire.read(); 
             accelZ = (Wire.read() << 8) | Wire.read();            
         };        
+        
+        void readGyroSum() {
+            readGyroRaw();
+            
+            gyroXsum += gyroX;
+            gyroYsum += gyroY;
+            gyroZsum += gyroZ;
+            
+            gyroSamples++;
+        };        
+        
+        void readAccelSum() {
+            readAccelRaw();
+            
+            accelXsum += accelX;
+            accelYsum += accelY;
+            accelZsum += accelZ;  
+
+            accelSamples++;
+        };
+        
+        void evaluateGyro() {
+            // Calculate average
+            gyroXsumRate = gyroXsum / gyroSamples;
+            gyroYsumRate = -(gyroYsum / gyroSamples);
+            gyroZsumRate = gyroZsum / gyroSamples;  
+            
+            // Apply offsets
+            gyroXsumRate += gyro_offset[0];
+            gyroYsumRate += gyro_offset[1];
+            gyroZsumRate += gyro_offset[2];         
+            
+            // Apply correct scaling
+            gyroXsumRate *= gyroScaleFactor;
+            gyroYsumRate *= gyroScaleFactor;
+            gyroZsumRate *= gyroScaleFactor;
+            
+            // Reset SUM variables
+            gyroXsum = 0;
+            gyroYsum = 0;
+            gyroZsum = 0;
+            gyroSamples = 0;
+        };
+        
+        void evaluateAccel() {
+            // Calculate average
+            accelXsumAvr = accelXsum / accelSamples;
+            accelYsumAvr = accelYsum / accelSamples;
+            accelZsumAvr = accelZsum / accelSamples;  
+            
+            // Apply offsets
+            accelXsumAvr += accel_offset[0];
+            accelYsumAvr += accel_offset[1];
+            accelZsumAvr += accel_offset[2];
+            
+            // Reset SUM variables
+            accelXsum = 0;
+            accelYsum = 0;
+            accelZsum = 0;
+            accelSamples = 0;
+        };
         
         void readGyroCalibrated() {
             readGyroRaw();
