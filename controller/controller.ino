@@ -174,18 +174,6 @@ void process50HzTask() {
 void process10HzTask() {
     // Trigger RX failsafe function every 100ms
     RX_failSafe();
-
-    // Blink LED to indicated activity
-    blinkState = !blinkState;
-    digitalWrite(LED_PIN, blinkState);
-    
-    // Orientation ligts
-    // also displaying armed / dis-armed status
-    if (armed) {
-        digitalWrite(LED_ORIENTATION, HIGH);
-    } else {
-        digitalWrite(LED_ORIENTATION, blinkState);
-    }
     
     #ifdef DISPLAY_ITTERATIONS
         // Print itterations per 100ms
@@ -197,5 +185,15 @@ void process10HzTask() {
 }
 
 void process1HzTask() {
-    // empty for now
+    // Blink LED to indicated activity
+    blinkState = !blinkState;
+    digitalWrite(LED_PIN, blinkState);
+    
+    // Orientation ligts
+    // also displaying armed / dis-armed status
+    if (armed) {
+        digitalWrite(LED_ORIENTATION, HIGH);
+    } else {
+        digitalWrite(LED_ORIENTATION, blinkState);
+    }
 }
