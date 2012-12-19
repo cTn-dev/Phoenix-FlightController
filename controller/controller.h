@@ -10,6 +10,7 @@ bool flightMode = false;
 
 // Blinking LED to indicate activity
 #define LED_PIN 13
+#define LED_ORIENTATION 14
 bool blinkState = false;
 
 // Modulo definitions (integer remainder)

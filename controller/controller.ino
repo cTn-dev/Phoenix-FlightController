@@ -41,8 +41,9 @@ void setup() {
     // RX timer and PIN setup
     setupFTM1();    
  
-    // Define the integrated LED pin (usually pin 13) as output
-    pinMode(LED_PIN, OUTPUT);
+    // PIN settings
+    pinMode(LED_PIN, OUTPUT); // build in status LED
+    pinMode(LED_ORIENTATION, OUTPUT); // orientation lights
     
     // Initialize sensors
     mpu.initialize();
@@ -177,6 +178,14 @@ void process10HzTask() {
     // Blink LED to indicated activity
     blinkState = !blinkState;
     digitalWrite(LED_PIN, blinkState);
+    
+    // Orientation ligts
+    // also displaying armed / dis-armed status
+    if (armed) {
+        digitalWrite(LED_ORIENTATION, HIGH);
+    } else {
+        digitalWrite(LED_ORIENTATION, blinkState);
+    }
     
     #ifdef DISPLAY_ITTERATIONS
         // Print itterations per 100ms
