@@ -85,9 +85,12 @@ class MPU6050 {
             // To calculate accel bias measure maximum positive and maximum negative value for axis
             // and then calculate average which will be used as bias
             // biasX = (accelXpositive + accelXnegative) / 2;
-            accel_bias[0] = -42; // (8200 -8115) / 2 = 42
-            accel_bias[1] = -220; // (8450 -8010) / 2 = 220
-            accel_bias[2] = 900; // (7400 -9200) / 2 = -900
+            
+            // The calibration output isn't really "working" for me, i will enter the X and Y axis
+            // values manually.
+            accel_bias[0] = -125; // (8200 -8115) / 2 = 42
+            accel_bias[1] = 20; // (8450 -8010) / 2 = 220
+            accel_bias[2] = 800; // (7400 -9200) / 2 = -900
             
             // Accel scale factor = 9.81 m/s^2 / scale
             // 9.81 / 8192 = 0.00119751
