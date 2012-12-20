@@ -84,6 +84,7 @@ class MPU6050 {
             // Manually defined accel bias
             // To calculate accel bias measure maximum positive and maximum negative value for axis
             // and then calculate average which will be used as bias
+            // accelXpositive and accelXnegative should be an average of at least 500 samples
             // biasX = (accelXpositive + accelXnegative) / 2;
             
             // The calibration output isn't really "working" for me, i will enter the X and Y axis

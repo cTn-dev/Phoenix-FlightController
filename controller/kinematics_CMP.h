@@ -1,28 +1,40 @@
 /*
-    Kinematics implementation using first order complementary filter
+    Kinematics implementation using first order complementary filter 
+    with accelerometer data normalization and accelerometer cut-off
     by cTn
 */
 
 unsigned long kinematics_timer;
 
-// Function where all the magic happen
-// Accel units doesn't matter because they are normalized, but gyro units have to be properly scaled
-// before they are fed into kinematics.
+// Kinematics input is averaged (from multiple samples) and scaled (gyro is in radians/s) and accel is in m/s^2
+// accel measurement is normalized before any angles are computed.
 void kinematics_update(double* accelX, double* accelY, double* accelZ, double* gyroX, double* gyroY, double* gyroZ) {
 
+    // Normalize accel values
+    double norm = sqrt(*accelX * *accelX + *accelY * *accelY + *accelZ * *accelZ);
+    *accelX /= norm;
+    *accelY /= norm;
+    *accelZ /= norm;
+    
     // Calculate accelerometer angles (roll/pitch)
     double accelXangle = atan2(*accelY, *accelZ);
     double accelYangle = atan2(*accelX, *accelZ);
     
-    // Calculate Angles using complementary filter
+    // Save current time into variable for better computation time
     unsigned long now = micros();
     
-    kinematicsAngleX = (0.99 * (kinematicsAngleX + (*gyroX * (double)(now - kinematics_timer) / 1000000))) + (0.01 * accelXangle);
-    kinematicsAngleY = (0.99 * (kinematicsAngleY + (*gyroY * (double)(now - kinematics_timer) / 1000000))) + (0.01 * accelYangle);
+    // Accelerometer cut-off
+    double accelWeight = 0.01; // normal operation
+    if (norm > 11.0) {
+        accelWeight = 0.00; // gyro only
+    }
+    
+    kinematicsAngleX = ((1.00 - accelWeight) * (kinematicsAngleX + (*gyroX * (double)(now - kinematics_timer) / 1000000))) + (accelWeight * accelXangle);
+    kinematicsAngleY = ((1.00 - accelWeight) * (kinematicsAngleY + (*gyroY * (double)(now - kinematics_timer) / 1000000))) + (accelWeight * accelYangle);
     kinematicsAngleZ = kinematicsAngleZ + (*gyroZ * (double)(now - kinematics_timer) / 1000000);
     
     // Saves time for next comparison
-    kinematics_timer = micros(); 
+    kinematics_timer = now; // not sure if now or micros() should be here, i am gonna use now for "now"
 
     // Used for debugging
     #ifdef KINEMATICS_GRAPH
