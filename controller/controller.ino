@@ -69,6 +69,22 @@ void loop() {
         mpu.readGyroSum();
         mpu.readAccelSum();        
         
+        #ifdef SENSOR_DATA_RAW
+            Serial.print(accelX);
+            Serial.write('\t');    
+            Serial.print(accelY);
+            Serial.write('\t');   
+            Serial.print(accelZ);
+            Serial.write('\t');   
+            Serial.print(gyroX);
+            Serial.write('\t');   
+            Serial.print(gyroY);
+            Serial.write('\t');   
+            Serial.print(gyroZ);
+            Serial.write('\t');  
+            Serial.println(); 
+        #endif
+        
         sensorPreviousTime = currentTime;
     }    
     

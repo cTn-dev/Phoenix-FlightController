@@ -27,4 +27,5 @@ double kinematicsAngleZ = 0.0;
 //#define RX_GRAPH
 //#define KINEMATICS_GRAPH
 //#define SENSOR_DATA
+//#define SENSOR_DATA_RAW
 //#define DISPLAY_ITTERATIONS

@@ -31,7 +31,7 @@ float[] fourthY = new float[width];
 void setup() {  
   size(width, height);
   //println(arduino.list()); // Use this to print connected serial devices
-  arduino = new Serial(this, "COM8", 38400);
+  arduino = new Serial(this, "COM3", 38400);
   arduino.bufferUntil('\n'); // Buffer until line feed
 
   for (int i=0;i<width;i++) { // center all variables

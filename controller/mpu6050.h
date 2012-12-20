@@ -61,6 +61,7 @@ int16_t gyroX, gyroY, gyroZ;
 int16_t accelX, accelY, accelZ;
 int16_t gyro_temperature;
 double gyroScaleFactor;
+double accelScaleFactor;
 
 double gyroXsum, gyroYsum, gyroZsum;
 double accelXsum, accelYsum, accelZsum;
@@ -81,9 +82,13 @@ class MPU6050 {
             gyroScaleFactor = radians(2000.0 / 65536.0);
             
             // Manually defined accel offset
-            accel_offset[0] = -120;
-            accel_offset[1] = 60;
+            accel_offset[0] = 0;
+            accel_offset[1] = 0;
             accel_offset[2] = 0;
+            
+            // Accel scale factor = 9.81 m/s^2 / scale
+            // 9.81 / 8192 = 0.00119751
+            accelScaleFactor = 9.81 / 8192.0;
         };
         
         void initialize() {
@@ -187,7 +192,7 @@ class MPU6050 {
             gyroYsumRate += gyro_offset[1];
             gyroZsumRate += gyro_offset[2];         
             
-            // Apply correct scaling
+            // Apply correct scaling (at this point gyroNsumRate is in radians)
             gyroXsumRate *= gyroScaleFactor;
             gyroYsumRate *= gyroScaleFactor;
             gyroZsumRate *= gyroScaleFactor;
@@ -209,6 +214,11 @@ class MPU6050 {
             accelXsumAvr += accel_offset[0];
             accelYsumAvr += accel_offset[1];
             accelZsumAvr += accel_offset[2];
+            
+            // Apply correct scaling (at this point accelNsumAvr reprensents +- 1g = 9.81 m/s^2)
+            accelXsumAvr *= accelScaleFactor;
+            accelYsumAvr *= accelScaleFactor;
+            accelZsumAvr *= accelScaleFactor;
             
             // Reset SUM variables
             accelXsum = 0;
