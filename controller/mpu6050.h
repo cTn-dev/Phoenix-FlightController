@@ -81,10 +81,13 @@ class MPU6050 {
             // to get the scale factor in radians = radians(2000.0 / 65536.0)
             gyroScaleFactor = radians(2000.0 / 65536.0);
             
-            // Manually defined accel offset
-            accel_offset[0] = 0;
-            accel_offset[1] = 0;
-            accel_offset[2] = 0;
+            // Manually defined accel bias
+            // To calculate accel bias measure maximum positive and maximum negative value for axis
+            // and then calculate average which will be used as bias
+            // biasX = (accelXpositive + accelXnegative) / 2;
+            accel_bias[0] = -42; // (8200 -8115) / 2 = 42
+            accel_bias[1] = -220; // (8450 -8010) / 2 = 220
+            accel_bias[2] = 900; // (7400 -9200) / 2 = -900
             
             // Accel scale factor = 9.81 m/s^2 / scale
             // 9.81 / 8192 = 0.00119751
@@ -211,9 +214,9 @@ class MPU6050 {
             accelZsumAvr = accelZsum / accelSamples;  
             
             // Apply offsets
-            accelXsumAvr += accel_offset[0];
-            accelYsumAvr += accel_offset[1];
-            accelZsumAvr += accel_offset[2];
+            accelXsumAvr += accel_bias[0];
+            accelYsumAvr += accel_bias[1];
+            accelZsumAvr += accel_bias[2];
             
             // Apply correct scaling (at this point accelNsumAvr reprensents +- 1g = 9.81 m/s^2)
             accelXsumAvr *= accelScaleFactor;
@@ -238,9 +241,9 @@ class MPU6050 {
         void readAccelCalibrated() {
             readAccelRaw();
             
-            accelX += accel_offset[0];
-            accelY += accel_offset[1];
-            accelZ += accel_offset[2];
+            accelX += accel_bias[0];
+            accelY += accel_bias[1];
+            accelZ += accel_bias[2];
         };
         
         void readGyroTemperatutre() {
@@ -263,5 +266,5 @@ class MPU6050 {
         
     private:
         int16_t gyro_offset[3];
-        int16_t accel_offset[3];
+        int16_t accel_bias[3];
 };
