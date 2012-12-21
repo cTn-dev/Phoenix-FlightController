@@ -8,6 +8,7 @@
 #include "PilotCommandProcessor.h"
 #include "PID.h"
 #include "esc.h"
+#include "battery_monitor.h"
 
 //#include "kinematics_ARG.h"
 #include "kinematics_CMP.h"
@@ -44,6 +45,8 @@ void setup() {
     // PIN settings
     pinMode(LED_PIN, OUTPUT); // build in status LED
     pinMode(LED_ORIENTATION, OUTPUT); // orientation lights
+    digitalWrite(LED_ORIENTATION, HIGH); // set to HIGH by default
+    pinMode(BAT_V_MONITOR_PIN, INPUT); // Battery voltage input pin
     
     // Initialize sensors
     mpu.initialize();
@@ -191,6 +194,30 @@ void process10HzTask() {
     // Trigger RX failsafe function every 100ms
     RX_failSafe();
     
+    // Orientation lights are also used to indicate battery voltage during flight
+    // Warning = slow blinking
+    // Alarm = fast blinking
+    if (BatteryAlarm) {
+        BatteryBlinkCounter++;
+        
+        if (BatteryBlinkCounter >= 1) {
+            BatteryBlinkState = !BatteryBlinkState;
+            BatteryBlinkCounter = 0;
+            
+            digitalWrite(LED_ORIENTATION, BatteryBlinkState);
+        }
+        
+    } else if (BatteryWarning) {
+        BatteryBlinkCounter++;
+
+        if (BatteryBlinkCounter >= 6) {
+            BatteryBlinkState = !BatteryBlinkState;
+            BatteryBlinkCounter = 0;
+            
+            digitalWrite(LED_ORIENTATION, BatteryBlinkState);
+        }        
+    }
+    
     #ifdef DISPLAY_ITTERATIONS
         // Print itterations per 100ms
         Serial.println(itterations);
@@ -201,10 +228,14 @@ void process10HzTask() {
 }
 
 void process1HzTask() {
+    // Measure battery voltage
+    measureBatteryVoltage();
+    
     // Blink LED to indicated activity
     blinkState = !blinkState;
     digitalWrite(LED_PIN, blinkState);
-    
+
+    /* temporary disabled    
     // Orientation ligts
     // also displaying armed / dis-armed status
     if (armed) {
@@ -212,4 +243,6 @@ void process1HzTask() {
     } else {
         digitalWrite(LED_ORIENTATION, blinkState);
     }
+    */
+   
 }
