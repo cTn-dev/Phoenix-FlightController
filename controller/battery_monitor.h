@@ -65,3 +65,30 @@ void measureBatteryVoltage() {
         #endif
     }
 }
+
+/* This code should be in the main setup()
+    pinMode(BAT_V_MONITOR_PIN, INPUT); // Battery voltage input pin
+*/
+
+/* This code should be entered inside the 50Hz loop
+
+    // Orientation lights are also used to indicate battery voltage during flight
+    // Warning = slow blinking
+    // Alarm = fast blinking
+    if (BatteryAlarm || BatteryWarning) {
+        BatteryBlinkCounter++;
+        
+        uint8_t BlinkSpeed = 6; // Default blink speed (for battery warning)
+        if (BatteryAlarm) BlinkSpeed = 1; // Fast blink speed (for battery critical)
+        
+        if (BatteryBlinkCounter >= BlinkSpeed) {
+            BatteryBlinkState = !BatteryBlinkState;
+            BatteryBlinkCounter = 0;
+            
+            digitalWrite(LED_ORIENTATION, BatteryBlinkState);
+        }   
+    } else {
+        digitalWrite(LED_ORIENTATION, HIGH); // set to HIGH by default
+    }
+    
+*/
