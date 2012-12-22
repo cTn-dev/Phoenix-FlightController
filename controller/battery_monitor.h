@@ -10,8 +10,6 @@
 
 // Battery voltage monitor PIN
 #define BAT_V_MONITOR_PIN 15
-#define BAT_V_MONITOR_R1 10000.0
-#define BAT_V_MONITOR_R2 1500.0
 #define BAT_V_MONITOR_WARNING 10.5
 #define BAT_V_MONITOR_ALARM 9.9
 
@@ -27,12 +25,27 @@ uint8_t BatteryBlinkCounter = 0;
 bool BatteryBlinkState = false;
 
 void measureBatteryVoltage() {
+    // Read analog PIN value into variable
     BatteryVoltage = analogRead(BAT_V_MONITOR_PIN);
+    
+    // Properly scale it
     BatteryVoltage *= BAT_V_MONITOR_SCALE_FACTOR;
 
+    // Warning & critical battery voltage flag handling
     if (BatteryVoltage < BAT_V_MONITOR_ALARM) {
+        // Battery critical
         BatteryAlarm = true;
     } else if (BatteryVoltage < BAT_V_MONITOR_WARNING) {
+        // Battery low
         BatteryWarning = true;
+    } else {
+        // Reset flags to "OFF" state
+        BatteryAlarm = false;
+        BatteryWarning = false;
     }
+    
+    #ifdef DISABLE_BATTERY_ALARM
+        BatteryAlarm = false;
+        BatteryWarning = false;            
+    #endif
 }

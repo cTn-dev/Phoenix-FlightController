@@ -29,3 +29,4 @@ double kinematicsAngleZ = 0.0;
 //#define SENSOR_DATA
 //#define SENSOR_DATA_RAW
 //#define DISPLAY_ITTERATIONS
+//#define DISABLE_BATTERY_ALARM
