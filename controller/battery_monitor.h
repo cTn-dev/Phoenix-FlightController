@@ -6,6 +6,8 @@
     My "default" voltage divider is using 10K R1 and 1K5 R2 with 100nF capacitor paralel to R2
     Voltage divider scale is (10 + 1.5) / 1.5 = 13%
     Real voltage = ADC scale / (13% * 100)
+    
+    Measured values will be always averaged over 5 samples
 */
 
 // Battery voltage monitor PIN
@@ -20,32 +22,46 @@ float BatteryVoltage = 0;
 bool BatteryWarning = false;
 bool BatteryAlarm = false;
 
+float BatteryVoltageSum = 0;
+uint8_t BatteryVoltageSamples = 0;
+
 // Variables used for warning/alarm indication via orientation lights
 uint8_t BatteryBlinkCounter = 0;
 bool BatteryBlinkState = false;
 
 void measureBatteryVoltage() {
     // Read analog PIN value into variable
-    BatteryVoltage = analogRead(BAT_V_MONITOR_PIN);
-    
-    // Properly scale it
-    BatteryVoltage *= BAT_V_MONITOR_SCALE_FACTOR;
+    BatteryVoltageSum += analogRead(BAT_V_MONITOR_PIN);
 
-    // Warning & critical battery voltage flag handling
-    if (BatteryVoltage < BAT_V_MONITOR_ALARM) {
-        // Battery critical
-        BatteryAlarm = true;
-    } else if (BatteryVoltage < BAT_V_MONITOR_WARNING) {
-        // Battery low
-        BatteryWarning = true;
-    } else {
-        // Reset flags to "OFF" state
-        BatteryAlarm = false;
-        BatteryWarning = false;
-    }
+    BatteryVoltageSamples++;
     
-    #ifdef DISABLE_BATTERY_ALARM
-        BatteryAlarm = false;
-        BatteryWarning = false;            
-    #endif
+    if (BatteryVoltageSamples >= 5) {
+        // Calculate Average
+        BatteryVoltageSum = BatteryVoltageSum / BatteryVoltageSamples;
+        
+        // Properly scale it
+        BatteryVoltage = BatteryVoltageSum * BAT_V_MONITOR_SCALE_FACTOR;
+        
+        // Reset SUM variables
+        BatteryVoltageSum = 0;
+        BatteryVoltageSamples = 0;
+        
+        // Warning & critical battery voltage flag handling
+        if (BatteryVoltage < BAT_V_MONITOR_ALARM) {
+            // Battery critical
+            BatteryAlarm = true;
+        } else if (BatteryVoltage < BAT_V_MONITOR_WARNING) {
+            // Battery low
+            BatteryWarning = true;
+        } else {
+            // Reset flags to "OFF" state
+            BatteryAlarm = false;
+            BatteryWarning = false;
+        }
+        
+        #ifdef DISABLE_BATTERY_ALARM
+            BatteryAlarm = false;
+            BatteryWarning = false;            
+        #endif
+    }
 }
