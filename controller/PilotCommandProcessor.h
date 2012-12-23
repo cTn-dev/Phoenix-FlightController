@@ -76,7 +76,7 @@ void processPilotCommands() {
     if (flightMode == ATTITUDE_MODE) {
         // YAW angle build up over time
         commandYaw += (TX_yaw * 0.0015) / 40;
-    } else if (flightMode == RATE_MOD) {
+    } else if (flightMode == RATE_MODE) {
         // raw stick input
         commandYaw = (TX_yaw * 0.0015);
     }    
