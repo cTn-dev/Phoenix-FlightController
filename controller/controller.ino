@@ -140,9 +140,7 @@ void process100HzTask() {
     // Update kinematics with latest data
     kinematics_update(&accelXsumAvr, &accelYsumAvr, &accelZsumAvr, &gyroXsumRate, &gyroYsumRate, &gyroZsumRate);
     
-    if (flightMode) {
-        // ATTITUDE mode
-        
+    if (flightMode == ATTITUDE_MODE) {
         // Compute command PIDs (with kinematics correction)
         yaw_command_pid.Compute();
         pitch_command_pid.Compute();
@@ -152,9 +150,7 @@ void process100HzTask() {
         yaw_motor_pid.Compute();
         pitch_motor_pid.Compute();
         roll_motor_pid.Compute();   
-    } else {
-        // RATE mode
-        
+    } else if (flightMode == RATE_MODE) {
         // * 4.0 is the rotation speed factor
         YawCommandPIDSpeed = commandYaw * 4.0;
         PitchCommandPIDSpeed = commandPitch * 4.0;
@@ -203,14 +199,14 @@ void process10HzTask() {
 void process1HzTask() {
     
     // Blink LED to indicated activity
-    blinkState = !blinkState;
-    digitalWrite(LED_PIN, blinkState);
+    Alive_LED_state = !Alive_LED_state;
+    digitalWrite(LED_PIN, Alive_LED_state);
 
     // Orientation ligts
     // also displaying armed / dis-armed status
     if (armed) {
         digitalWrite(LED_ORIENTATION, HIGH);
     } else {
-        digitalWrite(LED_ORIENTATION, blinkState);
+        digitalWrite(LED_ORIENTATION, Alive_LED_state);
     }
 }

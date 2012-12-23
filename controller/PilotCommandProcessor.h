@@ -74,10 +74,10 @@ void processPilotCommands() {
     TX_yaw = -TX_yaw;
     
     // PWM2RAD = 0.002, ATTITUDE_SCALING = 0.75 * PWM2RAD = 0.0015
-    // division by 50 is used to slow down YAW build up 
+    // division by 40 is used to slow down YAW build up 
     if (flightMode) {
         // ATTITUDE mode = YAW angle build up over time
-        commandYaw += (TX_yaw * 0.0015) / 50;
+        commandYaw += (TX_yaw * 0.0015) / 40;
     }    
     else {
         // RATE mode = raw stick input

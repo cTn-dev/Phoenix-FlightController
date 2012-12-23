@@ -1,4 +1,4 @@
-// main loop variables
+// Main loop variables
 uint8_t itterations = 0;
 unsigned long currentTime = 0;
 unsigned long previousTime = 0;
@@ -8,10 +8,14 @@ bool all_ready = false;
 bool armed = false;
 bool flightMode = false;
 
+// Flight modes
+#define RATE_MODE 0
+#define ATTITUDE_MODE 1
+
 // Blinking LED to indicate activity
 #define LED_PIN 13
 #define LED_ORIENTATION 14
-bool blinkState = false;
+bool Alive_LED_state = false;
 
 // Modulo definitions (integer remainder)
 #define TASK_50HZ 2
