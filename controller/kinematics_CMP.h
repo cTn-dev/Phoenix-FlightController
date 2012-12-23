@@ -2,12 +2,13 @@
     Kinematics implementation using first order complementary filter 
     with accelerometer data normalization and accelerometer cut-off
     by cTn
+    
+    Kinematics input is averaged (from multiple samples) and scaled (gyro is in radians/s) and accel is in m/s^2
+    accel measurement is normalized before any angles are computed.
 */
 
 unsigned long kinematics_timer;
 
-// Kinematics input is averaged (from multiple samples) and scaled (gyro is in radians/s) and accel is in m/s^2
-// accel measurement is normalized before any angles are computed.
 void kinematics_update(double* accelX, double* accelY, double* accelZ, double* gyroX, double* gyroY, double* gyroZ) {
 
     // Normalize accel values
@@ -34,7 +35,7 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
     kinematicsAngleZ = kinematicsAngleZ + (*gyroZ * (double)(now - kinematics_timer) / 1000000);
     
     // Saves time for next comparison
-    kinematics_timer = now; // not sure if now or micros() should be here, i am gonna use now for "now"
+    kinematics_timer = now;
 
     // Used for debugging
     #ifdef KINEMATICS_GRAPH

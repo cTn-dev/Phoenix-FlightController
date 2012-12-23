@@ -1,9 +1,10 @@
 // Main loop variables
-uint8_t itterations = 0;
 unsigned long currentTime = 0;
 unsigned long previousTime = 0;
 unsigned long sensorPreviousTime = 0;
 uint8_t frameCounter = 0;
+uint8_t itterations = 0;
+
 bool all_ready = false;
 bool armed = false;
 bool flightMode = false;

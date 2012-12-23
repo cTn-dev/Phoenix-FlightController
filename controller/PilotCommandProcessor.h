@@ -49,11 +49,9 @@ void processPilotCommands() {
     }
     
     if (TX_mode < 1100) {
-        // RATE mode
-        flightMode = false;
+        flightMode = RATE_MODE;
     } else if (TX_mode > 1900) {
-        // ATTITUDE mode
-        flightMode = true;
+        flightMode = ATTITUDE_MODE;
     }
     
     if (TX_baro < 1100) {
@@ -75,12 +73,11 @@ void processPilotCommands() {
     
     // PWM2RAD = 0.002, ATTITUDE_SCALING = 0.75 * PWM2RAD = 0.0015
     // division by 40 is used to slow down YAW build up 
-    if (flightMode) {
-        // ATTITUDE mode = YAW angle build up over time
+    if (flightMode == ATTITUDE_MODE) {
+        // YAW angle build up over time
         commandYaw += (TX_yaw * 0.0015) / 40;
-    }    
-    else {
-        // RATE mode = raw stick input
+    } else if (flightMode == RATE_MOD) {
+        // raw stick input
         commandYaw = (TX_yaw * 0.0015);
     }    
     commandRoll = TX_roll * 0.0015;
