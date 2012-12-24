@@ -64,7 +64,6 @@ void loop() {
     currentTime = micros();
     
     // Read data (not faster then every 1 ms)
-    // This is as fast as we can go on standard i2c bus (we could go much faster on SPI)
     if (currentTime - sensorPreviousTime >= 1000) {
         mpu.readGyroSum();
         mpu.readAccelSum();        
