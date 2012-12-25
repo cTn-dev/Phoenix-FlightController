@@ -25,7 +25,7 @@ PIN setup (Teensy 3.0 pin numbering)
   - Battery monitor 15
   
 Filters, kinematics, data handling
-==================================
+----------------------------------
   - Initial raw data from sensors (read every 1ms = 1000Hz) is being averaged by a simple averaging filter
   - Averaged data from sensors are being processed every 10ms (100Hz)
   - By default i am using my own complementary kinematics algorythm
@@ -33,6 +33,7 @@ Filters, kinematics, data handling
   - Flight controller supports 2 modes
     - Rate | (ACRO) gyro only
     - Attitude | gyro with accel corrections
+  - Pilot commands are being read by PPM sampling code via single PIN (with HW timer), this is the only pilot input supported for now
   - Stabilization and pilot commands are mixed together by 2 separate PID controllers
     - First (only used in attitude mode) mixes pilot commands with kinematics output
     - Second (used in both attitude and rate mode) mixes output from first PID or raw stick input with gyroRate output
