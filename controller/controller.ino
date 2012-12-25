@@ -195,8 +195,7 @@ void process10HzTask() {
     itterations = 0;    
 }
 
-void process1HzTask() {
-    
+void process1HzTask() {   
     // Blink LED to indicated activity
     Alive_LED_state = !Alive_LED_state;
     digitalWrite(LED_PIN, Alive_LED_state);
@@ -206,6 +205,6 @@ void process1HzTask() {
     if (armed) {
         digitalWrite(LED_ORIENTATION, HIGH);
     } else {
-        digitalWrite(LED_ORIENTATION, Alive_LED_state);
+        digitalWrite(LED_ORIENTATION, LOW);
     }
 }
