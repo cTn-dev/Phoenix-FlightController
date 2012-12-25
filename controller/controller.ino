@@ -108,11 +108,12 @@ void loop() {
             process1HzTask();
         }
         
+        // Reset frameCounter back to 0 after reaching 100 (1s)
+        if (frameCounter >= 100) {
+            frameCounter = 0;
+        }
+        
         previousTime = currentTime;
-    }
-    
-    if (frameCounter >= 100) {
-        frameCounter = 0;
     }
 }
 
@@ -186,8 +187,8 @@ void process10HzTask() {
     // Trigger RX failsafe function every 100ms
     RX_failSafe();
     
+    // Print itterations per 100ms
     #ifdef DISPLAY_ITTERATIONS
-        // Print itterations per 100ms
         Serial.println(itterations);
     #endif
     
