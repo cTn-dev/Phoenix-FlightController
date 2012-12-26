@@ -8,6 +8,7 @@ uint32_t itterations = 0;
 bool all_ready = false;
 bool armed = false;
 bool flightMode = false;
+bool altitudeHold = false;
 
 // Flight modes
 #define RATE_MODE 0

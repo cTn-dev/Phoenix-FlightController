@@ -56,8 +56,14 @@ void processPilotCommands() {
     
     if (TX_baro < 1100) {
         // throttle controlled by stick
+        altitudeHold = false;
     } else if (TX_baro > 1900) {
         // throttle controlled by baro
+        if (altitudeHold == false) { // We just switched on the altitudeHold
+            // save the current altitude and throttle
+        }
+        
+        altitudeHold = true;
     }
     
     // Ignore TX_yaw while throttle is below 1100
