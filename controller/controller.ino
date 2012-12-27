@@ -185,6 +185,7 @@ void process100HzTask() {
 void process50HzTask() {
     processPilotCommands();
     baro.evaluateBaroAltitude();
+    baro.getBaroAltitude();
 }
 
 void process10HzTask() {
