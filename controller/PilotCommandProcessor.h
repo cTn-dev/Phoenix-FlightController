@@ -1,5 +1,6 @@
 int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_mode, TX_baro, TX_cam, TX_last;
 int16_t throttle = 1000;
+bool throttlePanic = false;
 
 void processPilotCommands() {
     // read data into variables
@@ -54,7 +55,7 @@ void processPilotCommands() {
         flightMode = ATTITUDE_MODE;
     }
     
-    if (TX_baro < 1100) {
+    if (TX_baro < 1100 || throttlePanic) {
         // throttle controlled by stick
         altitudeHold = false;
     } else if (TX_baro > 1900) {
@@ -63,9 +64,19 @@ void processPilotCommands() {
             // save the current altitude and throttle
             baroAltitudeToHoldTarget = baroAltitude;
             baroAltitudeHoldThrottle = TX_throttle;
+            
+            // Reset throttle panic
+            throttlePanic = false;
         }
         
         altitudeHold = true;
+        
+        // Trigger throttle panic if throttle is higher or lower then 100 compared
+        // to initial altitude hold throttle.
+        if (TX_throttle > (baroAltitudeHoldThrottle + 100) || TX_throttle < (baroAltitudeHoldThrottle - 100)) {
+            // Pilot will be forced to re-flip the altitude hold switch to reset the throttlePanic flag.
+            throttlePanic = true;
+        }
     }
     
     // Ignore TX_yaw while throttle is below 1100
