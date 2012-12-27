@@ -55,18 +55,18 @@ void processPilotCommands() {
         flightMode = ATTITUDE_MODE;
     }
     
-    if (TX_baro < 1100 || throttlePanic) {
+    if (TX_baro < 1100) {
         // throttle controlled by stick
         altitudeHold = false;
-    } else if (TX_baro > 1900) {
+        
+        // reset throttle panic flag
+        throttlePanic = false;
+    } else if (TX_baro > 1900 && throttlePanic == false) {
         // throttle controlled by baro
         if (altitudeHold == false) { // We just switched on the altitudeHold
             // save the current altitude and throttle
             baroAltitudeToHoldTarget = baroAltitude;
             baroAltitudeHoldThrottle = TX_throttle;
-            
-            // Reset throttle panic
-            throttlePanic = false;
         }
         
         altitudeHold = true;
@@ -76,6 +76,7 @@ void processPilotCommands() {
         if (abs(TX_throttle - baroAltitudeHoldThrottle) > 100) {
             // Pilot will be forced to re-flip the altitude hold switch to reset the throttlePanic flag.
             throttlePanic = true;
+            altitudeHold = false;
         }
     }
     
