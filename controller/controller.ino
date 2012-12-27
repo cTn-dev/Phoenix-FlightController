@@ -11,13 +11,15 @@
 //#include "kinematics_ARG.h"
 #include "kinematics_CMP.h"
 #include "mpu6050.h"
+#include "bmp085.h"
 
-// MPU definitions
+// Sensor definitions
 MPU6050 mpu;
+BMP085 baro;
 
 // PID definitions
 double YawCommandPIDSpeed, PitchCommandPIDSpeed, RollCommandPIDSpeed;
-double YawMotorSpeed, PitchMotorSpeed, RollMotorSpeed;
+double YawMotorSpeed, PitchMotorSpeed, RollMotorSpeed, ThrottleMotorSpeed;
 
 PID yaw_command_pid(&kinematicsAngleZ, &YawCommandPIDSpeed, &commandYaw, 4.0, 0.0, 0.0, 25.0);
 PID pitch_command_pid(&kinematicsAngleY, &PitchCommandPIDSpeed, &commandPitch, 4.0, 0.0, 0.0, 25.0);
@@ -26,6 +28,7 @@ PID roll_command_pid(&kinematicsAngleX, &RollCommandPIDSpeed, &commandRoll, 4.0,
 PID yaw_motor_pid(&gyroZsumRate, &YawMotorSpeed, &YawCommandPIDSpeed, 200.0, 5.0, 0.0, 1000.0);
 PID pitch_motor_pid(&gyroYsumRate, &PitchMotorSpeed, &PitchCommandPIDSpeed, 80.0, 0.0, -300.0, 1000.0);
 PID roll_motor_pid(&gyroXsumRate, &RollMotorSpeed, &RollCommandPIDSpeed, 80.0, 0.0, -300.0, 1000.0);
+PID throttle_motor_pid(&baroAltitudeToHoldTarget, &ThrottleMotorSpeed, &baroAltitude, 25.0, 0.6, 0.0, 25.0);
   
 // Include this last as it contains objects from previous declarations
 #include "PilotCommandProcessor.h"  
@@ -50,6 +53,7 @@ void setup() {
     // Initialize sensors
     mpu.initialize();
     mpu.calibrate_gyro();
+    baro.initialize();
     
     // All is ready, start the loop
     all_ready = true;
@@ -122,6 +126,8 @@ void loop() {
 void process100HzTask() {    
     mpu.evaluateGyro();
     mpu.evaluateAccel();
+    
+    baro.measureBaroSum(); // Baro is being sampled every 10ms (because measuring pressure is slow)
 
     #ifdef SENSOR_DATA
         Serial.print(accelXsumAvr);
@@ -160,10 +166,10 @@ void process100HzTask() {
     roll_motor_pid.Compute();     
     
     if (armed) {               
-        MotorOut[0] = constrain(TX_throttle + PitchMotorSpeed + RollMotorSpeed + YawMotorSpeed, 1000, 2000);
-        MotorOut[1] = constrain(TX_throttle + PitchMotorSpeed - RollMotorSpeed - YawMotorSpeed, 1000, 2000);
-        MotorOut[2] = constrain(TX_throttle - PitchMotorSpeed - RollMotorSpeed + YawMotorSpeed, 1000, 2000);
-        MotorOut[3] = constrain(TX_throttle - PitchMotorSpeed + RollMotorSpeed - YawMotorSpeed, 1000, 2000);
+        MotorOut[0] = constrain(throttle + PitchMotorSpeed + RollMotorSpeed + YawMotorSpeed, 1000, 2000);
+        MotorOut[1] = constrain(throttle + PitchMotorSpeed - RollMotorSpeed - YawMotorSpeed, 1000, 2000);
+        MotorOut[2] = constrain(throttle - PitchMotorSpeed - RollMotorSpeed + YawMotorSpeed, 1000, 2000);
+        MotorOut[3] = constrain(throttle - PitchMotorSpeed + RollMotorSpeed - YawMotorSpeed, 1000, 2000);
 
         updateMotors();
     } else {
@@ -178,6 +184,7 @@ void process100HzTask() {
 
 void process50HzTask() {
     processPilotCommands();
+    baro.evaluateBaroAltitude();
 }
 
 void process10HzTask() {

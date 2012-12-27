@@ -1,4 +1,5 @@
 int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_mode, TX_baro, TX_cam, TX_last;
+int16_t throttle = 1000;
 
 void processPilotCommands() {
     // read data into variables
@@ -60,6 +61,8 @@ void processPilotCommands() {
         // throttle controlled by baro
         if (altitudeHold == false) { // We just switched on the altitudeHold
             // save the current altitude and throttle
+            baroAltitudeToHoldTarget = baroAltitude;
+            baroAltitudeHoldThrottle = TX_throttle;
         }
         
         altitudeHold = true;
@@ -87,4 +90,11 @@ void processPilotCommands() {
     }    
     commandRoll = TX_roll * 0.0015;
     commandPitch = TX_pitch * 0.0015;
+    
+    if (altitudeHold == true) {
+        throttle_motor_pid.Compute();
+        throttle = baroAltitudeHoldThrottle - constrain(ThrottleMotorSpeed, -50.0, 50.0);
+    } else {
+        throttle = TX_throttle;
+    }
 }    
