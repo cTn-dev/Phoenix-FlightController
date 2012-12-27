@@ -4,9 +4,10 @@ Flight Controller based on MK20DX128 (Teensy 3.0)
 I2C Setup
 ---------
 This is required for getting higher data reading speeds (mostly for gyro and accel)
-  - In Arduino/libraries/Wire/Wire.cpp change I2C0_F = 0x27; to I2C0_F = 0x0D;
+  - In Arduino/libraries/Wire/Wire.cpp change I2C0_F = 0x27; to I2C0_F = 0x00;
+  - I also added the modified Wire library to the repository
   
-This will set the I2C Bus Speed to FM (Fast-mode), reaching speeds up to 1Mbit/s
+This will set the I2C Bus Speed to FM (Fast-mode), reaching speeds up to 2.4Mbit/s
 By having faster I2C Bus to work with, we get a "spare" time between sensor reads
 which will give us quite a bit of spare computing time that we can utilize elsewhere
 (6 registers for gyro + 6 registers for) = 12 bytes = 96 bits 
