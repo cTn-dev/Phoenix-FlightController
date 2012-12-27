@@ -1,5 +1,4 @@
 int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_mode, TX_baro, TX_cam, TX_last;
-double commandYaw, commandPitch, commandRoll;
 
 void processPilotCommands() {
     // read data into variables

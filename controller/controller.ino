@@ -5,7 +5,6 @@
 // Custom imports
 #include "controller.h"
 #include "receiver.h"
-#include "PilotCommandProcessor.h"
 #include "PID.h"
 #include "esc.h"
 
@@ -27,6 +26,9 @@ PID roll_command_pid(&kinematicsAngleX, &RollCommandPIDSpeed, &commandRoll, 4.0,
 PID yaw_motor_pid(&gyroZsumRate, &YawMotorSpeed, &YawCommandPIDSpeed, 200.0, 5.0, 0.0, 1000.0);
 PID pitch_motor_pid(&gyroYsumRate, &PitchMotorSpeed, &PitchCommandPIDSpeed, 80.0, 0.0, -300.0, 1000.0);
 PID roll_motor_pid(&gyroXsumRate, &RollMotorSpeed, &RollCommandPIDSpeed, 80.0, 0.0, -300.0, 1000.0);
+  
+// Include this last as it contains objects from previous declarations
+#include "PilotCommandProcessor.h"  
   
 void setup() {    
     // Initialize serial communication

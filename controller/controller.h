@@ -29,6 +29,9 @@ double kinematicsAngleX = 0.0;
 double kinematicsAngleY = 0.0;
 double kinematicsAngleZ = 0.0;
 
+// FlightController commands definitions
+double commandYaw, commandPitch, commandRoll, commandThrottle;
+
 // Custom definitions
 //#define RX_GRAPH
 //#define KINEMATICS_GRAPH
