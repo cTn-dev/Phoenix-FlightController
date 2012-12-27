@@ -73,7 +73,7 @@ void processPilotCommands() {
         
         // Trigger throttle panic if throttle is higher or lower then 100 compared
         // to initial altitude hold throttle.
-        if (TX_throttle > (baroAltitudeHoldThrottle + 100) || TX_throttle < (baroAltitudeHoldThrottle - 100)) {
+        if (abs(TX_throttle - baroAltitudeHoldThrottle) > 100) {
             // Pilot will be forced to re-flip the altitude hold switch to reset the throttlePanic flag.
             throttlePanic = true;
         }
