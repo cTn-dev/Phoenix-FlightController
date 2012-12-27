@@ -145,22 +145,17 @@ void process100HzTask() {
         yaw_command_pid.Compute();
         pitch_command_pid.Compute();
         roll_command_pid.Compute();
-        
-        // Compute motor PIDs (rate)    
-        yaw_motor_pid.Compute();
-        pitch_motor_pid.Compute();
-        roll_motor_pid.Compute();   
     } else if (flightMode == RATE_MODE) {
-        // * 4.0 is the rotation speed factor
+        // Stick input, * 4.0 is the rotation speed factor
         YawCommandPIDSpeed = commandYaw * 4.0;
         PitchCommandPIDSpeed = commandPitch * 4.0;
-        RollCommandPIDSpeed = commandRoll * 4.0;
-        
-        // Compute motor PIDs (rate)    
-        yaw_motor_pid.Compute();
-        pitch_motor_pid.Compute();
-        roll_motor_pid.Compute();         
+        RollCommandPIDSpeed = commandRoll * 4.0;        
     }   
+    
+    // Compute motor PIDs (rate-based)    
+    yaw_motor_pid.Compute();
+    pitch_motor_pid.Compute();
+    roll_motor_pid.Compute();     
     
     if (armed) {               
         MotorOut[0] = constrain(TX_throttle + PitchMotorSpeed + RollMotorSpeed + YawMotorSpeed, 1000, 2000);
