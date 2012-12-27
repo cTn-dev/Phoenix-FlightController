@@ -1,3 +1,10 @@
+/*  According to MPU6050 datasheet
+    this chip should support I2C speeds up to 400kHz (Fast-mode Fm)
+    
+    However on Teensy 3.0 i am able to reach 2.4MHz (High-speed mode) without any problems.
+    (which cuts down the reading time of accel + gyro to about 180us)
+*/
+
 // MPU 6050 Registers
 #define MPU6050_ADDRESS         0x68   
 #define MPUREG_WHOAMI			0x75
