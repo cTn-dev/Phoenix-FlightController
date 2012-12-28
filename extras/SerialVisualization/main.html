@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Adanved serial monitor & visualization</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="description" content="desc" />
+        <meta name="keywords" content="test" />
+        <meta name="robots" content="ALL,FOLLOW" />
+        <meta name="author" content="cTn" />
+        <script type="text/javascript" src="./js/jquery-1.8.3.min.js"></script>
+        <script type="text/javascript" src="./js/d3.v3.min.js"></script>
+        <script type="text/javascript" src="./js/rickshaw.min.js"></script>
+        <script type="text/javascript" src="./js/custom.js"></script>
+        <link type="text/css" rel="stylesheet" href="./css/fonts.css" media="all" /> 
+        <link type="text/css" rel="stylesheet" href="./css/style.css" media="all" /> 
+    </head>
+    <body>
+        <div id="main-wrapper">
+            <div id="port-picker">
+                <select id="port">
+                </select>
+                <select id="baud">
+                    <option value="300">300</option>
+                    <option value="1200">1200</option>
+                    <option value="2400">2400</option>
+                    <option value="4800">4800</option>
+                    <option value="9600">9600</option>
+                    <option value="14400">14400</option>
+                    <option value="19200">19200</option>
+                    <option value="28800">28800</option>
+                    <option value="38400">38400</option>
+                    <option value="57600">57600</option>
+                    <option value="115200">115200</option>
+                </select>
+                <a class="refresh" href="#" title="Refresh">[ Refresh ]</a>
+                <a class="connect" href="#" title="">[ Connect ]</a>
+            </div>
+            <div id="graph_gyro"></div>
+            <div id="graph_accel"></div>
+            <div id="graph_kinematics"></div>
+        </div>
+    </body>
+</html>    
