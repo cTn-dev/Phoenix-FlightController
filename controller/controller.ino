@@ -187,13 +187,13 @@ void process100HzTask() {
         Serial.print(kinematicsAngleZ * RAD_TO_DEG + 180.0);  
         Serial.write(','); 
         
-        Serial.print(TX_roll);
+        Serial.print(TX_roll + 500);
         Serial.write(',');   
-        Serial.print(TX_pitch);
+        Serial.print(TX_pitch + 500);
         Serial.write(','); 
-        Serial.print(TX_throttle);
+        Serial.print(TX_throttle - 1000);
         Serial.write(','); 
-        Serial.print(TX_yaw);        
+        Serial.print(TX_yaw + 500);        
         
         Serial.println();     
     #endif    

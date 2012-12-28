@@ -3,6 +3,7 @@ var connectionId = -1;
 var graph_gyro;
 var graph_accel;
 var graph_kinematics;
+var graph_tx;
 
 $(document).ready(function() {
     var port_picker = $('div#port-picker #port');
@@ -61,7 +62,7 @@ $(document).ready(function() {
         width: 1278,
         height: 200,
         renderer: 'line',
-        max: 3,
+        max: 2.2,
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
             maxDataPoints: 1000,
@@ -76,7 +77,7 @@ $(document).ready(function() {
         width: 1278,
         height: 200,
         renderer: 'line',
-        max: 360,
+        max: 270, // This should be 360, but i am using lower value to get clearer visualization
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
             maxDataPoints: 1000,
@@ -85,6 +86,21 @@ $(document).ready(function() {
     } );
 
     graph_kinematics.render();
+    
+    graph_tx = new Rickshaw.Graph( {
+        element: document.getElementById("graph_tx"),
+        width: 1278,
+        height: 200,
+        renderer: 'line',
+        max: 1100,
+        series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
+            timeInterval: 10,
+            maxDataPoints: 1000,
+            timeBase: new Date().getTime()
+        }) 
+    } );
+
+    graph_tx.render();    
     
 });
 
@@ -132,7 +148,7 @@ function onCharRead(readInfo) {
         ar[4] = parseFloat(ar[4]); // Y
         ar[5] = parseFloat(ar[5]); // Z
 
-        var data_accel = {one: ar[3], two: ar[4], three: ar[5]};
+        var data_accel = {one: ar[4], two: ar[3], three: ar[5]}; // X and Y axis are in reverse here, to match kinematics colors
         graph_accel.series.addData(data_accel);
         graph_accel.render();          
         
@@ -150,6 +166,10 @@ function onCharRead(readInfo) {
         ar[10] = parseInt(ar[10]); // TX Pitch
         ar[11] = parseInt(ar[11]); // TX Throttle
         ar[12] = parseInt(ar[12]); // TX Yaw
+        
+        var data_tx = {one: ar[9], two: ar[10], three: ar[11], four: ar[12]};
+        graph_tx.series.addData(data_tx);
+        graph_tx.render();
         
     }
     chrome.serial.read(connectionId, 1000, onCharRead);
