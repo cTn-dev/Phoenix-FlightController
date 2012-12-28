@@ -36,15 +36,4 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
     
     // Saves time for next comparison
     kinematics_timer = now;
-
-    // Used for debugging
-    #ifdef KINEMATICS_GRAPH
-        Serial.print(kinematicsAngleX * RAD_TO_DEG + 180.0);
-        Serial.write('\t');      
-        Serial.print(kinematicsAngleY * RAD_TO_DEG + 180.0);
-        Serial.write('\t');      
-        Serial.print(kinematicsAngleZ * RAD_TO_DEG + 180.0);
-        Serial.write('\t');              
-        Serial.println();    
-    #endif 
 }

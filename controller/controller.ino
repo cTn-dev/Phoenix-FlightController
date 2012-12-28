@@ -127,23 +127,7 @@ void process100HzTask() {
     mpu.evaluateGyro();
     mpu.evaluateAccel();
     
-    baro.measureBaroSum(); // Baro is being sampled every 10ms (because measuring pressure is slow)
-
-    #ifdef SENSOR_DATA
-        Serial.print(accelXsumAvr);
-        Serial.write('\t');    
-        Serial.print(accelYsumAvr);
-        Serial.write('\t');   
-        Serial.print(accelZsumAvr);
-        Serial.write('\t');   
-        Serial.print(gyroXsumRate);
-        Serial.write('\t');   
-        Serial.print(gyroYsumRate);
-        Serial.write('\t');   
-        Serial.print(gyroZsumRate);
-        Serial.write('\t');  
-        Serial.println();          
-    #endif    
+    baro.measureBaroSum(); // Baro is being sampled every 10ms (because measuring pressure is slow) 
     
     // Update kinematics with latest data
     kinematics_update(&accelXsumAvr, &accelYsumAvr, &accelZsumAvr, &gyroXsumRate, &gyroYsumRate, &gyroZsumRate);

@@ -112,16 +112,5 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
     
     kinematicsAngleX = atan2(2 * (q0 * q1 + q2 * q3), 1 - 2 * (q1 * q1 + q2 * q2));
     kinematicsAngleY = asin(2 * (q0 * q2 - q1 * q3));
-    kinematicsAngleZ = atan2(2 * (q0 * q3 + q1 * q2), 1 - 2 * (q2 * q2 + q3 * q3)); 
-
-    // Used for debugging
-    #ifdef KINEMATICS_GRAPH
-        Serial.print(kinematicsAngleX * RAD_TO_DEG + 180.0);
-        Serial.write('\t');      
-        Serial.print(kinematicsAngleY * RAD_TO_DEG + 180.0);
-        Serial.write('\t');      
-        Serial.print(kinematicsAngleZ * RAD_TO_DEG + 180.0);
-        Serial.write('\t');              
-        Serial.println();    
-    #endif      
+    kinematicsAngleZ = atan2(2 * (q0 * q3 + q1 * q2), 1 - 2 * (q2 * q2 + q3 * q3));    
 }
