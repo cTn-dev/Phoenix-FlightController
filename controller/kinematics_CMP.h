@@ -46,5 +46,5 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
         Serial.print(kinematicsAngleZ * RAD_TO_DEG + 180.0);
         Serial.write('\t');              
         Serial.println();    
-    #endif     
+    #endif 
 }

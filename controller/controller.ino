@@ -179,7 +179,40 @@ void process100HzTask() {
         MotorOut[3] = 1000;
         
         updateMotors();
-    } 
+    }
+
+    #ifdef DATA_VISUALIZATION
+        Serial.print(gyroXsumRate);
+        Serial.write(',');
+        Serial.print(gyroYsumRate);
+        Serial.write(',');
+        Serial.print(gyroZsumRate);
+        Serial.write(',');        
+        
+        Serial.print(accelXsumAvr);
+        Serial.write(',');
+        Serial.print(accelYsumAvr);
+        Serial.write(','); 
+        Serial.print(accelZsumAvr);
+        Serial.write(',');         
+        
+        Serial.print(kinematicsAngleX * RAD_TO_DEG + 180.0);
+        Serial.write(',');      
+        Serial.print(kinematicsAngleY * RAD_TO_DEG + 180.0);
+        Serial.write(',');      
+        Serial.print(kinematicsAngleZ * RAD_TO_DEG + 180.0);  
+        Serial.write(','); 
+        
+        Serial.print(TX_roll);
+        Serial.write(',');   
+        Serial.print(TX_pitch);
+        Serial.write(','); 
+        Serial.print(TX_throttle);
+        Serial.write(','); 
+        Serial.print(TX_yaw);        
+        
+        Serial.println();     
+    #endif    
 }
 
 void process50HzTask() {
