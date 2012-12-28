@@ -182,18 +182,18 @@ void process100HzTask() {
     }
 
     #ifdef DATA_VISUALIZATION
-        Serial.print(gyroXsumRate);
+        Serial.print(gyroXsumRate + 10.0);
         Serial.write(',');
-        Serial.print(gyroYsumRate);
+        Serial.print(gyroYsumRate + 10.0);
         Serial.write(',');
-        Serial.print(gyroZsumRate);
+        Serial.print(gyroZsumRate + 10.0);
         Serial.write(',');        
         
-        Serial.print(accelXsumAvr);
+        Serial.print(accelXsumAvr + 1.0);
         Serial.write(',');
-        Serial.print(accelYsumAvr);
+        Serial.print(accelYsumAvr + 1.0);
         Serial.write(','); 
-        Serial.print(accelZsumAvr);
+        Serial.print(accelZsumAvr + 1.0);
         Serial.write(',');         
         
         Serial.print(kinematicsAngleX * RAD_TO_DEG + 180.0);
