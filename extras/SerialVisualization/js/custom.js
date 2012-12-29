@@ -44,13 +44,13 @@ $(document).ready(function() {
     // Setup Graphs
     graph_gyro = new Rickshaw.Graph( {
         element: document.getElementById("graph_gyro"),
-        width: 1278,
-        height: 200,
+        width: 1000,
+        height: 150,
         renderer: 'line',
         max: 20,
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
-            maxDataPoints: 1000,
+            maxDataPoints: 500,
             timeBase: new Date().getTime()
         }) 
     } );
@@ -59,13 +59,13 @@ $(document).ready(function() {
 
     graph_accel = new Rickshaw.Graph( {
         element: document.getElementById("graph_accel"),
-        width: 1278,
-        height: 200,
+        width: 1000,
+        height: 150,
         renderer: 'line',
         max: 2.2,
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
-            maxDataPoints: 1000,
+            maxDataPoints: 500,
             timeBase: new Date().getTime()
         }) 
     } );
@@ -74,13 +74,13 @@ $(document).ready(function() {
     
     graph_kinematics = new Rickshaw.Graph( {
         element: document.getElementById("graph_kinematics"),
-        width: 1278,
-        height: 200,
+        width: 1000,
+        height: 150,
         renderer: 'line',
         max: 270, // This should be 360, but i am using lower value to get clearer visualization
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
-            maxDataPoints: 1000,
+            maxDataPoints: 500,
             timeBase: new Date().getTime()
         }) 
     } );
@@ -89,13 +89,13 @@ $(document).ready(function() {
     
     graph_tx = new Rickshaw.Graph( {
         element: document.getElementById("graph_tx"),
-        width: 1278,
-        height: 200,
+        width: 1000,
+        height: 150,
         renderer: 'line',
         max: 1100,
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
-            maxDataPoints: 1000,
+            maxDataPoints: 500,
             timeBase: new Date().getTime()
         }) 
     } );

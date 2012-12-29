@@ -22,7 +22,7 @@ a:hover {
     clear: both;
 }
 #main-wrapper {
-    width: 1280px;
+    width: 1000px;
     margin: 20px auto 0 auto;
 }
     #port-picker {
@@ -51,40 +51,36 @@ a:hover {
         font-weight: bold;
         color: #525252;
     }
-    
     #graph_gyro {
-        width: 1278px;
-        height: 200px;
+        width: 1000px;
+        height: 150px;
         
         margin-bottom: 20px;
         
         border: 1px solid silver;
         background-color: white;
     }
-    
     #graph_accel {
-        width: 1278px;
-        height: 200px;
+        width: 1000px;
+        height: 150px;
         
         margin-bottom: 20px;
         
         border: 1px solid silver;
         background-color: white;
     }    
-    
     #graph_kinematics {
-        width: 1278px;
-        height: 200px;
+        width: 1000px;
+        height: 150px;
         
         margin-bottom: 20px;
         
         border: 1px solid silver;
         background-color: white;
     } 
-
     #graph_tx {
-        width: 1278px;
-        height: 200px;
+        width: 1000px;
+        height: 150px;
         
         border: 1px solid silver;
         background-color: white;

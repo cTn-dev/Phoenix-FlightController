@@ -25,7 +25,7 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
     unsigned long now = micros();
     
     // Accelerometer cut-off
-    double accelWeight = 0.01; // normal operation
+    double accelWeight = 0.0025; // normal operation
     if (norm > 12.0) {
         accelWeight = 0.00; // gyro only
     }
