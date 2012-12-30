@@ -166,8 +166,12 @@ function onCharRead(readInfo) {
         ar[10] = parseInt(ar[10]); // TX Pitch
         ar[11] = parseInt(ar[11]); // TX Throttle
         ar[12] = parseInt(ar[12]); // TX Yaw
+        ar[13] = parseInt(ar[13]); // TX Mode
+        ar[14] = parseInt(ar[14]); // TX baro
+        ar[15] = parseInt(ar[15]); // TX cam
+        ar[16] = parseInt(ar[16]); // TX last
         
-        var data_tx = {one: ar[9], two: ar[10], three: ar[11], four: ar[12]};
+        var data_tx = {one: ar[9], two: ar[10], three: ar[11], four: ar[12], five: ar[13], six: ar[14], seven: ar[15], eight: ar[16]};
         graph_tx.series.addData(data_tx);
         graph_tx.render();
         

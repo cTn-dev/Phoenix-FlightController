@@ -166,6 +166,7 @@ void process100HzTask() {
     }
 
     #ifdef DATA_VISUALIZATION
+        // Gyro data
         Serial.print(gyroXsumRate + 10.0);
         Serial.write(',');
         Serial.print(gyroYsumRate + 10.0);
@@ -173,6 +174,7 @@ void process100HzTask() {
         Serial.print(gyroZsumRate + 10.0);
         Serial.write(',');        
         
+        // Accel data
         Serial.print(accelXsumAvr + 1.0);
         Serial.write(',');
         Serial.print(accelYsumAvr + 1.0);
@@ -180,6 +182,7 @@ void process100HzTask() {
         Serial.print(accelZsumAvr + 1.0);
         Serial.write(',');         
         
+        // Kinematics data
         Serial.print(kinematicsAngleX * RAD_TO_DEG + 180.0);
         Serial.write(',');      
         Serial.print(kinematicsAngleY * RAD_TO_DEG + 180.0);
@@ -187,13 +190,22 @@ void process100HzTask() {
         Serial.print(kinematicsAngleZ * RAD_TO_DEG + 180.0);  
         Serial.write(','); 
         
+        // TX/RX data
         Serial.print(TX_roll + 500);
         Serial.write(',');   
         Serial.print(TX_pitch + 500);
         Serial.write(','); 
         Serial.print(TX_throttle - 1000);
         Serial.write(','); 
-        Serial.print(TX_yaw + 500);        
+        Serial.print(TX_yaw + 500);    
+        Serial.write(','); 
+        Serial.print(TX_mode - 1000);    
+        Serial.write(',');         
+        Serial.print(TX_baro -1000);
+        Serial.write(','); 
+        Serial.print(TX_cam - 1000);
+        Serial.write(','); 
+        Serial.print(TX_last - 1000);        
         
         Serial.println();     
     #endif    
