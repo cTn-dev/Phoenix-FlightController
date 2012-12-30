@@ -91,15 +91,21 @@ void processPilotCommands() {
     // Reverse YAW
     TX_yaw = -TX_yaw;
     
-    // PWM2RAD = 0.002, ATTITUDE_SCALING = 0.75 * PWM2RAD = 0.0015
-    // division by 40 is used to slow down YAW build up 
-    if (flightMode == ATTITUDE_MODE) {
-        // YAW angle build up over time
-        commandYaw += (TX_yaw * 0.0015) / 40;
-    } else if (flightMode == RATE_MODE) {
-        // raw stick input
-        commandYaw = (TX_yaw * 0.0015);
-    }    
+    // YAW deadband (its not 100% necessary, but i am more confiden't having it here)
+    // + i don't know anyone that is using YAW trimms on multicopter
+    // - it ruins YAW/Rudder trimms on TX
+    if (abs(TX_yaw) > 5) { // If yaw signal is bigger then 5 (5us) allow commandYaw to change
+        // PWM2RAD = 0.002, ATTITUDE_SCALING = 0.75 * PWM2RAD = 0.0015
+        // division by 50 is used to slow down YAW build up 
+        if (flightMode == ATTITUDE_MODE) {
+            // YAW angle build up over time
+            commandYaw += (TX_yaw * 0.0015) / 50;
+        } else if (flightMode == RATE_MODE) {
+            // raw stick input
+            commandYaw = (TX_yaw * 0.0015);
+        }      
+    }
+ 
     commandRoll = TX_roll * 0.0015;
     commandPitch = TX_pitch * 0.0015;
     
