@@ -35,7 +35,7 @@ PID throttle_motor_pid(&baroAltitudeToHoldTarget, &ThrottleMotorSpeed, &baroAlti
   
 void setup() {    
     // Initialize serial communication
-    Serial.begin(38400);   
+    Serial.begin(115200);   
  
     // Join i2c bus as master
     Wire.begin();
@@ -205,7 +205,11 @@ void process100HzTask() {
         Serial.write(','); 
         Serial.print(TX_cam - 1000);
         Serial.write(','); 
-        Serial.print(TX_last - 1000);        
+        Serial.print(TX_last - 1000);
+        Serial.write(',');
+        
+        // PPM error
+        Serial.print(PPM_error);
         
         Serial.println();     
     #endif    
