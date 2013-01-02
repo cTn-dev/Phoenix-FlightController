@@ -130,10 +130,10 @@ class MPU6050 {
 
             // Initial delay after proper configuration
             // let sensors heat up (especially gyro)
-            delay(1500);
+            delay(2000);
         };
         
-        // ~640ms
+        // ~1280ms
         void calibrate_gyro() {
             uint8_t i, count = 128;
             int16_t xSum = 0, ySum = 0, zSum = 0;
@@ -143,7 +143,7 @@ class MPU6050 {
                 xSum += gyroX;
                 ySum += gyroY;
                 zSum += gyroZ;
-                delay(5);
+                delay(10);
             }
             
             gyro_offset[0] = -xSum / count;

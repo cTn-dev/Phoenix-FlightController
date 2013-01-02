@@ -69,10 +69,13 @@ class BMP085 {
             
             requestRawTemperature(); // setup up next measure() for temperature
             isReadPressure = false;
+            
             pressureCount = 0;
             measureBaro();
+            
             delay(5); // delay for temperature
             measureBaro();
+            
             delay(10); // delay for pressure
             measureGroundBaro();
             

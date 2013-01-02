@@ -68,7 +68,7 @@ void TwoWire::begin(void)
 #else
 #error "F_BUS must be 48 MHz or 24 MHz"
 #endif
-	I2C0_C1 = I2C_C2_HDRS;
+	I2C0_C2 = I2C_C2_HDRS;
 	I2C0_C1 = I2C_C1_IICEN;
 }
 
@@ -266,7 +266,7 @@ uint8_t TwoWire::endTransmission(void)
 	return endTransmission(true);
 }
 
-void i2c_isr(void)
+void i2c0_isr(void)
 {
 }
 
