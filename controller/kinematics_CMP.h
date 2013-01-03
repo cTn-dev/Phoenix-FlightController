@@ -45,25 +45,25 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
     kinematicsAngleZ = kinematicsAngleZ + (*gyroZ * (double)(now - kinematics_timer) / 1000000);  
     
     // Normalize gyro kinematics (+ - PI)
-    if (kinematicsAngleX > PI) kinematicsAngleX -= 2 * PI;
-    else if (kinematicsAngleX < -PI) kinematicsAngleX += 2 * PI;    
+    if (kinematicsAngleX > PI) kinematicsAngleX -= TWO_PI;
+    else if (kinematicsAngleX < -PI) kinematicsAngleX += TWO_PI;    
     
-    if (kinematicsAngleY > PI) kinematicsAngleY -= 2 * PI;
-    else if (kinematicsAngleY < -PI) kinematicsAngleY += 2 * PI;    
+    if (kinematicsAngleY > PI) kinematicsAngleY -= TWO_PI;
+    else if (kinematicsAngleY < -PI) kinematicsAngleY += TWO_PI;    
     
     // Fuse in accel (handling accel flip)
     if ((kinematicsAngleX - accelXangle) > PI) {
-        kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * (accelXangle + 2 * PI);
+        kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * (accelXangle + TWO_PI);
     } else if ((kinematicsAngleX - accelXangle) < -PI) {
-        kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * (accelXangle - 2 * PI);
+        kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * (accelXangle - TWO_PI);
     } else {
         kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * accelXangle;
     }
     
     if ((kinematicsAngleY - accelYangle) > PI) {
-        kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * (accelYangle + 2 * PI);
+        kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * (accelYangle + TWO_PI);
     } else if ((kinematicsAngleY - accelYangle) < -PI) {
-        kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * (accelYangle - 2 * PI);
+        kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * (accelYangle - TWO_PI);
     } else {
         kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * accelYangle;
     }    
