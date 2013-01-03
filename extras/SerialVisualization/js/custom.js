@@ -5,7 +5,7 @@ var graph_accel;
 var graph_kinematics;
 var graph_tx;
 
-$(document).ready(function() {
+$(document).ready(function() {    
     var port_picker = $('div#port-picker #port');
     var baud_picker = $('div#port-picker #baud');
     
@@ -47,7 +47,8 @@ $(document).ready(function() {
         width: 1000,
         height: 150,
         renderer: 'line',
-        max: 20,
+        min: -10,
+        max: 10,
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
             maxDataPoints: 500,
@@ -62,6 +63,7 @@ $(document).ready(function() {
         width: 1000,
         height: 150,
         renderer: 'line',
+        min: -2.2,
         max: 2.2,
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
@@ -77,7 +79,8 @@ $(document).ready(function() {
         width: 1000,
         height: 150,
         renderer: 'line',
-        max: 270, // This should be 360, but i am using lower value to get clearer visualization
+        min: -200,
+        max: 200,
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
             maxDataPoints: 500,
@@ -92,6 +95,7 @@ $(document).ready(function() {
         width: 1000,
         height: 150,
         renderer: 'line',
+        min: -600,
         max: 1100,
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
@@ -161,15 +165,18 @@ function onCharRead(readInfo) {
         graph_kinematics.series.addData(data_kinematics);
         graph_kinematics.render();
         
+        // $('div#cube').css('-webkit-transform', 'rotateY(' + ar[6] + 'deg) rotateX(' + ar[7] + 'deg) rotateZ(' + ar[8] + 'deg)'); // Visualization
+        $('div#cube').css('-webkit-transform', 'rotateX(' + ar[7] + 'deg) rotateY(' + ar[8] + 'deg) rotateZ(' + ar[6] + 'deg)'); // Visualization
+        
         // TX
         ar[9] = parseInt(ar[9]); // TX Roll
         ar[10] = parseInt(ar[10]); // TX Pitch
-        ar[11] = parseInt(ar[11]); // TX Throttle
+        ar[11] = parseInt(ar[11]) - 1000; // TX Throttle
         ar[12] = parseInt(ar[12]); // TX Yaw
-        ar[13] = parseInt(ar[13]); // TX Mode
-        ar[14] = parseInt(ar[14]); // TX baro
-        ar[15] = parseInt(ar[15]); // TX cam
-        ar[16] = parseInt(ar[16]); // TX last
+        ar[13] = parseInt(ar[13]) - 1000; // TX Mode
+        ar[14] = parseInt(ar[14]) - 1000; // TX baro
+        ar[15] = parseInt(ar[15]) - 1000; // TX cam
+        ar[16] = parseInt(ar[16]) - 1000; // TX last
         
         var data_tx = {one: ar[9], two: ar[10], three: ar[11], four: ar[12], five: ar[13], six: ar[14], seven: ar[15], eight: ar[16]};
         graph_tx.series.addData(data_tx);

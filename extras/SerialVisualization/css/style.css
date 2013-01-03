@@ -84,4 +84,64 @@ a:hover {
         
         border: 1px solid silver;
         background-color: white;
-    }      
+    }  
+
+
+/* interactive_block */
+#interactive_block {
+    position: absolute;
+    top: 180px;
+    left: 25%;
+}
+#experiment {
+    -webkit-perspective: 800;
+    -webkit-perspective-origin: 50% 100px;
+}  
+
+#cube {
+    position: relative;
+    margin: 0 auto;
+    
+    height: 100px;
+    width: 100px;
+    -webkit-transform-style: preserve-3d;
+}  
+
+.face {
+    position: absolute;
+    
+    height: 100px;
+    width: 100px;
+    
+    text-align: center;
+}
+
+#cube .one  {
+    -webkit-transform: rotateX(90deg) translateZ(50px);
+    background-color: red;
+}
+
+#cube .two {
+    -webkit-transform: translateZ(50px);
+    background-color: yellow;
+}
+
+#cube .three {
+    -webkit-transform: rotateY(90deg) translateZ(50px);
+    background-color: silver;
+}
+
+#cube .four {
+    -webkit-transform: rotateY(180deg) translateZ(50px);
+    background-color: green;
+}
+
+#cube .five {
+    -webkit-transform: rotateY(-90deg) translateZ(50px);
+    background-color: blue;
+}
+
+#cube .six {
+    -webkit-transform: rotateX(-90deg) translateZ(50px) rotate(180deg);
+    background-color: orange;
+}

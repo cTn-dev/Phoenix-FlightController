@@ -167,45 +167,45 @@ void process100HzTask() {
 
     #ifdef DATA_VISUALIZATION
         // Gyro data
-        Serial.print(gyroXsumRate + 10.0);
+        Serial.print(gyroXsumRate);
         Serial.write(',');
-        Serial.print(gyroYsumRate + 10.0);
+        Serial.print(gyroYsumRate);
         Serial.write(',');
-        Serial.print(gyroZsumRate + 10.0);
+        Serial.print(gyroZsumRate);
         Serial.write(',');        
         
         // Accel data
-        Serial.print(accelXsumAvr + 1.0);
+        Serial.print(accelXsumAvr);
         Serial.write(',');
-        Serial.print(accelYsumAvr + 1.0);
+        Serial.print(accelYsumAvr);
         Serial.write(','); 
-        Serial.print(accelZsumAvr + 1.0);
+        Serial.print(accelZsumAvr);
         Serial.write(',');         
         
         // Kinematics data
-        Serial.print(kinematicsAngleX * RAD_TO_DEG + 180.0);
+        Serial.print(kinematicsAngleX * RAD_TO_DEG);
         Serial.write(',');      
-        Serial.print(kinematicsAngleY * RAD_TO_DEG + 180.0);
+        Serial.print(kinematicsAngleY * RAD_TO_DEG);
         Serial.write(',');      
-        Serial.print(kinematicsAngleZ * RAD_TO_DEG + 180.0);  
+        Serial.print(kinematicsAngleZ * RAD_TO_DEG);  
         Serial.write(','); 
         
         // TX/RX data
-        Serial.print(TX_roll + 500);
+        Serial.print(TX_roll);
         Serial.write(',');   
-        Serial.print(TX_pitch + 500);
+        Serial.print(TX_pitch);
         Serial.write(','); 
-        Serial.print(TX_throttle - 1000);
+        Serial.print(TX_throttle);
         Serial.write(','); 
-        Serial.print(TX_yaw + 500);    
+        Serial.print(TX_yaw);    
         Serial.write(','); 
-        Serial.print(TX_mode - 1000);    
+        Serial.print(TX_mode);    
         Serial.write(',');         
-        Serial.print(TX_baro -1000);
+        Serial.print(TX_baro);
         Serial.write(','); 
-        Serial.print(TX_cam - 1000);
+        Serial.print(TX_cam);
         Serial.write(','); 
-        Serial.print(TX_last - 1000);
+        Serial.print(TX_last);
         Serial.write(',');
         
         // PPM error
