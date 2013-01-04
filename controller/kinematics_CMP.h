@@ -50,9 +50,17 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
     
     if (kinematicsAngleY > PI) kinematicsAngleY -= TWO_PI;
     else if (kinematicsAngleY < -PI) kinematicsAngleY += TWO_PI;
-
-    if (kinematicsAngleZ > PI) kinematicsAngleZ -= TWO_PI;
-    else if (kinematicsAngleZ < -PI) kinematicsAngleZ += TWO_PI;    
+    
+    // While normalizing Z angle, attitudeYaw (angle desired by user) is also normalized
+    // attitudeYaw variable was added to handle clean normalization of angles while still
+    // allowing for a smooth rate/attitude mode switching.
+    if (kinematicsAngleZ > PI) {
+        kinematicsAngleZ -= TWO_PI;
+        commandYawAttitude -= TWO_PI;
+    } else if (kinematicsAngleZ < -PI) {
+        kinematicsAngleZ += TWO_PI; 
+        commandYawAttitude += TWO_PI;
+    }
     
     // Fuse in accel (handling accel flip)
     if ((kinematicsAngleX - accelXangle) > PI) {
@@ -70,6 +78,7 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
     } else {
         kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * accelYangle;
     }    
+    
     
     // Saves time for next comparison
     kinematics_timer = now;  

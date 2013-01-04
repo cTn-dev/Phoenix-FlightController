@@ -166,8 +166,12 @@ function onCharRead(readInfo) {
         graph_kinematics.render();
         
         // Cube visualization 
-        // Reverse some of the axis
-        ar[7] = -ar[7];
+        ar[7] = -ar[7]; // Reverse pitch
+        
+        //ar[6] = 0; // Roll disabled
+        //ar[7] = 0; // Pitch disabled
+        //ar[8] = 0; // YAW disabled
+        
         $('div#cube').css('-webkit-transform', 'rotateX(' + ar[7] + 'deg) rotateY(' + ar[8] + 'deg) rotateZ(' + ar[6] + 'deg)');
         
         // TX

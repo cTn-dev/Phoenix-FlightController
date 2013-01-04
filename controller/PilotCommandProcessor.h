@@ -41,7 +41,8 @@ void processPilotCommands() {
         // controller is now armed
         armed = true;
         
-        // reset command YAW and kinematics YAW to 0
+        // reset command YAW, attitude YAW and kinematics YAW to 0
+        commandYawAttitude = 0.0;
         commandYaw = 0.0;
         kinematicsAngleZ = 0.0;
     } else if (TX_throttle < 1100 && TX_yaw < 1250) {
@@ -50,8 +51,21 @@ void processPilotCommands() {
     }
     
     if (TX_mode < 1100) {
+        if (flightMode == ATTITUDE_MODE) {
+            // We just switched from attitude to rate mode
+            // That means commandYaw reset
+            commandYaw = 0.0;
+        }
+        
         flightMode = RATE_MODE;
     } else if (TX_mode > 1900) {
+        if (flightMode == RATE_MODE) {
+            // We just switched from rate to attitude mode
+            // That means YAW correction should be applied to avoid YAW angle "jump"
+            commandYawAttitude = kinematicsAngleZ;
+            commandYaw = commandYawAttitude;
+        }
+        
         flightMode = ATTITUDE_MODE;
     }
     
@@ -99,10 +113,9 @@ void processPilotCommands() {
         // division by 50 is used to slow down YAW build up 
         if (flightMode == ATTITUDE_MODE) {
             // YAW angle build up over time
-            commandYaw += (TX_yaw * 0.0015) / 50;
+            commandYawAttitude += (TX_yaw * 0.0015) / 50;
             
-            if (commandYaw > PI) commandYaw -= TWO_PI;
-            else if (commandYaw < -PI) commandYaw += TWO_PI;              
+            commandYaw = commandYawAttitude;           
         } else if (flightMode == RATE_MODE) {
             // raw stick input
             commandYaw = (TX_yaw * 0.0015);
