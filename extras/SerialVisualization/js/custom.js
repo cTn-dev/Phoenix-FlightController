@@ -44,14 +44,14 @@ $(document).ready(function() {
     // Setup Graphs
     graph_gyro = new Rickshaw.Graph( {
         element: document.getElementById("graph_gyro"),
-        width: 1000,
+        width: 600,
         height: 150,
         renderer: 'line',
         min: -10,
         max: 10,
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
-            maxDataPoints: 500,
+            maxDataPoints: 600,
             timeBase: new Date().getTime()
         }) 
     } );
@@ -60,14 +60,14 @@ $(document).ready(function() {
 
     graph_accel = new Rickshaw.Graph( {
         element: document.getElementById("graph_accel"),
-        width: 1000,
+        width: 600,
         height: 150,
         renderer: 'line',
-        min: -2.2,
-        max: 2.2,
+        min: -1.5,
+        max: 1.5,
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
-            maxDataPoints: 500,
+            maxDataPoints: 600,
             timeBase: new Date().getTime()
         }) 
     } );
@@ -76,14 +76,14 @@ $(document).ready(function() {
     
     graph_kinematics = new Rickshaw.Graph( {
         element: document.getElementById("graph_kinematics"),
-        width: 1000,
+        width: 600,
         height: 150,
         renderer: 'line',
         min: -200,
         max: 200,
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
-            maxDataPoints: 500,
+            maxDataPoints: 600,
             timeBase: new Date().getTime()
         }) 
     } );
@@ -92,14 +92,14 @@ $(document).ready(function() {
     
     graph_tx = new Rickshaw.Graph( {
         element: document.getElementById("graph_tx"),
-        width: 1000,
+        width: 350,
         height: 150,
         renderer: 'line',
         min: -600,
         max: 1100,
         series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
             timeInterval: 10,
-            maxDataPoints: 500,
+            maxDataPoints: 350,
             timeBase: new Date().getTime()
         }) 
     } );
@@ -165,8 +165,10 @@ function onCharRead(readInfo) {
         graph_kinematics.series.addData(data_kinematics);
         graph_kinematics.render();
         
-        // $('div#cube').css('-webkit-transform', 'rotateY(' + ar[6] + 'deg) rotateX(' + ar[7] + 'deg) rotateZ(' + ar[8] + 'deg)'); // Visualization
-        $('div#cube').css('-webkit-transform', 'rotateX(' + ar[7] + 'deg) rotateY(' + ar[8] + 'deg) rotateZ(' + ar[6] + 'deg)'); // Visualization
+        // Cube visualization 
+        // Reverse some of the axis
+        ar[7] = -ar[7];
+        $('div#cube').css('-webkit-transform', 'rotateX(' + ar[7] + 'deg) rotateY(' + ar[8] + 'deg) rotateZ(' + ar[6] + 'deg)');
         
         // TX
         ar[9] = parseInt(ar[9]); // TX Roll

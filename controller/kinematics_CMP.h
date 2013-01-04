@@ -49,7 +49,10 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
     else if (kinematicsAngleX < -PI) kinematicsAngleX += TWO_PI;    
     
     if (kinematicsAngleY > PI) kinematicsAngleY -= TWO_PI;
-    else if (kinematicsAngleY < -PI) kinematicsAngleY += TWO_PI;    
+    else if (kinematicsAngleY < -PI) kinematicsAngleY += TWO_PI;
+
+    if (kinematicsAngleZ > PI) kinematicsAngleZ -= TWO_PI;
+    else if (kinematicsAngleZ < -PI) kinematicsAngleZ += TWO_PI;    
     
     // Fuse in accel (handling accel flip)
     if ((kinematicsAngleX - accelXangle) > PI) {

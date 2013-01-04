@@ -35,37 +35,30 @@
                 <a class="refresh" href="#" title="Refresh">[ Refresh ]</a>
                 <a class="connect" href="#" title="">[ Connect ]</a>
             </div>
-            <span class="graph_title">Gyroscope (deg/s)</span>
-            <div id="graph_gyro"></div>
-            <span class="graph_title">Accelerometer (+- 1g = 9.81 m/s^2)</span>
-            <div id="graph_accel"></div>
-            <span class="graph_title">Kinematics (deg)</span>
-            <div id="graph_kinematics"></div>
-            <span class="graph_title">RX (us)</span>
-            <div id="graph_tx"></div>
-            <div id="interactive_block">
-                <div id="experiment">
-                    <div id="cube">
-                        <div class="face one">
-                            1
+            <div class="left">
+                <span class="graph_title">Gyroscope (deg/s)</span>
+                <div id="graph_gyro"></div>
+                <span class="graph_title">Accelerometer (+- 1g = 9.81 m/s^2)</span>
+                <div id="graph_accel"></div>
+                <span class="graph_title">Kinematics (deg)</span>
+                <div id="graph_kinematics"></div>
+            </div>
+            <div class="layout left">
+                <span class="graph_title">RX (us)</span>
+                <div id="graph_tx"></div>
+                <span class="graph_title">3D (euler angles)</span>
+                <div id="interactive_block">
+                    <div id="perspective">
+                        <div id="cube">
+                            <div class="face one">BOTTOM</div>
+                            <div class="face two">BACK</div>
+                            <div class="face three">RIGHT</div>
+                            <div class="face four">FRONT</div>
+                            <div class="face five">LEFT</div>
+                            <div class="face six">TOP</div>
                         </div>
-                        <div class="face two">
-                            2
-                        </div>
-                        <div class="face three">
-                            3
-                        </div>
-                        <div class="face four">
-                            4
-                        </div>
-                        <div class="face five">
-                            5
-                        </div>
-                        <div class="face six">
-                            6
-                        </div>
-                    </div>
-                </div>            
+                    </div>            
+                </div>
             </div>
         </div>
     </body>
