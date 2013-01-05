@@ -63,14 +63,24 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
     // "up-side UP" angle estimation and restricts it further to avoid incorrect accelerometer
     // data correction.
     if (*accelZ > 0.75) {
-        kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * accelXangle;
+        if ((kinematicsAngleX - accelXangle) > PI) {
+            kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * (accelXangle + TWO_PI);
+        } else if ((kinematicsAngleX - accelXangle) < -PI) {
+            kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * (accelXangle - TWO_PI);
+        } else {
+            kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * accelXangle;
+        }
     }
     
     if (*accelZ > 0.60) {
-        kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * accelYangle;
+        if ((kinematicsAngleY - accelYangle) > PI) {
+            kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * (accelYangle + TWO_PI);
+        } else if ((kinematicsAngleY - accelYangle) < -PI) {
+            kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * (accelYangle - TWO_PI);
+        } else {
+            kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * accelYangle;
+        } 
     }
     // Saves time for next comparison
-    kinematics_timer = now;  
-    
-    //Serial.println(*accelZ);
+    kinematics_timer = now;
 }
