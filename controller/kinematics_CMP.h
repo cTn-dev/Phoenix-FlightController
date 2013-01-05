@@ -4,7 +4,7 @@
     Extra:
     1. accelerometer data normalization
     2. accelerometer data cut-off
-    3. accelerometer angle overflow/flip handling
+    3. kinematics-gyroscope angle overflow handling
 
     Kinematics input is averaged (from multiple samples) and scaled (gyro is in radians/s) and accel is in m/s^2
     accel measurement is normalized before any angles are computed.
@@ -24,17 +24,13 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
     bool orientation = true; // up-side UP
     if (*accelZ < 0.00) orientation = false; // up-side DOWN    
     
-    // Standard angle calculation
     double accelXangle = atan2(*accelY, *accelZ);
-    double accelYangle = atan2(*accelX, *accelZ);    
-    
-    // Trigonometric equation to calculate roll and pitch angles (constant sensitivity over 360deg rotation)
-    // double accelXangle = atan(*accelY / sqrt(*accelX * *accelX + *accelZ * *accelZ));
-    // double accelYangle = atan(*accelX / sqrt(*accelY * *accelY + *accelZ * *accelZ));
+    double accelYangle = atan2(*accelX, *accelZ); 
+    //double accelYangle = atan2(*accelX, sqrt(*accelY * *accelY + *accelZ * *accelZ));   
     
     // Accelerometer cut-off
     double accelWeight = 0.0025; // normal operation
-    if (norm > 12.0) accelWeight = 0.00; // gyro only
+    if (norm > 13.0 || norm < 7.0) accelWeight = 0.00; // gyro only
     
     // Save current time into variable for better computation time
     unsigned long now = micros();    
@@ -63,23 +59,18 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
     }
     
     // Fuse in accel (handling accel flip)
-    if ((kinematicsAngleX - accelXangle) > PI) {
-        kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * (accelXangle + TWO_PI);
-    } else if ((kinematicsAngleX - accelXangle) < -PI) {
-        kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * (accelXangle - TWO_PI);
-    } else {
+    // This is second order accelerometer cut off, which restricts accel data fusion in only
+    // "up-side UP" angle estimation and restricts it further to avoid incorrect accelerometer
+    // data correction.
+    if (*accelZ > 0.75) {
         kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * accelXangle;
     }
     
-    if ((kinematicsAngleY - accelYangle) > PI) {
-        kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * (accelYangle + TWO_PI);
-    } else if ((kinematicsAngleY - accelYangle) < -PI) {
-        kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * (accelYangle - TWO_PI);
-    } else {
+    if (*accelZ > 0.60) {
         kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * accelYangle;
-    }    
-    
-    
+    }
     // Saves time for next comparison
     kinematics_timer = now;  
+    
+    //Serial.println(*accelZ);
 }

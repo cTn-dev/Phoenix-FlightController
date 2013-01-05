@@ -7,6 +7,7 @@
 #include "receiver.h"
 #include "PID.h"
 #include "esc.h"
+#include "math.h"
 
 //#include "kinematics_ARG.h"
 #include "kinematics_CMP.h"
