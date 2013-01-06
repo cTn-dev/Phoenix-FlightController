@@ -41,10 +41,13 @@ void processPilotCommands() {
         // controller is now armed
         armed = true;
         
-        // reset command YAW, attitude YAW and kinematics YAW to 0
-        commandYawAttitude = 0.0;
-        commandYaw = 0.0;
-        kinematicsAngleZ = 0.0;
+        // Depending
+        if (flightMode = ATTITUDE_MODE) {
+            commandYawAttitude = kinematicsAngleZ;
+            commandYaw = commandYawAttitude;
+        } else if (flightMode == RATE_MODE)  {
+            commandYaw = 0.0;
+        }    
     } else if (TX_throttle < 1100 && TX_yaw < 1250) {
         // controller is now dis-armed
         armed = false;

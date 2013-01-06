@@ -112,9 +112,16 @@ void kinematics_update(double* accelX, double* accelY, double* accelZ, double* g
     kinematics_timer = now;
     
     // Some sensors require different orientation, do the inverse here.
-    *gyroY = -*gyroY;
+    // Also store sensor data in different variables as they are also used elsewhere
+    float gyX = *gyroX;
+    float gyY = -*gyroY;
+    float gyZ = *gyroZ;
+    float acX = *accelX;
+    float acY = *accelY;
+    float acZ = *accelZ;
     
-    AHRSupdate(*gyroX, *gyroY, *gyroZ, *accelX, *accelY, *accelZ);
+    
+    AHRSupdate(gyX, gyY, gyZ, acX, acY, acZ);
     
     float gx = 2 * (q1*q3 - q0*q2);
     float gy = 2 * (q0*q1 + q2*q3);
