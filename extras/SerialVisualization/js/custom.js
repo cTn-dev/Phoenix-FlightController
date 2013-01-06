@@ -5,6 +5,9 @@ var graph_accel;
 var graph_kinematics;
 var graph_tx;
 
+var ar;
+var yaw_fix = 0.0;
+
 $(document).ready(function() {    
     var port_picker = $('div#port-picker #port');
     var baud_picker = $('div#port-picker #baud');
@@ -39,6 +42,11 @@ $(document).ready(function() {
         chrome.serial.close(connectionId, onClosed); // Seems to be broken
         
         $(this).text('[ Connect ]');
+    });
+    
+    // Reset Z axis in 3D visualization
+    $('div#interactive_block > a.reset').click(function() {
+        yaw_fix = ar[8];
     });
     
     // Setup Graphs
@@ -136,7 +144,7 @@ function onCharRead(readInfo) {
         // Line read
         // str = standard string
         // ar = str split into array
-        var ar = str.split(",");
+        ar = str.split(",");
         
         // Gyro
         ar[0] = parseFloat(ar[0]); // X
@@ -172,7 +180,8 @@ function onCharRead(readInfo) {
         //ar[7] = 0; // Pitch disabled
         //ar[8] = 0; // YAW disabled
         
-        $('div#cube').css('-webkit-transform', 'rotateX(' + ar[7] + 'deg) rotateY(' + ar[8] + 'deg) rotateZ(' + ar[6] + 'deg)');
+        
+        $('div#cube').css('-webkit-transform', 'rotateX(' + ar[7] + 'deg) rotateY(' + (ar[8] - yaw_fix) + 'deg) rotateZ(' + ar[6] + 'deg)');
         
         // TX
         ar[9] = parseInt(ar[9]); // TX Roll

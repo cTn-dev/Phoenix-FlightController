@@ -107,6 +107,15 @@ a:hover {
     border: 1px solid silver;
     background-color: white;
 }
+    #interactive_block a.reset {
+        position: relative;
+        
+        top: 315px;
+        left: 10px;
+    } 
+    #interactive_block a.reset:hover {
+        text-decoration: none;
+    }
 #perspective {
     -webkit-perspective: 800;
     -webkit-perspective-origin: 50% 100px;
