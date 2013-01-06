@@ -10,7 +10,9 @@
 #include "math.h"
 
 //#include "kinematics_ARG.h"
-#include "kinematics_CMP.h"
+//#include "kinematics_CMP.h"
+#include "kinematics_DCM.h"
+
 #include "mpu6050.h"
 #include "bmp085.h"
 

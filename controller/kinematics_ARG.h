@@ -1,5 +1,8 @@
 // Quaternion implementation of the 'DCM filter' [Mayhony et al].
 //
+// This is the EXACT ARG kinematics taken from aeroquad flight controll software
+// @see: https://github.com/AeroQuad/AeroQuad
+//
 // User must define 'halfT' as the (sample period / 2), and the filter gains 'Kp' and 'Ki'.
 //
 // Global variables 'q0', 'q1', 'q2', 'q3' are the quaternion elements representing the estimated
