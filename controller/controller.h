@@ -33,7 +33,6 @@ double kinematicsAngleZ = 0.0;
 double commandYaw, commandYawAttitude, commandPitch, commandRoll, commandThrottle;
 
 // Custom definitions
-//#define RX_GRAPH
 #define DATA_VISUALIZATION
 //#define SENSOR_DATA_RAW
 //#define DISPLAY_ITTERATIONS

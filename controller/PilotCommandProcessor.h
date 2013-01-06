@@ -15,28 +15,7 @@ void processPilotCommands() {
     TX_last = PPM[7];     // CH-8
     sei(); // enable interrupts
     
-    #ifdef RX_GRAPH
-        Serial.print(TX_roll);
-        Serial.write('\t');
-        Serial.print(TX_pitch);
-        Serial.write('\t');   
-        Serial.print(TX_throttle);
-        Serial.write('\t');
-        Serial.print(TX_yaw);
-        Serial.write('\t');  
-        Serial.print(TX_mode);
-        Serial.write('\t'); 
-        Serial.print(TX_baro);
-        Serial.write('\t');
-        Serial.print(TX_cam);
-        Serial.write('\t');       
-        Serial.print(TX_last);
-        Serial.write('\t');
-        Serial.print(PPM_error);
-        Serial.write('\t');        
-        Serial.println();
-    #endif
-    
+    // Arming-Disarming sequence
     if (TX_throttle < 1100 && TX_yaw > 1850) {
         // controller is now armed
         armed = true;
@@ -53,6 +32,7 @@ void processPilotCommands() {
         armed = false;
     }
     
+    // Rate-Attitude mode
     if (TX_mode < 1100) {
         if (flightMode == ATTITUDE_MODE) {
             // We just switched from attitude to rate mode
@@ -72,6 +52,7 @@ void processPilotCommands() {
         flightMode = ATTITUDE_MODE;
     }
     
+    // Altitude hold ON/OFF
     if (TX_baro < 1100) {
         // throttle controlled by stick
         altitudeHold = false;

@@ -1,25 +1,27 @@
-/* PPM (pulse position modulation) sampling done in hardware via FLEX timer.
+/*  PPM (pulse position modulation) sampling done in hardware via FLEX timer.
 
-   We are using flex timer1 which supports only 2 channels.
-   This code only utilizes single edge capture which is more then enough in terms of accuracy.
+    We are using flex timer1 which supports only 2 channels.
+    This code only utilizes single edge capture which is more then enough in terms of accuracy.
 
-   Code below supports frame buffering, which is used to protect the controller from
-   errors introduced (from simple noise to complete RX failure), if any of the channels in a single
-   PPM frame triggered the sanity check, whole frame will be droped and PPM signal values will remain
-   unchanged until a valid frame can be sampled.
-    
-   PPM_error variable will be increased every time a corrupted frame was detected.
-   
-   RX_signalReceived flag is set to 0 every time a valid frame is processed, this variables is used to
-   "tell" software there was an error in communication (anything from a corrupted frame to a complete 
-   receiver failure), this flag is increased by 1 every 10ms, if it reaches 100 (represnting 1 second)
-   an subroutine is triggered that should handle this failure condition, from the most simple routines
-   that will just disarm the craft (making it fall from the sky like a boiled potato) to more adnvaced 
-   auto-descent routines.
-   
-   Please remember that this failsafe is here to prevent craft from "flying away on its own" and
-   potentionaly harming someone in the proces (damaged craft from a crash is still better then cutting
-   someones head off with uncontrollable craft).
+    Code below supports frame buffering, which is used to protect the controller from
+    errors introduced (from simple noise to complete RX failure), if any of the channels in a single
+    PPM frame triggered the sanity check, whole frame will be droped and PPM signal values will remain
+    unchanged until a valid frame can be sampled.
+
+    PPM_error variable will be increased every time a corrupted frame was detected.
+
+    RX_signalReceived flag is set to 0 every time a valid frame is processed, this variables is used to
+    "tell" software there was an error in communication (anything from a corrupted frame to a complete 
+    receiver failure), this flag is increased by 1 every 10ms, if it reaches 100 (represnting 1 second)
+    an subroutine is triggered that should handle this failure condition, from the most simple routines
+    that will just disarm the craft (making it fall from the sky like a boiled potato) to more adnvaced 
+    auto-descent routines.
+
+    Please remember that this failsafe is here to prevent craft from "flying away on its own" and
+    potentionaly harming someone in the proces (damaged craft from a crash is still better then cutting
+    someones head off with uncontrollable craft).
+
+    Big thanks to kha from #aeroquad and Ragnorok from #arduino for helping me get this up and running.
 */
 
 #define PPM_CHANNELS 8
@@ -114,5 +116,3 @@ void RX_failSafe() {
         }    
     }
 }
-
-// Big thanks to kha from #aeroquad and Ragnorok from #arduino for helping me get this up and running.
