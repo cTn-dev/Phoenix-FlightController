@@ -64,7 +64,7 @@ void processPilotCommands() {
         // throttle controlled by baro
         if (altitudeHoldBaro == false) { // We just switched on the altitudeHoldBaro
             // save the current altitude and throttle
-            baroAltitudeToHoldTarget = baroAltitude;
+            baroAltitudeToHoldTarget = baroAltitudeRunning;
             baroAltitudeHoldThrottle = TX_throttle;
             
             AltitudeToHoldTarget = baroAltitudeToHoldTarget;
@@ -134,7 +134,7 @@ void processPilotCommands() {
     
     // Compute throttle according to altitude switch (pilot input/baro/sonar)
     if (altitudeHoldBaro == true) {
-        AltitudeHold = baroAltitude;
+        AltitudeHold = baroAltitudeRunning;
         throttle_motor_pid.Compute();
         throttle = baroAltitudeHoldThrottle - constrain(ThrottleMotorSpeed, -50.0, 50.0);
     } else if (altitudeHoldSonar == true) {

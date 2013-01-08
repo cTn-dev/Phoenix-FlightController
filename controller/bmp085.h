@@ -35,6 +35,7 @@
 double baroRawAltitude = 0.0;
 double baroGroundAltitude = 0.0; 
 double baroAltitude = 0.0;
+double baroAltitudeRunning = 0.0;
 
 double baroAltitudeToHoldTarget = 0.0;
 int16_t baroAltitudeHoldThrottle = 1000;
@@ -207,8 +208,7 @@ class BMP085 {
         };
         
         void getBaroAltitude() {
-            // baroGroundAltitude is currently broken !
-            baroAltitude -= baroGroundAltitude;
+            baroAltitudeRunning = baroAltitude - baroGroundAltitude;
         };
         
         // I2C Stuff
