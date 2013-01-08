@@ -22,3 +22,8 @@ float invSqrt(float number) {
     y = y * ( f - ( x * y * y ) );
     return y;
 }
+
+// Smooth Filter
+float filterSmooth(float currentData, float previousData, float smoothFactor) {
+    return (previousData * (1.0 - smoothFactor) + (currentData * smoothFactor)); 
+}

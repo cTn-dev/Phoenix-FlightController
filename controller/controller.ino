@@ -15,6 +15,7 @@
 
 #include "mpu6050.h"
 #include "bmp085.h"
+#include "sonar.h"
 
 // Sensor definitions
 MPU6050 mpu;
@@ -31,7 +32,7 @@ PID roll_command_pid(&kinematicsAngleX, &RollCommandPIDSpeed, &commandRoll, 4.0,
 PID yaw_motor_pid(&gyroZsumRate, &YawMotorSpeed, &YawCommandPIDSpeed, 200.0, 5.0, 0.0, 1000.0);
 PID pitch_motor_pid(&gyroYsumRate, &PitchMotorSpeed, &PitchCommandPIDSpeed, 80.0, 0.0, -300.0, 1000.0);
 PID roll_motor_pid(&gyroXsumRate, &RollMotorSpeed, &RollCommandPIDSpeed, 80.0, 0.0, -300.0, 1000.0);
-PID throttle_motor_pid(&baroAltitudeToHoldTarget, &ThrottleMotorSpeed, &baroAltitude, 25.0, 0.6, 0.0, 25.0);
+PID throttle_motor_pid(&baroAltitudeToHoldTarget, &ThrottleMotorSpeed, &AltitudeHold, 25.0, 0.6, 0.0, 25.0);
   
 // Include this last as it contains objects from previous declarations
 #include "PilotCommandProcessor.h"  
@@ -48,7 +49,12 @@ void setup() {
     
     // RX timer and PIN setup
     setupFTM1();    
- 
+    
+    // Sonar PIN setup
+    pinMode(SONAR_PIN_TRIGGER, OUTPUT);
+    pinMode(SONAR_PIN_ECHO, INPUT);
+    attachInterrupt(SONAR_PIN_ECHO, sonarEcho, CHANGE);
+    
     // PIN settings
     pinMode(LED_PIN, OUTPUT); // build in status LED
     pinMode(LED_ORIENTATION, OUTPUT); // orientation lights
@@ -76,6 +82,9 @@ void loop() {
     if (currentTime - sensorPreviousTime >= 1000) {
         mpu.readGyroSum();
         mpu.readAccelSum();        
+        
+        // Bring sonar pin down (complete TLL trigger pulse)
+        readSonarFinish();
         
         #ifdef SENSOR_DATA_RAW
             Serial.print(accelX);
@@ -227,6 +236,9 @@ void process50HzTask() {
 void process10HzTask() {
     // Trigger RX failsafe function every 100ms
     RX_failSafe();
+    
+    // Request sonar reading
+    readSonar();
     
     // Print itterations per 100ms
     #ifdef DISPLAY_ITTERATIONS

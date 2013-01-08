@@ -210,11 +210,6 @@ class BMP085 {
             baroAltitude -= baroGroundAltitude;
         };
         
-        // Math Stuff
-        float filterSmooth(float currentData, float previousData, float smoothFactor) {
-            return (previousData * (1.0 - smoothFactor) + (currentData * smoothFactor)); 
-        }
-        
         // I2C Stuff
         void WriteRegister(int dataAddress, byte dataValue) {
             Wire.beginTransmission(BMP085_ADDRESS);

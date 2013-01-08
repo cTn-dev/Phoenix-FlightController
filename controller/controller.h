@@ -8,7 +8,9 @@ uint32_t itterations = 0;
 bool all_ready = false;
 bool armed = false;
 bool flightMode = false;
-bool altitudeHold = false;
+bool altitudeHoldBaro = false;
+bool altitudeHoldSonar = false;
+double AltitudeHold = 0.0;
 
 // Flight modes
 #define RATE_MODE 0
@@ -33,7 +35,7 @@ double kinematicsAngleZ = 0.0;
 double commandYaw, commandYawAttitude, commandPitch, commandRoll, commandThrottle;
 
 // Custom definitions
-#define DATA_VISUALIZATION
+//#define DATA_VISUALIZATION
 //#define SENSOR_DATA_RAW
 //#define DISPLAY_ITTERATIONS
 //#define DISABLE_BATTERY_ALARM
