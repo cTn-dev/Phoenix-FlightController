@@ -38,7 +38,7 @@ void sonarEcho() {
             sonar_raw = 0;
         } else {
             // Compute
-            sonarAltitude = filterSmooth(sonar_raw, sonarAltitude, 0.02);
+            sonarAltitude = filterSmooth(sonar_raw, sonarAltitude, 0.25);
         }
         
         sonar_ready = true;

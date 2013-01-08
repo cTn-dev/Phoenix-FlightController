@@ -11,6 +11,7 @@ bool flightMode = false;
 bool altitudeHoldBaro = false;
 bool altitudeHoldSonar = false;
 double AltitudeHold = 0.0;
+double AltitudeToHoldTarget = 0.0;
 
 // Flight modes
 #define RATE_MODE 0

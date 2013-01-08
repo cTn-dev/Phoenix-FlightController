@@ -207,6 +207,7 @@ class BMP085 {
         };
         
         void getBaroAltitude() {
+            // baroGroundAltitude is currently broken !
             baroAltitude -= baroGroundAltitude;
         };
         
