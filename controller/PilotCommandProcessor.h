@@ -53,53 +53,63 @@ void processPilotCommands() {
     }
     
     // Altitude hold ON/OFF
-    if (TX_altitude < 1100) {
-        // throttle controlled by stick
-        altitudeHoldBaro = false;
-        altitudeHoldSonar = false;
-        
-        // reset throttle panic flag
-        throttlePanic = false;
-    } else if (TX_altitude > 1400 && TX_altitude < 1600 && throttlePanic == false) {
-        // throttle controlled by baro
-        if (altitudeHoldBaro == false) { // We just switched on the altitudeHoldBaro
-            // save the current altitude and throttle
-            baroAltitudeToHoldTarget = baroAltitudeRunning;
-            baroAltitudeHoldThrottle = TX_throttle;
-            
-            AltitudeToHoldTarget = baroAltitudeToHoldTarget;
-        }
-        
-        altitudeHoldSonar = false;
-        altitudeHoldBaro = true;
-        
-        // Trigger throttle panic if throttle is higher or lower then 100 compared
-        // to initial altitude hold throttle.
-        if (abs(TX_throttle - baroAltitudeHoldThrottle) > 100) {
-            // Pilot will be forced to re-flip the altitude hold switch to reset the throttlePanic flag.
-            throttlePanic = true;
+    #if defined(AltitudeHoldBaro) || defined(AltitudeHoldSonar)
+        if (TX_altitude < 1100) {
+            // throttle controlled by stick
             altitudeHoldBaro = false;
-        }
-    } else if (TX_altitude > 1900 && throttlePanic == false) {
-        // throttle controlled by sonar
-        if (altitudeHoldSonar == false) { // We just switched on the altitudeHoldSonar
-            sonarAltitudeToHoldTarget = sonarAltitude;
-            sonarAltitudeHoldThrottle = TX_throttle;
-            
-            AltitudeToHoldTarget = sonarAltitudeToHoldTarget;
-        }
-        
-        altitudeHoldBaro = false;
-        altitudeHoldSonar = true;
-        
-        // Trigger throttle panic if throttle is higher or lower then 100 compared
-        // to initial altitude hold throttle.
-        if (abs(TX_throttle - baroAltitudeHoldThrottle) > 100) {
-            // Pilot will be forced to re-flip the altitude hold switch to reset the throttlePanic flag.
-            throttlePanic = true;
             altitudeHoldSonar = false;
-        }        
-    }
+            
+            // reset throttle panic flag
+            throttlePanic = false;
+        }
+    #endif
+
+    #ifdef AltitudeHoldBaro
+        else if (TX_altitude > 1400 && TX_altitude < 1600 && throttlePanic == false) {
+            // throttle controlled by baro
+            if (altitudeHoldBaro == false) { // We just switched on the altitudeHoldBaro
+                // save the current altitude and throttle
+                baroAltitudeToHoldTarget = baroAltitudeRunning;
+                baroAltitudeHoldThrottle = TX_throttle;
+                
+                AltitudeToHoldTarget = baroAltitudeToHoldTarget;
+            }
+            
+            altitudeHoldSonar = false;
+            altitudeHoldBaro = true;
+            
+            // Trigger throttle panic if throttle is higher or lower then 100 compared
+            // to initial altitude hold throttle.
+            if (abs(TX_throttle - baroAltitudeHoldThrottle) > 100) {
+                // Pilot will be forced to re-flip the altitude hold switch to reset the throttlePanic flag.
+                throttlePanic = true;
+                altitudeHoldBaro = false;
+            }
+        }
+    #endif
+    
+    #ifdef AltitudeHoldSonar
+        else if (TX_altitude > 1900 && throttlePanic == false) {
+            // throttle controlled by sonar
+            if (altitudeHoldSonar == false) { // We just switched on the altitudeHoldSonar
+                sonarAltitudeToHoldTarget = sonarAltitude;
+                sonarAltitudeHoldThrottle = TX_throttle;
+                
+                AltitudeToHoldTarget = sonarAltitudeToHoldTarget;
+            }
+            
+            altitudeHoldBaro = false;
+            altitudeHoldSonar = true;
+            
+            // Trigger throttle panic if throttle is higher or lower then 100 compared
+            // to initial altitude hold throttle.
+            if (abs(TX_throttle - sonarAltitudeHoldThrottle) > 100) {
+                // Pilot will be forced to re-flip the altitude hold switch to reset the throttlePanic flag.
+                throttlePanic = true;
+                altitudeHoldSonar = false;
+            }        
+        }
+    #endif
     
     // Ignore TX_yaw while throttle is below 1100
     if (TX_throttle < 1100) TX_yaw = 1500;
@@ -133,16 +143,23 @@ void processPilotCommands() {
     commandPitch = TX_pitch * 0.0015;
     
     // Compute throttle according to altitude switch (pilot input/baro/sonar)
-    if (altitudeHoldBaro == true) {
-        AltitudeHold = baroAltitudeRunning;
-        throttle_motor_pid.Compute();
-        throttle = baroAltitudeHoldThrottle - constrain(ThrottleMotorSpeed, -50.0, 50.0);
-    } else if (altitudeHoldSonar == true) {
-        // Sonar Altitude hold will most likely need a different PID
-        AltitudeHold = sonarAltitude;
-        throttle_motor_pid.Compute();
-        throttle = sonarAltitudeHoldThrottle - constrain(ThrottleMotorSpeed, -50.0, 50.0);
-    } else {
+    if (altitudeHoldBaro == false && altitudeHoldSonar == false) {
         throttle = TX_throttle;
-    } 
+    }
+    
+    #ifdef AltitudeHoldBaro
+        else if (altitudeHoldBaro == true) {
+            AltitudeHold = baroAltitudeRunning;
+            throttle_motor_pid.Compute();
+            throttle = baroAltitudeHoldThrottle - constrain(ThrottleMotorSpeed, -55.0, 55.0);
+        }
+    #endif
+    
+    #ifdef AltitudeHoldSonar
+        else if (altitudeHoldSonar == true) {
+            AltitudeHold = sonarAltitude;
+            throttle_motor_pid.Compute();
+            throttle = sonarAltitudeHoldThrottle - constrain(ThrottleMotorSpeed, -55.0, 55.0);
+        }
+    #endif
 }    
