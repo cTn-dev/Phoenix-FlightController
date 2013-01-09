@@ -5,10 +5,10 @@
     with this idea in mind i will try to make the flight controller feature set flexible as
     possible to accommodate as much hw as possible.
 
-    // Under HEAVY development
-*/
-
-/*  Feature set
+    Defines below only enable/disable "pre-defined" hw setups, you can always define your own
+    setup in controller.ino file in the == Hardware setup == section.
+    
+    -== Feature set ==-
 
     == Gyroscopes ==
     mpu6050
@@ -17,7 +17,7 @@
     mpu6050
     
     == Magnetometers ==
-    none =<
+    none
     
     == Barometers ==
     BMP085
@@ -26,7 +26,7 @@
     SRF04
     
     == InfraRed ==    
-    none =<
+    none
     
     == Kinematics ==
     #include "kinematics_CMP.h" // created by cTn with kha optimizations
@@ -35,30 +35,4 @@
 
 */
 
-
 #define Maggie
-
-#ifdef Maggie
-    // Features requested
-    #define Accelerometer
-    #define AltitudeHoldBaro
-    #define AltitudeHoldSonar
-    
-    // Critical sensors on board (gyro/accel)
-    #include "mpu6050.h"
-    
-    // Barometer
-    #include "bmp085.h"
-    
-    // Sonar
-    #include "SRF04.h"
-    
-    // Kinematics used
-    #include "kinematics_CMP.h"
-    
-    // Receiver
-    #include "receiver.h"
-    
-    // Motor / ESC setup
-    #include "esc.h"    
-#endif

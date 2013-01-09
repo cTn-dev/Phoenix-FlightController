@@ -8,6 +8,33 @@
 #include "configuration.h"
 #include "PID.h"
 
+// == Hardware setup/s == 
+#ifdef Maggie
+    // Features requested
+    #define Accelerometer
+    #define AltitudeHoldBaro
+    #define AltitudeHoldSonar
+    
+    // Critical sensors on board (gyro/accel)
+    #include <mpu6050.h>
+    
+    // Barometer
+    #include <bmp085.h>
+    
+    // Sonar
+    #include <srf04.h>
+    
+    // Kinematics used
+    #include "kinematics_CMP.h"
+    
+    // Receiver
+    #include <Receiver_teensy3_HW_PPM.h>
+    
+    // Motor / ESC setup
+    #include "esc.h"    
+#endif  
+// == END of Hardware setup ==
+
 // PID definitions
 double YawCommandPIDSpeed, PitchCommandPIDSpeed, RollCommandPIDSpeed;
 double YawMotorSpeed, PitchMotorSpeed, RollMotorSpeed, ThrottleMotorSpeed;
