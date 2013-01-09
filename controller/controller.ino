@@ -31,8 +31,8 @@
     #include <Receiver_teensy3_HW_PPM.h>
     
     // Motor / ESC setup
-    #include "esc.h"    
-#endif  
+    #include <Esc_teensy3_HW.h>    
+#endif
 // == END of Hardware setup ==
 
 // PID definitions
@@ -221,7 +221,7 @@ void process100HzTask() {
         Serial.write(','); 
         Serial.print(TX_mode);    
         Serial.write(',');         
-        Serial.print(TX_baro);
+        Serial.print(TX_altitude);
         Serial.write(','); 
         Serial.print(TX_cam);
         Serial.write(','); 
