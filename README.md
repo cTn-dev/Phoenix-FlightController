@@ -17,13 +17,15 @@ PIN setup (Teensy 3.0 pin numbering)
 ------------------------------------
   - I2C SCL 19
   - I2C SDA 18
-  - PPM in 3
-  - Rotor 1 22
-  - Rotor 2 23
-  - Rotor 3 9
-  - Rotor 4 10
-  - Orientation lights 14
-  - Battery monitor 15
+  
+  - PPM in (receiver) 3
+  
+  - Rotor 1 20
+  - Rotor 2 21
+  - Rotor 3 22
+  - Rotor 4 23
+  
+  - Orientation lights / Armed-Disarmed indicator 14
   
 Filters, kinematics, data handling
 ----------------------------------
@@ -40,5 +42,3 @@ Filters, kinematics, data handling
     - Second (used in both attitude and rate mode) mixes output from first PID or raw stick input with gyroRate output
   - For ESC signal output i am using an build in 8 channel FLEX timer (yes you can controll octocopter with this)
     - ESC PWM signal supports both 250Hz and 400Hz update rate (running at 400Hz by default)    
-    
-  

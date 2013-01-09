@@ -35,32 +35,30 @@ void setupFTM0() {
     // Initial values (3000 = 1ms)
     FTM0_C0V = 3000;
     FTM0_C1V = 3000;
-    FTM0_C2V = 3000;
-    FTM0_C3V = 3000;
-    
+    // FTM0_C2V = 3000;
+    // FTM0_C3V = 3000;
     // FTM0_C4V = 3000;
-    // FTM0_C5V = 3000;
-    // FTM0_C6V = 3000;
+    FTM0_C5V = 3000;
+    FTM0_C6V = 3000;
     // FTM0_C7V = 3000;
 
     
     // Using PORT_PCR_MUX(4) doesn't work
     PORTC_PCR1 |= 0x400;
     PORTC_PCR2 |= 0x400;
-    PORTC_PCR3 |= 0x400;
-    PORTC_PCR4 |= 0x400;
-    
+    // PORTC_PCR3 |= 0x400;
+    // PORTC_PCR4 |= 0x400;
     // PORTD_PCR4 |= 0x400;
-    // PORTD_PCR5 |= 0x400;
-    // PORTD_PCR6 |= 0x400;
+    PORTD_PCR5 |= 0x400;
+    PORTD_PCR6 |= 0x400;
     // PORTD_PCR7 |= 0x400;
 }
 
 void updateMotors() {
-    FTM0_C0V = MotorOut[0] * 3;
-    FTM0_C1V = MotorOut[1] * 3;
-    FTM0_C2V = MotorOut[2] * 3;
-    FTM0_C3V = MotorOut[3] * 3;
+    FTM0_C5V = MotorOut[0] * 3;
+    FTM0_C6V = MotorOut[1] * 3;
+    FTM0_C0V = MotorOut[2] * 3;
+    FTM0_C1V = MotorOut[3] * 3;
 }
 
 void initializeESC() {
