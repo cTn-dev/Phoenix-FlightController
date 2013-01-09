@@ -1,4 +1,4 @@
-Flight Controller based on MK20DX128 (Teensy 3.0)
+Flight Controller based on K20DX128 (Teensy 3.0)
 =================================================
 
 I2C Setup
