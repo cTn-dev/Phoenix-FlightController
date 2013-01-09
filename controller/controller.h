@@ -37,6 +37,5 @@ double commandYaw, commandYawAttitude, commandPitch, commandRoll, commandThrottl
 
 // Custom definitions
 //#define DATA_VISUALIZATION
-//#define SENSOR_DATA_RAW
 //#define DISPLAY_ITTERATIONS
 //#define DISABLE_BATTERY_ALARM

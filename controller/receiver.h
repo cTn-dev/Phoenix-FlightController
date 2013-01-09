@@ -116,3 +116,7 @@ void RX_failSafe() {
         }    
     }
 }
+
+void initializeReceiver() {
+    setupFTM1();
+}

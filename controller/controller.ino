@@ -3,23 +3,10 @@
 #include <Wire.h>
 
 // Custom imports
-#include "controller.h"
-#include "receiver.h"
-#include "PID.h"
-#include "esc.h"
 #include "math.h"
-
-#include "kinematics_CMP.h"
-//#include "kinematics_ARG.h"
-//#include "kinematics_DCM.h"
-
-#include "mpu6050.h"
-#include "bmp085.h"
-#include "sonar.h"
-
-// Sensor definitions
-MPU6050 mpu;
-BMP085 baro;
+#include "controller.h"
+#include "configuration.h"
+#include "PID.h"
 
 // PID definitions
 double YawCommandPIDSpeed, PitchCommandPIDSpeed, RollCommandPIDSpeed;
@@ -37,32 +24,33 @@ PID throttle_motor_pid(&AltitudeToHoldTarget, &ThrottleMotorSpeed, &AltitudeHold
 // Include this last as it contains objects from previous declarations
 #include "PilotCommandProcessor.h"  
   
-void setup() {    
+void setup() {
+    // PIN settings
+    pinMode(LED_PIN, OUTPUT); // build in status LED
+    pinMode(LED_ORIENTATION, OUTPUT); // orientation lights
+    
     // Initialize serial communication
     Serial.begin(115200);   
  
     // Join i2c bus as master
     Wire.begin();
 
-    // ESC timer and PIN setup
-    setupFTM0();
+    initializeESC();    
+    initializeReceiver();
     
-    // RX timer and PIN setup
-    setupFTM1();    
+    initializeGyro();
     
-    // Sonar PIN setup
-    pinMode(SONAR_PIN_TRIGGER, OUTPUT);
-    pinMode(SONAR_PIN_ECHO, INPUT);
-    attachInterrupt(SONAR_PIN_ECHO, sonarEcho, CHANGE);
+    #ifdef Accelerometer
+        initializeAccel();
+    #endif
     
-    // PIN settings
-    pinMode(LED_PIN, OUTPUT); // build in status LED
-    pinMode(LED_ORIENTATION, OUTPUT); // orientation lights
+    #ifdef AltitudeHoldBaro
+        initializeBaro();    
+    #endif
     
-    // Initialize sensors
-    mpu.initialize();
-    mpu.calibrate_gyro();
-    baro.initialize();
+    #ifdef AltitudeHoldSonar
+        initializeSonar();
+    #endif    
     
     // All is ready, start the loop
     all_ready = true;
@@ -80,27 +68,16 @@ void loop() {
     
     // Read data (not faster then every 1 ms)
     if (currentTime - sensorPreviousTime >= 1000) {
-        mpu.readGyroSum();
-        mpu.readAccelSum();        
+        readGyroSum();
         
-        // Bring sonar pin down (complete TLL trigger pulse)
-        readSonarFinish();
-        
-        #ifdef SENSOR_DATA_RAW
-            Serial.print(accelX);
-            Serial.write('\t');    
-            Serial.print(accelY);
-            Serial.write('\t');   
-            Serial.print(accelZ);
-            Serial.write('\t');   
-            Serial.print(gyroX);
-            Serial.write('\t');   
-            Serial.print(gyroY);
-            Serial.write('\t');   
-            Serial.print(gyroZ);
-            Serial.write('\t');  
-            Serial.println(); 
+        #ifdef Accelerometer
+            readAccelSum();        
         #endif
+        
+        #ifdef AltitudeHoldSonar
+            // Bring sonar pin down (complete TLL trigger pulse)
+            readSonarFinish();
+        #endif    
         
         sensorPreviousTime = currentTime;
     }    
@@ -136,10 +113,13 @@ void loop() {
 }
 
 void process100HzTask() {    
-    mpu.evaluateGyro();
-    mpu.evaluateAccel();
+    evaluateGyro();
+    evaluateAccel();
     
-    baro.measureBaroSum(); // Baro is being sampled every 10ms (because measuring pressure is slow) 
+    #ifdef AltitudeHoldBaro
+        // Baro is being sampled every 10ms (because measuring pressure is slow) 
+        readBaroSum();
+    #endif    
     
     // Update kinematics with latest data
     kinematics_update(&accelXsumAvr, &accelYsumAvr, &accelZsumAvr, &gyroXsumRate, &gyroYsumRate, &gyroZsumRate);
@@ -161,7 +141,8 @@ void process100HzTask() {
     pitch_motor_pid.Compute();
     roll_motor_pid.Compute();     
     
-    if (armed) {               
+    if (armed) {
+        // All of the motor outputs are constrained to standard 1000-2000us)
         MotorOut[0] = constrain(throttle + PitchMotorSpeed + RollMotorSpeed + YawMotorSpeed, 1000, 2000);
         MotorOut[1] = constrain(throttle + PitchMotorSpeed - RollMotorSpeed - YawMotorSpeed, 1000, 2000);
         MotorOut[2] = constrain(throttle - PitchMotorSpeed - RollMotorSpeed + YawMotorSpeed, 1000, 2000);
@@ -229,16 +210,20 @@ void process100HzTask() {
 
 void process50HzTask() {
     processPilotCommands();
-    baro.evaluateBaroAltitude();
-    baro.getBaroAltitude();
+    
+    #ifdef AltitudeHoldBaro
+        evaluateBaroAltitude();
+    #endif    
 }
 
 void process10HzTask() {
     // Trigger RX failsafe function every 100ms
     RX_failSafe();
     
-    // Request sonar reading
-    readSonar();
+    #ifdef AltitudeHoldSonar
+        // Request sonar reading
+        readSonar();
+    #endif    
     
     // Print itterations per 100ms
     #ifdef DISPLAY_ITTERATIONS

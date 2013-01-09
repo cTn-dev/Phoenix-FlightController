@@ -62,3 +62,7 @@ void updateMotors() {
     FTM0_C2V = MotorOut[2] * 3;
     FTM0_C3V = MotorOut[3] * 3;
 }
+
+void initializeESC() {
+    setupFTM0();
+}

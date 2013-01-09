@@ -249,3 +249,19 @@ class BMP085 {
         float pressureFactor;
         float baroSmoothFactor;
 };
+
+// Create Baro object
+BMP085 baro;
+
+void initializeBaro() {
+    baro.initialize();
+}
+
+void readBaroSum() {
+    baro.measureBaroSum();
+}
+
+void evaluateBaroAltitude() {
+    baro.evaluateBaroAltitude();
+    baro.getBaroAltitude();
+}

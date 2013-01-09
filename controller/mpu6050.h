@@ -279,3 +279,29 @@ class MPU6050 {
         int16_t gyro_offset[3];
         int16_t accel_bias[3];
 };
+
+MPU6050 mpu;
+
+void initializeGyro() {
+    mpu.initialize();
+    mpu.calibrate_gyro();
+}
+
+void initializeAccel() {
+}
+
+void readGyroSum() {
+    mpu.readGyroSum();
+}
+
+void readAccelSum() {
+    mpu.readAccelSum();
+}
+
+void evaluateGyro() {
+    mpu.evaluateGyro();
+}
+
+void evaluateAccel() {
+    mpu.evaluateAccel();
+}

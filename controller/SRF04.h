@@ -6,7 +6,7 @@ unsigned long sonar_start = 0;
 unsigned long sonar_end = 0;
 bool sonar_ready = true;
 
-double sonar_raw = 0.0; // This shouldn't be used directly / ergo needs a smoothing filter
+double sonar_raw = 0.0;
 double sonarAltitude = 0.0;
 double sonarAltitudeToHoldTarget = 0.0;
 int16_t sonarAltitudeHoldThrottle = 1000;
@@ -46,4 +46,10 @@ void sonarEcho() {
         
         sonar_ready = true;
     }
+}
+
+void initializeSonar() {
+    pinMode(SONAR_PIN_TRIGGER, OUTPUT);
+    pinMode(SONAR_PIN_ECHO, INPUT);
+    attachInterrupt(SONAR_PIN_ECHO, sonarEcho, CHANGE);
 }
