@@ -17,7 +17,9 @@
 
     Please remember that this failsafe is here to prevent craft from "flying away on its own" and
     potentionaly harming someone in the proces (damaged craft from a crash is still better then cutting
-    someones head off with uncontrollable craft).    
+    someones head off with uncontrollable craft). 
+
+    Big thanks to kha from #aeroquad for setting up the shared timer.
 */
 
 #define PPM_CHANNELS 8

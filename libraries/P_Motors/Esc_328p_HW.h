@@ -1,6 +1,8 @@
 /*  ESC signal generation via shared timer1.
 
-    This port for atmega328p is UNTESTED.
+    Big thanks to kha from #aeroquad for setting up the shared timer.
+
+    This port for atmega328p is UNTESTED.    
 */
 
 #define MOTORS 4
@@ -27,7 +29,7 @@ ISR(TIMER1_COMPA_vect) {
         motorTotal += now; // tally up time
         OCR1A = TCNT1 + now;  // interrupt 
         digitalWrite(motorPins[motorCounter],1); // start pulse
-    } else { // motorCounter==MOTORS
+    } else { // motorCounter == MOTORS
         OCR1A = TCNT1 + MOTORS * 4000 + 50 - motorTotal;
         motorTotal = 0;
     } 
