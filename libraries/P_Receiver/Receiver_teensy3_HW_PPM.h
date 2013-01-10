@@ -92,31 +92,6 @@ void setupFTM1() {
     PORTA_PCR12 |= 0x300; // 0x300
 }
 
-void RX_failSafe() {
-    // if this flag reaches 10, an auto-descent routine will be triggered.
-    RX_signalReceived++;
-    
-    if (RX_signalReceived > 10) {
-        RX_signalReceived = 10; // don't let the variable overflow
-        
-        // Bear in mind that this is here just to "slow" the fall, if you have lets say 500m altitude,
-        // this probably won't help you much (sorry).
-        // This will slowly (-2 every 100ms) bring the throttle to 1000 (still saved in the PPM array)
-        // 1000 = 0 throttle;
-        // Descending from FULL throttle 2000 (most unlikely) would take about 1 minute and 40 seconds
-        // Descending from HALF throttle 1500 (more likely) would take about 50 seconds
-        PPM[2] -= 2;
-        PPM[4] = 2000; // force attitude mode
-        
-        if (PPM[2] < 1000) {
-            PPM[2] = 1000; // don't let the value fall below 1000
-            
-            // at this point, we will also disarm
-            armed = false;
-        }    
-    }
-}
-
 void initializeReceiver() {
     setupFTM1();
 }

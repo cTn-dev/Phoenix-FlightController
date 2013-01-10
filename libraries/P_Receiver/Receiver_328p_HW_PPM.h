@@ -45,9 +45,6 @@ void setupTimer1RX() {
     TIMSK1 |= (1<<ICIE1)|(1<<OCIE1A); // Enable ICP and OCRA interrupts
 }
 
-void RX_failSafe() {
-}
-
 void initializeReceiver() {
     setupTimer1RX();
 }
