@@ -5,14 +5,16 @@ bool throttlePanic = false;
 void processPilotCommands() {
     // read data into variables
     cli(); // disable interrupts
-    TX_roll = PPM[0];     // CH-1 AIL
-    TX_pitch = PPM[1];    // CH-2 ELE
-    TX_throttle = PPM[2]; // CH-3 THR
-    TX_yaw = PPM[3];      // CH-4 RUD
-    TX_mode = PPM[4];     // CH-5 FULL ELE switch (off = rate, on = attitude)
-    TX_altitude = PPM[5]; // CH-6 FULL AIL switch (off = standard altitude control by stick, on = altitude controled via barometer)
-    TX_cam = PPM[6];      // CH-7
-    TX_last = PPM[7];     // CH-8
+    
+    TX_roll = RX[0];     // CH-1 AIL
+    TX_pitch = RX[1];    // CH-2 ELE
+    TX_throttle = RX[2]; // CH-3 THR
+    TX_yaw = RX[3];      // CH-4 RUD
+    TX_mode = RX[4];     // CH-5 FULL ELE switch (off = rate, on = attitude)
+    TX_altitude = RX[5]; // CH-6 FULL AIL switch (off = standard altitude control by stick, on = altitude controled via barometer)
+    TX_cam = RX[6];      // CH-7
+    TX_last = RX[7];     // CH-8
+    
     sei(); // enable interrupts
     
     // Arming-Disarming sequence

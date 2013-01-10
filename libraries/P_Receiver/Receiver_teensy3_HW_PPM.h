@@ -26,9 +26,9 @@
 
 #define PPM_CHANNELS 8
 volatile uint16_t startPulse = 0;
-volatile uint16_t PPM[PPM_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+volatile uint16_t RX[PPM_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
 volatile uint16_t PPM_temp[PPM_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
-volatile uint8_t ppmCounter = PPM_CHANNELS;
+volatile uint8_t  ppmCounter = PPM_CHANNELS;
 volatile uint16_t PPM_error = 0;
 
 volatile uint8_t RX_signalReceived = 0;
@@ -42,6 +42,7 @@ extern "C" void ftm1_isr(void) {
     
     uint16_t pulseWidth = stopPulse - startPulse;
 
+    // Error / Sanity check
     if (pulseWidth < 2700 || (pulseWidth > 6100 && pulseWidth < 12000)) {
         PPM_error++;
         
@@ -56,7 +57,7 @@ extern "C" void ftm1_isr(void) {
             // by new data, that will also be checked for sanity.
             
             for (uint8_t i = 0; i < PPM_CHANNELS; i++) {
-                PPM[i] = PPM_temp[i];
+                RX[i] = PPM_temp[i];
             }
             
             // Set signal received flag to 0 every time we accept a valid frame
@@ -94,4 +95,29 @@ void setupFTM1() {
 
 void initializeReceiver() {
     setupFTM1();
+}
+
+void RX_failSafe() {
+    // if this flag reaches 10, an auto-descent routine will be triggered.
+    RX_signalReceived++;
+    
+    if (RX_signalReceived > 10) {
+        RX_signalReceived = 10; // don't let the variable overflow
+        
+        // Bear in mind that this is here just to "slow" the fall, if you have lets say 500m altitude,
+        // this probably won't help you much (sorry).
+        // This will slowly (-2 every 100ms) bring the throttle to 1000 (still saved in the PPM array)
+        // 1000 = 0 throttle;
+        // Descending from FULL throttle 2000 (most unlikely) would take about 1 minute and 40 seconds
+        // Descending from HALF throttle 1500 (more likely) would take about 50 seconds
+        RX[2] -= 2;
+        RX[4] = 2000; // force attitude mode
+        
+        if (RX[2] < 1000) {
+            RX[2] = 1000; // don't let the value fall below 1000
+            
+            // at this point, we will also disarm
+            armed = false;
+        }    
+    }
 }
