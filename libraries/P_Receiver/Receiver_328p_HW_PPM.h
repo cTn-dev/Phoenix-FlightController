@@ -41,14 +41,15 @@ ISR(TIMER1_CAPT_vect) {
     unsigned int pulseWidth = stopPulse - startPulse;
 
     // Error / Sanity check
-    if (pulseWidth < 1800 || (pulseWidth > 4200 && pulseWidth < 5000)) {
+    // if pulseWidth < 900us or pulseWidth > 2100us and pulseWidth < 4000us
+    if (pulseWidth < 1800 || (pulseWidth > 4200 && pulseWidth < 8000)) {
         PPM_error++;
         
         // set ppmCounter out of range so rest and (later on) whole frame is dropped
         ppmCounter = PPM_CHANNELS + 1;    
     }
     
-    if (pulseWidth > 5000) {  // Verify if this is the sync pulse (2.5ms)
+    if (pulseWidth > 8000) {  // Verify if this is the sync pulse (4ms >)
         if (ppmCounter == PPM_CHANNELS) {
             // This indicates that we received an correct frame = push to the "main" PPM array
             // if we received an broken frame, it will get ignored here and later get over-written

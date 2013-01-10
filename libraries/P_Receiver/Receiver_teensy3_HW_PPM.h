@@ -43,7 +43,8 @@ extern "C" void ftm1_isr(void) {
     uint16_t pulseWidth = stopPulse - startPulse;
 
     // Error / Sanity check
-    if (pulseWidth < 2700 || (pulseWidth > 6100 && pulseWidth < 12000)) {
+    // if pulseWidth < 900us or pulseWidth > 2100us and pulseWidth < 4000us
+    if (pulseWidth < 2700 || (pulseWidth > 6300 && pulseWidth < 12000)) {
         PPM_error++;
         
         // set ppmCounter out of range so rest and (later on) whole frame is dropped
@@ -89,7 +90,6 @@ void setupFTM1() {
     
     // PIN configuration (teensy 3.0 pin3 = PTA12)
     // we are using pin alternative function 3 
-    // PORT_PCR_MUX(3) works in this case, but we will set it manually anyway
     PORTA_PCR12 |= 0x300; // 0x300
 }
 
