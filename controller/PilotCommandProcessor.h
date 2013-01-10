@@ -73,8 +73,6 @@ void processPilotCommands() {
                 // save the current altitude and throttle
                 baroAltitudeToHoldTarget = baroAltitudeRunning;
                 baroAltitudeHoldThrottle = TX_throttle;
-                
-                AltitudeToHoldTarget = baroAltitudeToHoldTarget;
             }
             
             altitudeHoldSonar = false;
@@ -96,8 +94,6 @@ void processPilotCommands() {
             if (altitudeHoldSonar == false) { // We just switched on the altitudeHoldSonar
                 sonarAltitudeToHoldTarget = sonarAltitude;
                 sonarAltitudeHoldThrottle = TX_throttle;
-                
-                AltitudeToHoldTarget = sonarAltitudeToHoldTarget;
             }
             
             altitudeHoldBaro = false;
@@ -151,17 +147,15 @@ void processPilotCommands() {
     
     #ifdef AltitudeHoldBaro
         else if (altitudeHoldBaro == true) {
-            AltitudeHold = baroAltitudeRunning;
-            throttle_motor_pid.Compute();
-            throttle = baroAltitudeHoldThrottle - constrain(ThrottleMotorSpeed, -55.0, 55.0);
+            altitude_hold_baro_pid.Compute();
+            throttle = baroAltitudeHoldThrottle - constrain(AltitudeHoldMotorSpeed, -50.0, 50.0);
         }
     #endif
     
     #ifdef AltitudeHoldSonar
         else if (altitudeHoldSonar == true) {
-            AltitudeHold = sonarAltitude;
-            throttle_motor_pid.Compute();
-            throttle = sonarAltitudeHoldThrottle - constrain(ThrottleMotorSpeed, -55.0, 55.0);
+            altitude_hold_sonar_pid.Compute();
+            throttle = sonarAltitudeHoldThrottle - constrain(AltitudeHoldMotorSpeed, -100.0, 100.0);
         }
     #endif
 }    

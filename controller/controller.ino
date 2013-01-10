@@ -37,7 +37,7 @@
 
 // PID definitions
 double YawCommandPIDSpeed, PitchCommandPIDSpeed, RollCommandPIDSpeed;
-double YawMotorSpeed, PitchMotorSpeed, RollMotorSpeed, ThrottleMotorSpeed;
+double YawMotorSpeed, PitchMotorSpeed, RollMotorSpeed, AltitudeHoldMotorSpeed;
 
 PID yaw_command_pid(&kinematicsAngleZ, &YawCommandPIDSpeed, &commandYaw, 4.0, 0.0, 0.0, 25.0);
 PID pitch_command_pid(&kinematicsAngleY, &PitchCommandPIDSpeed, &commandPitch, 4.0, 0.0, 0.0, 25.0);
@@ -46,7 +46,14 @@ PID roll_command_pid(&kinematicsAngleX, &RollCommandPIDSpeed, &commandRoll, 4.0,
 PID yaw_motor_pid(&gyroZsumRate, &YawMotorSpeed, &YawCommandPIDSpeed, 200.0, 5.0, 0.0, 1000.0);
 PID pitch_motor_pid(&gyroYsumRate, &PitchMotorSpeed, &PitchCommandPIDSpeed, 80.0, 0.0, -300.0, 1000.0);
 PID roll_motor_pid(&gyroXsumRate, &RollMotorSpeed, &RollCommandPIDSpeed, 80.0, 0.0, -300.0, 1000.0);
-PID throttle_motor_pid(&AltitudeToHoldTarget, &ThrottleMotorSpeed, &AltitudeHold, 30.0, 0.6, 0.0, 25.0);
+
+#ifdef AltitudeHoldBaro
+    PID altitude_hold_baro_pid(&baroAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &baroAltitudeRunning, 25.0, 0.6, 0.0, 25.0);
+#endif
+
+#ifdef AltitudeHoldSonar    
+    PID altitude_hold_sonar_pid(&sonarAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &sonarAltitude, 50.0, 0.6, 0.0, 25.0);
+#endif  
   
 // Include this last as it contains objects from previous declarations
 #include "PilotCommandProcessor.h"  

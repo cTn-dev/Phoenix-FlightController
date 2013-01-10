@@ -41,7 +41,7 @@ void sonarEcho() {
             // Convert centimeters to meters (to match baro units)
             sonar_raw /= 100;
             
-            sonarAltitude = filterSmooth(sonar_raw, sonarAltitude, 0.50);
+            sonarAltitude = filterSmooth(sonar_raw, sonarAltitude, 0.75);
         }
         
         sonar_ready = true;
