@@ -1,3 +1,13 @@
+/*
+    Phoenix flight controller was initially build to support only one array of sensors but
+    with minor sensor changes it seemed like a waste to just "drop" previous sensor support
+    with this idea in mind i will try to make the flight controller feature set flexible as
+    possible to accommodate as much hw as possible.
+
+    Defines below only enable/disable "pre-defined" hw setups, you can always define your own
+    setup in the == Hardware setup == section.
+*/
+
 // Arduino standard library imports
 #include <Arduino.h>
 #include <Wire.h>
@@ -5,10 +15,11 @@
 // Custom imports
 #include "math.h"
 #include "controller.h"
-#include "configuration.h"
 #include "PID.h"
 
 // == Hardware setup/s == 
+#define Maggie
+
 #ifdef Maggie
     // Features requested
     #define Accelerometer
@@ -16,13 +27,13 @@
     #define AltitudeHoldSonar
     
     // Critical sensors on board (gyro/accel)
-    #include <mpu6050.h>
+    #include "mpu6050.h"
     
     // Barometer
-    #include <bmp085.h>
+    #include "Barometer_bmp085.h"
     
     // Sonar
-    #include <srf04.h>
+    #include "Sonar_srf04.h"
     
     // Kinematics used
     #include "kinematics_CMP.h"
