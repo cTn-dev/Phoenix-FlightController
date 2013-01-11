@@ -107,26 +107,26 @@ class MPU6050 {
         
         void initialize() {
             // Chip reset
-            WriteRegister(MPUREG_PWR_MGMT_1, BIT_H_RESET);
+            sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_PWR_MGMT_1, BIT_H_RESET);
             
             // Startup delay 
             delay(100);  
 
             // Wake Up device and select GyroZ clock (better performance)
-            WriteRegister(MPUREG_PWR_MGMT_1, MPU_CLK_SEL_PLLGYROZ);
-            WriteRegister(MPUREG_PWR_MGMT_2, 0);    
+            sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_PWR_MGMT_1, MPU_CLK_SEL_PLLGYROZ);
+            sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_PWR_MGMT_2, 0);    
             
             // Sample rate = 1kHz 
-            WriteRegister(MPUREG_SMPLRT_DIV, 0x00);
+            sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_SMPLRT_DIV, 0x00);
 
             // FS & DLPF   FS = 1000 degrees/s (dps), DLPF = 42Hz (low pass filter)
-            WriteRegister(MPUREG_CONFIG, BITS_DLPF_CFG_42HZ); 
+            sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_CONFIG, BITS_DLPF_CFG_42HZ); 
 
             // Gyro scale 1000 degrees/s (dps)
-            WriteRegister(MPUREG_GYRO_CONFIG, BITS_FS_1000DPS);
+            sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_GYRO_CONFIG, BITS_FS_1000DPS);
             
             // Accel scale +-4g (8192LSB/g)
-            WriteRegister(MPUREG_ACCEL_CONFIG, 0x08);    
+            sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_ACCEL_CONFIG, 0x08);    
 
             // Initial delay after proper configuration
             // let sensors heat up (especially gyro)
@@ -266,15 +266,6 @@ class MPU6050 {
             
             gyro_temperature = (Wire.read() << 8) | Wire.read();         
         };
-        
-        // I2C Stuff
-        void WriteRegister(int dataAddress, byte dataValue) {
-            Wire.beginTransmission(MPU6050_ADDRESS);
-            Wire.write(dataAddress);
-            Wire.write(dataValue);
-            Wire.endTransmission();  
-        };
-        
     private:
         int16_t gyro_offset[3];
         int16_t accel_bias[3];
@@ -282,26 +273,26 @@ class MPU6050 {
 
 MPU6050 mpu;
 
-void initializeGyro() {
+void SensorArray::initializeGyro() {
     mpu.initialize();
     mpu.calibrate_gyro();
 }
 
-void initializeAccel() {
+void SensorArray::initializeAccel() {
 }
 
-void readGyroSum() {
+void SensorArray::readGyroSum() {
     mpu.readGyroSum();
 }
 
-void readAccelSum() {
+void SensorArray::readAccelSum() {
     mpu.readAccelSum();
 }
 
-void evaluateGyro() {
+void SensorArray::evaluateGyro() {
     mpu.evaluateGyro();
 }
 
-void evaluateAccel() {
+void SensorArray::evaluateAccel() {
     mpu.evaluateAccel();
 }

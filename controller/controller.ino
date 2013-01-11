@@ -13,8 +13,9 @@
 #include <Wire.h>
 
 // Custom imports
-#include "math.h"
 #include "controller.h"
+#include "sensors.h"
+#include "math.h"
 #include "PID.h"
 
 // == Hardware setup/s == 
@@ -36,7 +37,7 @@
     #include <Sonar_srf04.h>
     
     // Kinematics used
-    #include "kinematics_CMP.h"
+    #include <kinematics_CMP.h>
     
     // Receiver
     #include <Receiver_teensy3_HW_PPM.h>
@@ -83,14 +84,14 @@ void setup() {
     initializeESC();    
     initializeReceiver();
     
-    initializeGyro();
+    sensors.initializeGyro();
     
     #ifdef Accelerometer
-        initializeAccel();
+        sensors.initializeAccel();
     #endif
     
     #ifdef AltitudeHoldBaro
-        initializeBaro();    
+        sensors.initializeBaro();    
     #endif
     
     #ifdef AltitudeHoldSonar
@@ -113,10 +114,10 @@ void loop() {
     
     // Read data (not faster then every 1 ms)
     if (currentTime - sensorPreviousTime >= 1000) {
-        readGyroSum();
+        sensors.readGyroSum();
         
         #ifdef Accelerometer
-            readAccelSum();        
+            sensors.readAccelSum();        
         #endif
         
         #ifdef AltitudeHoldSonar
@@ -158,12 +159,12 @@ void loop() {
 }
 
 void process100HzTask() {    
-    evaluateGyro();
-    evaluateAccel();
+    sensors.evaluateGyro();
+    sensors.evaluateAccel();
     
     #ifdef AltitudeHoldBaro
         // Baro is being sampled every 10ms (because measuring pressure is slow) 
-        readBaroSum();
+        sensors.readBaroSum();
     #endif    
     
     // Update kinematics with latest data
@@ -257,7 +258,7 @@ void process50HzTask() {
     processPilotCommands();
     
     #ifdef AltitudeHoldBaro
-        evaluateBaroAltitude();
+        sensors.evaluateBaroAltitude();
     #endif    
 }
 

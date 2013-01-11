@@ -54,19 +54,19 @@ class BMP085 {
             baroSmoothFactor = 0.02;
             
             // Read Calibration Data
-            ac1 = read16(BMP085_CAL_AC1);
-            ac2 = read16(BMP085_CAL_AC2);
-            ac3 = read16(BMP085_CAL_AC3);
-            ac4 = read16(BMP085_CAL_AC4);
-            ac5 = read16(BMP085_CAL_AC5);
-            ac6 = read16(BMP085_CAL_AC6);
+            ac1 = sensors.i2c_read16(BMP085_ADDRESS, BMP085_CAL_AC1);
+            ac2 = sensors.i2c_read16(BMP085_ADDRESS, BMP085_CAL_AC2);
+            ac3 = sensors.i2c_read16(BMP085_ADDRESS, BMP085_CAL_AC3);
+            ac4 = sensors.i2c_read16(BMP085_ADDRESS, BMP085_CAL_AC4);
+            ac5 = sensors.i2c_read16(BMP085_ADDRESS, BMP085_CAL_AC5);
+            ac6 = sensors.i2c_read16(BMP085_ADDRESS, BMP085_CAL_AC6);
 
-            b1 = read16(BMP085_CAL_B1);
-            b2 = read16(BMP085_CAL_B2);
+            b1 = sensors.i2c_read16(BMP085_ADDRESS, BMP085_CAL_B1);
+            b2 = sensors.i2c_read16(BMP085_ADDRESS, BMP085_CAL_B2);
 
-            mb = read16(BMP085_CAL_MB);
-            mc = read16(BMP085_CAL_MC);
-            md = read16(BMP085_CAL_MD); 
+            mb = sensors.i2c_read16(BMP085_ADDRESS, BMP085_CAL_MB);
+            mc = sensors.i2c_read16(BMP085_ADDRESS, BMP085_CAL_MC);
+            md = sensors.i2c_read16(BMP085_ADDRESS, BMP085_CAL_MD); 
             
             requestRawTemperature(); // setup up next measure() for temperature
             isReadPressure = false;
@@ -90,7 +90,7 @@ class BMP085 {
         };
         
         void requestRawPressure() {
-            WriteRegister(BMP085_CONTROL, BMP085_READPRESSURECMD + (overSamplingSetting << 6));
+            sensors.i2c_write8(BMP085_ADDRESS, BMP085_CONTROL, BMP085_READPRESSURECMD + (overSamplingSetting << 6));
         };
         
         long readRawPressure() {            
@@ -104,7 +104,7 @@ class BMP085 {
         };
         
         void requestRawTemperature() {
-            WriteRegister(BMP085_CONTROL, BMP085_READTEMPCMD);
+            sensors.i2c_write8(BMP085_ADDRESS, BMP085_CONTROL, BMP085_READTEMPCMD);
         };
         
         unsigned int readRawTemperature() {
@@ -210,29 +210,6 @@ class BMP085 {
         void getBaroAltitude() {
             baroAltitudeRunning = baroAltitude - baroGroundAltitude;
         };
-        
-        // I2C Stuff
-        void WriteRegister(int dataAddress, byte dataValue) {
-            Wire.beginTransmission(BMP085_ADDRESS);
-            Wire.write(dataAddress);
-            Wire.write(dataValue);
-            Wire.endTransmission();  
-        };
-        
-        int16_t read16(uint8_t a) {
-            int16_t data;
-            
-            Wire.beginTransmission(BMP085_ADDRESS);
-            Wire.write(a);
-            Wire.endTransmission();
-            
-            Wire.requestFrom(BMP085_ADDRESS, 2);
-            
-            data = (Wire.read() << 8) | Wire.read();
-            
-            return data;
-        };
-        
     private:
         int16_t ac1, ac2, ac3, b1, b2, mb, mc, md;
         uint16_t ac4, ac5, ac6;
@@ -253,15 +230,15 @@ class BMP085 {
 // Create Baro object
 BMP085 baro;
 
-void initializeBaro() {
+void SensorArray::initializeBaro() {
     baro.initialize();
 }
 
-void readBaroSum() {
+void SensorArray::readBaroSum() {
     baro.measureBaroSum();
 }
 
-void evaluateBaroAltitude() {
+void SensorArray::evaluateBaroAltitude() {
     baro.evaluateBaroAltitude();
     baro.getBaroAltitude();
 }
