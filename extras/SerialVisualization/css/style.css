@@ -248,18 +248,23 @@ a:hover {
                 
                 width: 40px;
                 height: 40px;  
+                line-height: 40px;
+                
+                text-align: center;
+                color: white;
+                font-size: 25px;
                 
                 background-color: rgb(0, 0, 0);
             }
             #cube .motor.one {                
-                -webkit-transform: rotateX(90deg) translateX(-40px) translateY(-75px) translateZ(0px);
+                -webkit-transform: rotateX(90deg) translateX(-40px) translateY(-80px) translateZ(0px);
             }
             #cube .motor.two {
-                -webkit-transform: rotateX(90deg) translateX(100px) translateY(-75px) translateZ(0px);          
+                -webkit-transform: rotateX(90deg) translateX(100px) translateY(-80px) translateZ(0px);          
             }
             #cube .motor.three {
-                -webkit-transform: rotateX(90deg) translateX(100px) translateY(75px) translateZ(0px);               
+                -webkit-transform: rotateX(90deg) translateX(100px) translateY(80px) translateZ(0px);               
             }
             #cube .motor.four {
-                -webkit-transform: rotateX(90deg) translateX(-40px) translateY(75px) translateZ(0px);              
+                -webkit-transform: rotateX(90deg) translateX(-40px) translateY(80px) translateZ(0px);              
             }            
