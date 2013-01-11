@@ -34,5 +34,5 @@ double kinematicsAngleZ = 0.0;
 double commandYaw, commandYawAttitude, commandPitch, commandRoll, commandThrottle;
 
 // Custom definitions
-#define DATA_VISUALIZATION
+//#define DATA_VISUALIZATION
 //#define DISPLAY_ITTERATIONS

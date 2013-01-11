@@ -154,14 +154,14 @@ void processPilotCommands() {
     #ifdef AltitudeHoldBaro
         else if (altitudeHoldBaro == true) {
             altitude_hold_baro_pid.Compute();
-            throttle = baroAltitudeHoldThrottle - constrain(AltitudeHoldMotorSpeed, -50.0, 50.0);
+            throttle = baroAltitudeHoldThrottle - constrain(AltitudeHoldMotorSpeed, -200.0, 200.0);
         }
     #endif
     
     #ifdef AltitudeHoldSonar
         else if (altitudeHoldSonar == true) {
             altitude_hold_sonar_pid.Compute();
-            throttle = sonarAltitudeHoldThrottle - constrain(AltitudeHoldMotorSpeed, -100.0, 100.0);
+            throttle = sonarAltitudeHoldThrottle - constrain(AltitudeHoldMotorSpeed, -200.0, 200.0);
         }
     #endif
 }    

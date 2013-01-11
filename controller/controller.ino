@@ -60,11 +60,11 @@ PID pitch_motor_pid(&gyroYsumRate, &PitchMotorSpeed, &PitchCommandPIDSpeed, 80.0
 PID roll_motor_pid(&gyroXsumRate, &RollMotorSpeed, &RollCommandPIDSpeed, 80.0, 0.0, -300.0, 1000.0);
 
 #ifdef AltitudeHoldBaro
-    PID altitude_hold_baro_pid(&baroAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &baroAltitudeRunning, 25.0, 0.6, 0.0, 25.0);
+    PID altitude_hold_baro_pid(&baroAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &baroAltitudeRunning, 25.0, 0.6, -10.0, 25.0);
 #endif
 
 #ifdef AltitudeHoldSonar    
-    PID altitude_hold_sonar_pid(&sonarAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &sonarAltitude, 50.0, 0.6, 0.0, 25.0);
+    PID altitude_hold_sonar_pid(&sonarAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &sonarAltitude, 60.0, 0.6, -10.0, 25.0);
 #endif  
   
 // Include this last as it contains objects from previous declarations
