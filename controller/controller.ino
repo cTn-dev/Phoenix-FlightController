@@ -249,6 +249,16 @@ void process100HzTask() {
         
         // PPM error
         Serial.print(PPM_error);
+        Serial.write(',');
+        
+        // Motor out
+        Serial.print(MotorOut[0]);
+        Serial.write(',');
+        Serial.print(MotorOut[1]);
+        Serial.write(',');
+        Serial.print(MotorOut[2]);
+        Serial.write(',');
+        Serial.print(MotorOut[3]);
         
         Serial.println();     
     #endif    

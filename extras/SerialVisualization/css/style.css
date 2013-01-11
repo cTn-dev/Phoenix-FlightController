@@ -154,9 +154,20 @@ a:hover {
 }
     #interactive_block a.reset {
         position: relative;
+        display: block;
         
         top: 315px;
         left: 10px;
+        
+        width: 80px;
+        height: 18px;
+        line-height: 18px;
+        
+        color: white;
+        text-align: center;
+        
+        border: 1px solid silver;
+        background-color: blue;
     } 
     #interactive_block a.reset:hover {
         text-decoration: none;
@@ -182,7 +193,7 @@ a:hover {
                 font-size: 25px;
                 text-align: center;
             }
-            #cube .one  {
+            #cube .face.one  {
                 width: 100px;
                 height: 200px;
                 line-height: 200px;
@@ -190,7 +201,7 @@ a:hover {
                 -webkit-transform: rotateX(-90deg) translateZ(-50px);
                 background-color: purple;
             }
-            #cube .two {
+            #cube .face.two {
                 width: 100px;
                 height: 50px;
                 line-height: 50px;
@@ -198,7 +209,7 @@ a:hover {
                 -webkit-transform: translateZ(100px);
                 background-color: blue;
             }
-            #cube .three {
+            #cube .face.three {
                 width: 200px;
                 height: 50px;
                 line-height: 50px;
@@ -206,7 +217,7 @@ a:hover {
                 -webkit-transform: rotateY(90deg);
                 background-color: green;
             }
-            #cube .four {
+            #cube .face.four {
                 width: 100px;
                 height: 50px;
                 line-height: 50px;
@@ -214,7 +225,7 @@ a:hover {
                 -webkit-transform: rotateY(180deg) translateZ(100px);
                 background-color: black;
             }
-            #cube .five {
+            #cube .face.five {
                 width: 200px;
                 height: 50px;
                 line-height: 50px;
@@ -222,7 +233,7 @@ a:hover {
                 -webkit-transform: rotateY(-90deg) translateZ(100px);
                 background-color: red;
             }
-            #cube .six {
+            #cube .face.six {
                 width: 100px;
                 height: 200px;
                 line-height: 200px;
@@ -230,3 +241,27 @@ a:hover {
                 -webkit-transform: rotateX(90deg) translateZ(100px);
                 background-color: silver;
             }
+            
+            #cube .motor {
+                display: block;
+                position: absolute;
+                
+                width: 40px;
+                height: 40px;            
+            }
+            #cube .motor.one {                
+                -webkit-transform: rotateX(90deg) translateX(-40px) translateY(-75px) translateZ(0px);
+                background-color: red;
+            }
+            #cube .motor.two {
+                -webkit-transform: rotateX(90deg) translateX(100px) translateY(-75px) translateZ(0px);
+                background-color: green;            
+            }
+            #cube .motor.three {
+                -webkit-transform: rotateX(90deg) translateX(100px) translateY(75px) translateZ(0px);
+                background-color: green;                
+            }
+            #cube .motor.four {
+                -webkit-transform: rotateX(90deg) translateX(-40px) translateY(75px) translateZ(0px);
+                background-color: red;               
+            }            

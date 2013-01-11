@@ -218,6 +218,17 @@ function onCharRead(readInfo) {
         graph_tx.series.addData(data_tx);
         graph_tx.render();
         
+        // PPM error
+        ar[17] = parseInt(ar[17]);
+        
+        // Motors
+        ar[18] = parseInt(ar[18]);
+        ar[19] = parseInt(ar[19]);
+        ar[20] = parseInt(ar[20]);
+        ar[21] = parseInt(ar[21]);
+        
+        
+        
     }
     chrome.serial.read(connectionId, 1000, onCharRead);
 }
