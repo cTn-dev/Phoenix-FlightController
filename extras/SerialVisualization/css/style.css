@@ -26,7 +26,6 @@ a:hover {
     margin: 20px auto 0 auto;
 }
     #port-picker {
-        /* border: 1px solid silver; */
         height: 22px;
         padding-bottom: 20px;
     }
@@ -116,80 +115,72 @@ a:hover {
     #interactive_block a.reset:hover {
         text-decoration: none;
     }
-#perspective {
-    -webkit-perspective: 800;
-    -webkit-perspective-origin: 50% 100px;
-}  
+    #perspective {
+        -webkit-perspective: 800;
+        -webkit-perspective-origin: 50% 100px;
+    }  
+        #cube {
+            position: relative;
+            top: 140px;
+            left: 120px;
+            
+            height: 100px;
+            width: 100px;
+            
+            -webkit-transform-style: preserve-3d;
+        }  
+            #cube .face {
+                position: absolute;
+                
+                color: white;
+                font-size: 25px;
+                text-align: center;
+            }
+            #cube .one  {
+                width: 100px;
+                height: 200px;
+                line-height: 200px;
 
-#cube {
-    position: relative;
-    top: 140px;
-    left: 120px;
-    
-    height: 100px;
-    width: 100px;
-    
-    -webkit-transform-style: preserve-3d;
-}  
-
-.face {
-    position: absolute;
-    
-    color: white;
-    font-size: 25px;
-    text-align: center;
-}
-
-#cube .one  {
-    width: 100px;
-    height: 200px;
-    line-height: 200px;
-
-    -webkit-transform: rotateX(-90deg) translateZ(-50px);
-    background-color: purple;
-}
-
-#cube .two {
-    width: 100px;
-    height: 50px;
-    line-height: 50px;
-    
-    -webkit-transform: translateZ(100px);
-    background-color: blue;
-}
-
-#cube .three {
-    width: 200px;
-    height: 50px;
-    line-height: 50px;
-    
-    -webkit-transform: rotateY(90deg);
-    background-color: green;
-}
-
-#cube .four {
-    width: 100px;
-    height: 50px;
-    line-height: 50px;
-    
-    -webkit-transform: rotateY(180deg) translateZ(100px);
-    background-color: black;
-}
-
-#cube .five {
-    width: 200px;
-    height: 50px;
-    line-height: 50px;
-    
-    -webkit-transform: rotateY(-90deg) translateZ(100px);
-    background-color: red;
-}
-
-#cube .six {
-    width: 100px;
-    height: 200px;
-    line-height: 200px;
-    
-    -webkit-transform: rotateX(90deg) translateZ(100px);
-    background-color: silver;
-}
+                -webkit-transform: rotateX(-90deg) translateZ(-50px);
+                background-color: purple;
+            }
+            #cube .two {
+                width: 100px;
+                height: 50px;
+                line-height: 50px;
+                
+                -webkit-transform: translateZ(100px);
+                background-color: blue;
+            }
+            #cube .three {
+                width: 200px;
+                height: 50px;
+                line-height: 50px;
+                
+                -webkit-transform: rotateY(90deg);
+                background-color: green;
+            }
+            #cube .four {
+                width: 100px;
+                height: 50px;
+                line-height: 50px;
+                
+                -webkit-transform: rotateY(180deg) translateZ(100px);
+                background-color: black;
+            }
+            #cube .five {
+                width: 200px;
+                height: 50px;
+                line-height: 50px;
+                
+                -webkit-transform: rotateY(-90deg) translateZ(100px);
+                background-color: red;
+            }
+            #cube .six {
+                width: 100px;
+                height: 200px;
+                line-height: 200px;
+                
+                -webkit-transform: rotateX(90deg) translateZ(100px);
+                background-color: silver;
+            }

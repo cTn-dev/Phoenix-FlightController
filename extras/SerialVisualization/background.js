@@ -3,6 +3,6 @@ chrome.app.runtime.onLaunched.addListener(function() {
         frame: 'chrome',
         id: 'main-window',
         width: 1280,
-        height: 500
+        height: 720
     });
 });

@@ -1,7 +1,7 @@
 {
-    "name": "My Extension",
-    "description": "Testing Serial API.",
-    "version": "1.0",
+    "name": "Serial Data Visualization",
+    "description": "Application utilizing chrome.serial API",
+    "version": "0.1",
     "manifest_version": 2,
     "minimum_chrome_version": "23", 
     
