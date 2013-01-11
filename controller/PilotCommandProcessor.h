@@ -135,6 +135,12 @@ void processPilotCommands() {
             // raw stick input
             commandYaw = (TX_yaw * 0.0015);
         }      
+    } else {
+        // Pilot sticks didn't changed but commandYawAttitude is also accesed directly by kinematics
+        // so in theory it could change, and we need to handle this.
+        if (flightMode == ATTITUDE_MODE) {
+            commandYaw = commandYawAttitude;
+        }
     }
  
     commandRoll = TX_roll * 0.0015;

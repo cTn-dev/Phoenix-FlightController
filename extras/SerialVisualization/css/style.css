@@ -247,21 +247,19 @@ a:hover {
                 position: absolute;
                 
                 width: 40px;
-                height: 40px;            
+                height: 40px;  
+                
+                background-color: rgb(0, 0, 0);
             }
             #cube .motor.one {                
                 -webkit-transform: rotateX(90deg) translateX(-40px) translateY(-75px) translateZ(0px);
-                background-color: red;
             }
             #cube .motor.two {
-                -webkit-transform: rotateX(90deg) translateX(100px) translateY(-75px) translateZ(0px);
-                background-color: green;            
+                -webkit-transform: rotateX(90deg) translateX(100px) translateY(-75px) translateZ(0px);          
             }
             #cube .motor.three {
-                -webkit-transform: rotateX(90deg) translateX(100px) translateY(75px) translateZ(0px);
-                background-color: green;                
+                -webkit-transform: rotateX(90deg) translateX(100px) translateY(75px) translateZ(0px);               
             }
             #cube .motor.four {
-                -webkit-transform: rotateX(90deg) translateX(-40px) translateY(75px) translateZ(0px);
-                background-color: red;               
+                -webkit-transform: rotateX(90deg) translateX(-40px) translateY(75px) translateZ(0px);              
             }            

@@ -9,9 +9,12 @@ var graph_tx;
 var ar;
 var yaw_fix = 0.0;
 
+var cube
+
 $(document).ready(function() {    
     var port_picker = $('div#port-picker .port');
     var baud_picker = $('div#port-picker #baud');
+    cube = $('div#cube');
     
     $('div#port-picker a.refresh').click(function() {
         console.log("Available port list requested.");
@@ -202,7 +205,7 @@ function onCharRead(readInfo) {
         //ar[8] = 0; // YAW disabled
         
         
-        $('div#cube').css('-webkit-transform', 'rotateX(' + ar[7] + 'deg) rotateY(' + (ar[8] - yaw_fix) + 'deg) rotateZ(' + ar[6] + 'deg)');
+        cube.css('-webkit-transform', 'rotateX(' + ar[7] + 'deg) rotateY(' + (ar[8] - yaw_fix) + 'deg) rotateZ(' + ar[6] + 'deg)');
         
         // TX
         ar[9] = parseInt(ar[9]); // TX Roll
@@ -222,11 +225,15 @@ function onCharRead(readInfo) {
         ar[17] = parseInt(ar[17]);
         
         // Motors
-        ar[18] = parseInt(ar[18]);
-        ar[19] = parseInt(ar[19]);
-        ar[20] = parseInt(ar[20]);
-        ar[21] = parseInt(ar[21]);
+        ar[18] = parseInt((parseInt(ar[18]) - 1000) * 0.255);
+        ar[19] = parseInt((parseInt(ar[19]) - 1000) * 0.255);
+        ar[20] = parseInt((parseInt(ar[20]) - 1000) * 0.255);
+        ar[21] = parseInt((parseInt(ar[21]) - 1000) * 0.255);
         
+        $('.motor.one', cube).css('background-color', 'rgb(' + ar[18] + ', 0, 0)');
+        $('.motor.two', cube).css('background-color', 'rgb(' + ar[19] + ', 0, 0)');
+        $('.motor.three', cube).css('background-color', 'rgb(' + ar[20] + ', 0, 0)');
+        $('.motor.four', cube).css('background-color', 'rgb(' + ar[21]  + ', 0, 0)');
         
         
     }
