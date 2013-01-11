@@ -1,4 +1,5 @@
 var connectionId = -1;
+var port_list = true;
 
 var graph_gyro;
 var graph_accel;
@@ -9,39 +10,58 @@ var ar;
 var yaw_fix = 0.0;
 
 $(document).ready(function() {    
-    var port_picker = $('div#port-picker #port');
+    var port_picker = $('div#port-picker .port');
     var baud_picker = $('div#port-picker #baud');
     
     $('div#port-picker a.refresh').click(function() {
+        console.log("Available port list requested.");
         port_picker.html('');
 
         chrome.serial.getPorts(function(ports) {
-            ports.forEach(function(port) {
-                port_picker.append($("<option/>", {
-                    value: port,
-                    text: port
-                }));        
-            });
+            if (ports.length > 0) {
+                // Port list received
+                port_list = true;
+                port_picker.html('<select id="port"></select>');
+                
+                ports.forEach(function(port) {
+                    $('select', port_picker).append($("<option/>", {
+                        value: port,
+                        text: port
+                    }));        
+                });
+            } else {
+                // Looks like this check is kinda useless as the serial API doesn't seem to work in windows
+                // at all, requires v25>
+                // No serial ports found (do something/offer solution)
+                port_list = false;
+                console.log("No serial ports detected");
+                
+                port_picker.html('<input id="port" type="text" value=""></input>');
+                
+            }
         });
-
-        console.log("Available port list requested.");
     });
     // software click to refresh port picker select during first load
     $('div#port-picker a.refresh').click();
     
-    $('div#port-picker a.connect').toggle(function() {        
-        var selected_port = port_picker.val();
+    $('div#port-picker a.connect').toggle(function() {
+        if (port_list) {
+            var selected_port = $('select#port', port_picker).val();
+        } else {
+            var selected_port = $('input#port', port_picker).val();
+        }   
+
         var selected_baud = parseInt(baud_picker.val());
         
         chrome.serial.open(selected_port, {
             bitrate: selected_baud
         }, onOpen);
         
-        $(this).text('[ Disconnect ]');
+        $(this).text('Disconnect');
     }, function() {
         chrome.serial.close(connectionId, onClosed); // Seems to be broken
         
-        $(this).text('[ Connect ]');
+        $(this).text('Connect');
     });
     
     // Reset Z axis in 3D visualization
@@ -49,7 +69,8 @@ $(document).ready(function() {
         yaw_fix = ar[8];
     });
     
-    // Setup Graphs
+    
+    // =========== Setup Graphs ===========
     graph_gyro = new Rickshaw.Graph( {
         element: document.getElementById("graph_gyro"),
         width: 600,

@@ -29,8 +29,22 @@ a:hover {
         height: 22px;
         padding-bottom: 20px;
     }
+        #port-picker dl {
+            float: left;
+            width: 150px;
+        }
+        #port-picker dt {
+            float: left;
+            
+            width: 100px;
+            height: 25px;
+        }
+        #port-picker dd {
+            margin-left: 100px;
+            height: 25px;
+        }
         #port-picker select {
-            width: 80px;
+            width: 90px;
             height: 20px;
             line-height: 20px;
             
@@ -39,11 +53,43 @@ a:hover {
             
             border: 1px solid silver;
         }
-        
-        #port-picker a {
-            float: left;
+        #port-picker input {
+            width: 88px;
+            height: 20px;
             line-height: 20px;
+            
+            float: left;
+            margin-right: 10px;
+            
+            border: 1px solid silver;        
         }
+        #port-picker a {
+            display: block;
+            
+            width: 80px;
+            height: 18px;
+            border: 1px solid silver;
+            
+            line-height: 18px;
+            text-align: center;
+        }
+        #port-picker a.refresh {
+            background-color: #5569d0;
+            color: white;
+        }
+            #port-picker a.refresh:hover {
+                text-decoration: none;
+                background-color: #424d84;
+            }
+        #port-picker a.connect {
+            margin-top: 5px;
+            background-color: #51c7b5;
+            color: white;
+        }
+            #port-picker a.connect:hover {
+                text-decoration: none;
+                background-color: #2d7066;
+            }
     
     #main-wrapper .graph_title {
         font-size: 14px;
