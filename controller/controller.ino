@@ -27,13 +27,13 @@
     #define AltitudeHoldSonar
     
     // Critical sensors on board (gyro/accel)
-    #include "mpu6050.h"
+    #include <mpu6050.h>
     
     // Barometer
-    #include "Barometer_bmp085.h"
+    #include <Barometer_bmp085.h>
     
     // Sonar
-    #include "Sonar_srf04.h"
+    #include <Sonar_srf04.h>
     
     // Kinematics used
     #include "kinematics_CMP.h"
@@ -42,7 +42,7 @@
     #include <Receiver_teensy3_HW_PPM.h>
     
     // Motor / ESC setup
-    #include <Esc_teensy3_HW.h>    
+    #include <ESC_teensy3_HW.h>    
 #endif
 // == END of Hardware setup ==
 
