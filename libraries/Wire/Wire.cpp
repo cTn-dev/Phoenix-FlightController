@@ -82,10 +82,31 @@ void TwoWire::begin(void)
 //  I2C0_FLT     // I2C Programmable Input Glitch Filter register
 
 
+static volatile uint32_t i2c_timeoutc;
+uint8_t i2c_timeout(uint8_t init) {
+    if (init) i2c_timeoutc = 0;
+    else i2c_timeoutc++;
+    
+    if (i2c_timeoutc >= 100000) {
+        // timeout expired
+        i2c_timeoutc = 0;
+        
+        // We should reinitialize here
+        
+        return 1;
+    }
+    
+    return 0;
+}
+
 static void i2c_wait(void)
 {
-	while (!(I2C0_S & I2C_S_IICIF)) ; // wait
-	I2C0_S = I2C_S_IICIF;
+    i2c_timeout(1); // Start the counter
+    while (!(I2C0_S & I2C_S_IICIF)) { // wait
+        if (i2c_timeout(0)) break;  
+    };
+    
+    I2C0_S = I2C_S_IICIF;
 }
 
 void TwoWire::beginTransmission(uint8_t address)
