@@ -101,9 +101,9 @@ uint8_t i2c_timeout(uint8_t init) {
 
 static void i2c_wait(void)
 {
-    i2c_timeout(1); // Start the counter
+    // i2c_timeout(1); // Start the counter
     while (!(I2C0_S & I2C_S_IICIF)) { // wait
-        if (i2c_timeout(0)) break;  
+        // if (i2c_timeout(0)) break;  
     };
     
     I2C0_S = I2C_S_IICIF;
