@@ -12,6 +12,9 @@ class SensorArray {
         void initializeBaro();
         void readBaroSum();
         void evaluateBaroAltitude();
+        void initializeGPS();
+        void readGPS();
+        void evaluateGPS();
         
         // I2C stuff
         void i2c_write8 (int16_t deviceAddress, uint8_t registerAddress, int16_t registerValue) {

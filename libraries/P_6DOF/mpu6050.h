@@ -96,9 +96,9 @@ class MPU6050 {
             
             // The calibration output isn't really "working" for me, i will enter the X and Y axis
             // values manually.
-            accel_bias[0] = -125; // (8200 -8115) / 2 = 42
-            accel_bias[1] = 20; // (8450 -8010) / 2 = 220
-            accel_bias[2] = 800; // (7400 -9200) / 2 = -900
+            accel_bias[0] = -390;
+            accel_bias[1] = 150;
+            accel_bias[2] = 380;
             
             // Accel scale factor = 9.81 m/s^2 / scale
             // 9.81 / 8192 = 0.00119751
@@ -111,7 +111,10 @@ class MPU6050 {
             
             // Startup delay 
             delay(100);  
-
+            
+            // Enable auxiliary I2C bus bypass
+            sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_INT_PIN_CFG, 0x02); // I2C _BYPASS _EN 1
+            
             // Wake Up device and select GyroZ clock (better performance)
             sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_PWR_MGMT_1, MPU_CLK_SEL_PLLGYROZ);
             sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_PWR_MGMT_2, 0);    
@@ -172,7 +175,7 @@ class MPU6050 {
             
             accelX = (Wire.read() << 8) | Wire.read();
             accelY = (Wire.read() << 8) | Wire.read(); 
-            accelZ = (Wire.read() << 8) | Wire.read();            
+            accelZ = (Wire.read() << 8) | Wire.read();
         };        
         
         void readGyroSum() {
@@ -228,6 +231,16 @@ class MPU6050 {
             accelXsumAvr += accel_bias[0];
             accelYsumAvr += accel_bias[1];
             accelZsumAvr += accel_bias[2];
+            
+            /* used for debugging calibrated accel
+            Serial.print(accelXsumAvr);
+            Serial.write('\t');
+            Serial.print(accelYsumAvr);
+            Serial.write('\t');
+            Serial.print(accelZsumAvr);
+            Serial.write('\t');
+            Serial.println();            
+            */
             
             // Apply correct scaling (at this point accelNsumAvr reprensents +- 1g = 9.81 m/s^2)
             accelXsumAvr *= accelScaleFactor;

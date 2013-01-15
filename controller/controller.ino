@@ -24,17 +24,21 @@
 #ifdef Maggie
     // Features requested
     #define Accelerometer
-    #define AltitudeHoldBaro
+    //#define AltitudeHoldBaro
     #define AltitudeHoldSonar
+    //#define GPS
     
     // Critical sensors on board (gyro/accel)
     #include <mpu6050.h>
     
     // Barometer
-    #include <Barometer_bmp085.h>
+    //#include <Barometer_bmp085.h>
     
     // Sonar
     #include <Sonar_srf04.h>
+    
+    // GPS (ublox neo 6m)
+    //#include <GPS_ublox.h>
     
     // Kinematics used
     #include <kinematics_CMP.h>
@@ -166,6 +170,10 @@ void process100HzTask() {
         // Baro is being sampled every 10ms (because measuring pressure is slow) 
         sensors.readBaroSum();
     #endif    
+    
+    #ifdef GPS
+        sensors.readGPS();
+    #endif
     
     // Update kinematics with latest data
     kinematics_update(&accelXsumAvr, &accelYsumAvr, &accelZsumAvr, &gyroXsumRate, &gyroYsumRate, &gyroZsumRate);
