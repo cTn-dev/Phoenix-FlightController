@@ -25,7 +25,7 @@
     // Features requested
     #define Accelerometer
     #define Magnetometer
-    //#define AltitudeHoldBaro
+    #define AltitudeHoldBaro
     #define AltitudeHoldSonar
     //#define GPS
     
@@ -36,7 +36,7 @@
     #include <Magnetometer_HMC5883L.h>
     
     // Barometer
-    //#include <Barometer_bmp085.h>
+    #include <Barometer_ms5611.h>
     
     // Sonar
     #include <Sonar_srf04.h>
