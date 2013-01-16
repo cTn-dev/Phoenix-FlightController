@@ -9,6 +9,7 @@ class SensorArray {
         void evaluateAccel();
         void initializeMag();
         void readMag();
+        void evaluateMag();
         void initializeBaro();
         void readBaroSum();
         void evaluateBaroAltitude();

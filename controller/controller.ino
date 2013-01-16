@@ -24,12 +24,16 @@
 #ifdef Maggie
     // Features requested
     #define Accelerometer
+    #define Magnetometer
     //#define AltitudeHoldBaro
     #define AltitudeHoldSonar
     //#define GPS
     
     // Critical sensors on board (gyro/accel)
     #include <mpu6050.h>
+    
+    // Magnetometer
+    #include <Magnetometer_HMC5883L.h>
     
     // Barometer
     //#include <Barometer_bmp085.h>
@@ -92,6 +96,10 @@ void setup() {
     
     #ifdef Accelerometer
         sensors.initializeAccel();
+    #endif
+    
+    #ifdef Magnetometer
+        sensors.initializeMag();
     #endif
     
     #ifdef AltitudeHoldBaro
@@ -288,6 +296,10 @@ void process10HzTask() {
         // Request sonar reading
         readSonar();
     #endif    
+    
+    #ifdef Magnetometer
+        sensors.readMag();
+    #endif
     
     // Print itterations per 100ms
     #ifdef DISPLAY_ITTERATIONS

@@ -27,6 +27,8 @@
 
 #define BUFFER_LENGTH 32
 
+extern "C" void i2c0_isr(void);
+
 class TwoWire : public Stream
 {
   private:
@@ -40,10 +42,11 @@ class TwoWire : public Stream
     static uint8_t txBufferLength;
 
     static uint8_t transmitting;
-    static void (*user_onRequest)(void);
-    static void (*user_onReceive)(int);
     static void onRequestService(void);
     static void onReceiveService(uint8_t*, int);
+    static void (*user_onRequest)(void);
+    static void (*user_onReceive)(int);
+    friend void i2c0_isr(void);
   public:
     TwoWire();
     void begin();

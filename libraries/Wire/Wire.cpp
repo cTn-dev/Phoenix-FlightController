@@ -22,8 +22,9 @@
 #if defined(__MK20DX128__)
 
 #include "mk20dx128.h"
+#include <string.h> // for memcpy
 #include "core_pins.h"
-#include "HardwareSerial.h"
+//#include "HardwareSerial.h"
 #include "Wire.h"
 
 uint8_t TwoWire::rxBuffer[BUFFER_LENGTH];
@@ -31,28 +32,31 @@ uint8_t TwoWire::rxBufferIndex = 0;
 uint8_t TwoWire::rxBufferLength = 0;
 //uint8_t TwoWire::txAddress = 0;
 uint8_t TwoWire::txBuffer[BUFFER_LENGTH+1];
-//uint8_t TwoWire::txBufferIndex = 0;
+uint8_t TwoWire::txBufferIndex = 0;
 uint8_t TwoWire::txBufferLength = 0;
 uint8_t TwoWire::transmitting = 0;
-//void (*TwoWire::user_onRequest)(void);
-//void (*TwoWire::user_onReceive)(int);
+void (*TwoWire::user_onRequest)(void) = NULL;
+void (*TwoWire::user_onReceive)(int) = NULL;
 
 
 TwoWire::TwoWire()
 {
 }
 
+static uint8_t slave_mode = 0;
+
 void TwoWire::begin(void)
 {
 	//serial_begin(BAUD2DIV(115200));
 	//serial_print("\nWire Begin\n");
 
+	slave_mode = 0;
 	SIM_SCGC4 |= SIM_SCGC4_I2C0; // TODO: use bitband
 	// On Teensy 3.0 external pullup resistors *MUST* be used
 	// the PORT_PCR_PE bit is ignored when in I2C mode
 	// I2C will not work at all without pullup resistors
-	CORE_PIN18_CONFIG = PORT_PCR_MUX(2)|PORT_PCR_PE|PORT_PCR_PS;
-	CORE_PIN19_CONFIG = PORT_PCR_MUX(2)|PORT_PCR_PE|PORT_PCR_PS;
+	CORE_PIN18_CONFIG = PORT_PCR_MUX(2)|PORT_PCR_ODE;
+	CORE_PIN19_CONFIG = PORT_PCR_MUX(2)|PORT_PCR_ODE;
 #if F_BUS == 48000000
     I2C0_F = 0x00;
 	// I2C0_F = 0x27; // 100 kHz (prescaler 480)
@@ -72,6 +76,96 @@ void TwoWire::begin(void)
 	I2C0_C1 = I2C_C1_IICEN;
 }
 
+
+void TwoWire::begin(uint8_t address)
+{
+	begin();
+	I2C0_A1 = address << 1;
+	slave_mode = 1;
+	I2C0_C1 = I2C_C1_IICEN | I2C_C1_IICIE;
+	NVIC_ENABLE_IRQ(IRQ_I2C0);
+}
+
+void i2c0_isr(void)
+{
+	uint8_t status, c1, data;
+	static uint8_t receiving=0;
+
+	status = I2C0_S;
+	//serial_print(".");
+	if (status & I2C_S_ARBL) {
+		// Arbitration Lost
+		I2C0_S = I2C_S_ARBL;
+		//serial_print("a");
+		if (receiving && TwoWire::rxBufferLength > 0) {
+			// TODO: does this detect the STOP condition in slave receive mode?
+
+
+		}
+		if (!(status & I2C_S_IAAS)) return;
+	}
+	if (status & I2C_S_IAAS) {
+		//serial_print("\n");
+		// Addressed As A Slave
+		if (status & I2C_S_SRW) {
+			//serial_print("T");
+			// Begin Slave Transmit
+			receiving = 0;
+			TwoWire::txBufferLength = 0;
+			if (TwoWire::user_onRequest != NULL) {
+				TwoWire::user_onRequest();
+			}
+			if (TwoWire::txBufferLength == 0) {
+				// is this correct, transmitting a single zero
+				// when we should send nothing?  Arduino's AVR
+				// implementation does this, but is it ok?
+				TwoWire::txBufferLength = 1;
+				TwoWire::txBuffer[0] = 0;
+			}
+			I2C0_C1 = I2C_C1_IICEN | I2C_C1_IICIE | I2C_C1_TX;
+			I2C0_D = TwoWire::txBuffer[0];
+			TwoWire::txBufferIndex = 1;
+		} else {
+			// Begin Slave Receive
+			//serial_print("R");
+			receiving = 1;
+			TwoWire::rxBufferLength = 0;
+			I2C0_C1 = I2C_C1_IICEN | I2C_C1_IICIE;
+			data = I2C0_D;
+		}
+		I2C0_S = I2C_S_IICIF;
+		return;
+	}
+	c1 = I2C0_C1;
+	if (c1 & I2C_C1_TX) {
+		// Continue Slave Transmit
+		//serial_print("t");
+		if ((status & I2C_S_RXAK) == 0) {
+			//serial_print(".");
+			// Master ACK'd previous byte
+			if (TwoWire::txBufferIndex < TwoWire::txBufferLength) {
+				I2C0_D = TwoWire::txBuffer[TwoWire::txBufferIndex++];
+			} else {
+				I2C0_D = 0;
+			}
+			I2C0_C1 = I2C_C1_IICEN | I2C_C1_IICIE | I2C_C1_TX;
+		} else {
+			//serial_print("*");
+			// Master did not ACK previous byte
+			I2C0_C1 = I2C_C1_IICEN | I2C_C1_IICIE;
+			data = I2C0_D;
+		}
+	} else {
+		// Continue Slave Receive
+		data = I2C0_D;
+		//serial_phex(data);
+		if (TwoWire::rxBufferLength < BUFFER_LENGTH && receiving) {
+			TwoWire::rxBuffer[TwoWire::rxBufferLength++] = data;
+		}
+	}
+	I2C0_S = I2C_S_IICIF;
+}
+
 // Chapter 44: Inter-Integrated Circuit (I2C) - Page 1012
 //  I2C0_A1      // I2C Address Register 1
 //  I2C0_F       // I2C Frequency Divider register
@@ -82,31 +176,10 @@ void TwoWire::begin(void)
 //  I2C0_FLT     // I2C Programmable Input Glitch Filter register
 
 
-static volatile uint32_t i2c_timeoutc;
-uint8_t i2c_timeout(uint8_t init) {
-    if (init) i2c_timeoutc = 0;
-    else i2c_timeoutc++;
-    
-    if (i2c_timeoutc >= 100000) {
-        // timeout expired
-        i2c_timeoutc = 0;
-        
-        // We should reinitialize here
-        
-        return 1;
-    }
-    
-    return 0;
-}
-
 static void i2c_wait(void)
 {
-    // i2c_timeout(1); // Start the counter
-    while (!(I2C0_S & I2C_S_IICIF)) { // wait
-        // if (i2c_timeout(0)) break;  
-    };
-    
-    I2C0_S = I2C_S_IICIF;
+	while (!(I2C0_S & I2C_S_IICIF)) ; // wait
+	I2C0_S = I2C_S_IICIF;
 }
 
 void TwoWire::beginTransmission(uint8_t address)
@@ -118,26 +191,28 @@ void TwoWire::beginTransmission(uint8_t address)
 
 size_t TwoWire::write(uint8_t data)
 {
-	if (transmitting) {
+	if (transmitting || slave_mode) {
 		if (txBufferLength >= BUFFER_LENGTH+1) {
 			setWriteError();
 			return 0;
 		}
 		txBuffer[txBufferLength++] = data;
-	} else {
-		// TODO: implement slave mode
+		return 1;
 	}
+	return 0;
 }
 
 size_t TwoWire::write(const uint8_t *data, size_t quantity)
 {
-	if (transmitting) {
-		while (quantity > 0) {
-			write(*data++);
-			quantity--;
+	if (transmitting || slave_mode) {
+		size_t avail = BUFFER_LENGTH+1 - txBufferLength;
+		if (quantity > avail) {
+			quantity = avail;
+			setWriteError();
 		}
-	} else {
-		// TODO: implement slave mode
+		memcpy(txBuffer + txBufferLength, data, quantity);
+		txBufferLength += quantity;
+		return quantity;
 	}
 	return 0;
 }
@@ -149,7 +224,7 @@ void TwoWire::flush(void)
 
 uint8_t TwoWire::endTransmission(uint8_t sendStop)
 {
-	uint8_t i, status;
+	uint8_t i, status, ret=0;
 
 	// clear the status flags
 	I2C0_S = I2C_S_IICIF | I2C_S_ARBL;
@@ -170,11 +245,17 @@ uint8_t TwoWire::endTransmission(uint8_t sendStop)
 		status = I2C0_S;
 		if (status & I2C_S_RXAK) {
 			// the slave device did not acknowledge
+			if (i == 0) {
+				ret = 2; // 2:received NACK on transmit of address
+			} else {
+				ret = 3; // 3:received NACK on transmit of data 
+			}
 			break;
 		}
 		if ((status & I2C_S_ARBL)) {
 			// we lost bus arbitration to another master
 			// TODO: what is the proper thing to do here??
+			ret = 4; // 4:other error 
 			break;
 		}
 	}
@@ -184,7 +265,7 @@ uint8_t TwoWire::endTransmission(uint8_t sendStop)
 		// TODO: do we wait for this somehow?
 	}
 	transmitting = 0;
-	return 0;
+	return ret;
 }
 
 
@@ -262,6 +343,9 @@ int TwoWire::peek(void)
 
 
 
+
+// alternate function prototypes
+
 uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity)
 {
   return requestFrom((uint8_t)address, (uint8_t)quantity, (uint8_t)true);
@@ -287,12 +371,24 @@ uint8_t TwoWire::endTransmission(void)
 	return endTransmission(true);
 }
 
-void i2c0_isr(void)
+void TwoWire::begin(int address)
 {
+	begin((uint8_t)address);
+}
+
+void TwoWire::onReceive( void (*function)(int) )
+{
+	user_onReceive = function;
+}
+
+void TwoWire::onRequest( void (*function)(void) )
+{
+	user_onRequest = function;
 }
 
 //TwoWire Wire = TwoWire();
 TwoWire Wire;
+
 
 #endif // __MK20DX128__
 
