@@ -44,6 +44,8 @@ TwoWire::TwoWire()
 }
 
 static uint8_t slave_mode = 0;
+static uint8_t irqcount=0;
+
 
 void TwoWire::begin(void)
 {
@@ -55,8 +57,12 @@ void TwoWire::begin(void)
 	// On Teensy 3.0 external pullup resistors *MUST* be used
 	// the PORT_PCR_PE bit is ignored when in I2C mode
 	// I2C will not work at all without pullup resistors
-	CORE_PIN18_CONFIG = PORT_PCR_MUX(2)|PORT_PCR_ODE;
-	CORE_PIN19_CONFIG = PORT_PCR_MUX(2)|PORT_PCR_ODE;
+	// It might seem like setting PORT_PCR_PE & PORT_PCR_PS
+	// would enable pullup resistors.  However, there seems
+	// to be a bug in chip while I2C is enabled, where setting
+	// those causes the port to be driven strongly high.
+	CORE_PIN18_CONFIG = PORT_PCR_MUX(2)|PORT_PCR_ODE|PORT_PCR_SRE|PORT_PCR_DSE;
+	CORE_PIN19_CONFIG = PORT_PCR_MUX(2)|PORT_PCR_ODE|PORT_PCR_SRE|PORT_PCR_DSE;
 #if F_BUS == 48000000
     I2C0_F = 0x00;
 	// I2C0_F = 0x27; // 100 kHz (prescaler 480)
@@ -74,6 +80,8 @@ void TwoWire::begin(void)
 #endif
 	I2C0_C2 = I2C_C2_HDRS;
 	I2C0_C1 = I2C_C1_IICEN;
+	//pinMode(3, OUTPUT);
+	//pinMode(4, OUTPUT);
 }
 
 
@@ -157,14 +165,41 @@ void i2c0_isr(void)
 		}
 	} else {
 		// Continue Slave Receive
+		irqcount = 0;
+		attachInterrupt(18, TwoWire::sda_rising_isr, RISING);
+		//digitalWriteFast(4, HIGH);
 		data = I2C0_D;
 		//serial_phex(data);
 		if (TwoWire::rxBufferLength < BUFFER_LENGTH && receiving) {
 			TwoWire::rxBuffer[TwoWire::rxBufferLength++] = data;
 		}
+		//digitalWriteFast(4, LOW);
 	}
 	I2C0_S = I2C_S_IICIF;
 }
+
+// Setects the stop condition that terminates a slave receive transfer.
+// If anyone from Freescale ever reads this code, please email me at
+// paul@pjrc.com and explain how I can respond to the I2C stop without
+// inefficient polling or a horrible pin change interrupt hack?!
+void TwoWire::sda_rising_isr(void)
+{
+	//digitalWrite(3, HIGH);
+	if (!(I2C0_S & I2C_S_BUSY)) {
+		detachInterrupt(18);
+		if (user_onReceive != NULL) {
+			rxBufferIndex = 0;
+			user_onReceive(rxBufferLength);
+		}
+		//delayMicroseconds(100);
+	} else {
+		if (++irqcount >= 2) {
+			detachInterrupt(18);
+		}
+	}
+	//digitalWrite(3, LOW);
+}
+
 
 // Chapter 44: Inter-Integrated Circuit (I2C) - Page 1012
 //  I2C0_A1      // I2C Address Register 1

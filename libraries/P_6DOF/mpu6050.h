@@ -133,7 +133,7 @@ class MPU6050 {
 
             // Initial delay after proper configuration
             // let sensors heat up (especially gyro)
-            delay(2000);
+            delay(1500);
         };
         
         // ~1280ms

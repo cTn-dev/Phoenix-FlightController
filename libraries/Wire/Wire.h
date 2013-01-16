@@ -23,7 +23,7 @@
 #define TwoWire_h
 
 #include <inttypes.h>
-#include "Stream.h"
+#include "Arduino.h"
 
 #define BUFFER_LENGTH 32
 
@@ -46,6 +46,7 @@ class TwoWire : public Stream
     static void onReceiveService(uint8_t*, int);
     static void (*user_onRequest)(void);
     static void (*user_onReceive)(int);
+    static void sda_rising_isr(void);
     friend void i2c0_isr(void);
   public:
     TwoWire();
