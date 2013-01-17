@@ -27,7 +27,7 @@
     #define Magnetometer
     #define AltitudeHoldBaro
     #define AltitudeHoldSonar
-    //#define GPS
+    #define GPS
     
     // Critical sensors on board (gyro/accel)
     #include <mpu6050.h>
@@ -42,7 +42,7 @@
     #include <Sonar_srf04.h>
     
     // GPS (ublox neo 6m)
-    //#include <GPS_ublox.h>
+    #include <GPS_ublox.h>
     
     // Kinematics used
     #include <kinematics_CMP.h>
@@ -84,7 +84,11 @@ void setup() {
     pinMode(LED_ORIENTATION, OUTPUT); // orientation lights
     
     // Initialize serial communication
-    Serial.begin(115200);   
+    Serial.begin(115200);
+
+    #ifdef GPS
+        Serial2.begin(38400);
+    #endif
  
     // Join i2c bus as master
     Wire.begin();
