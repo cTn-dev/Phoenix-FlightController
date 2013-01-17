@@ -299,6 +299,7 @@ void process10HzTask() {
     
     #ifdef Magnetometer
         sensors.readMag();
+        sensors.evaluateMag();
     #endif
     
     // Print itterations per 100ms

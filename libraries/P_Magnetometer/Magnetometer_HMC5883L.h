@@ -1,5 +1,6 @@
 /*  HMC5883L magnetometer integration in C++
 
+    Needs testing
 */
 
 #define HMC5883L_ADDRESS            0x1E
@@ -12,7 +13,9 @@
 #define HMC5883L_MODE_SINGLE        0x01
 #define HMC5883L_MODE_IDLE          0x02
 
-int16_t magX, magY, magZ;
+int16_t magXraw, magYraw, magZraw;
+double magX, magY;
+double magHeadingX, magHeadingY;
 
 class HMC5883L {
     public:
@@ -25,7 +28,7 @@ class HMC5883L {
             sensors.i2c_write8(HMC5883L_ADDRESS, HMC5883L_RA_CONFIG_B, 0x20);
             
             // Start in single mode
-            sensors.i2c_write8(HMC5883L_ADDRESS, HMC5883L_RA_MODE, HMC5883L_MODE_CONTINUOUS); 
+            sensors.i2c_write8(HMC5883L_ADDRESS, HMC5883L_RA_MODE, HMC5883L_MODE_SINGLE);           
         };
         
         void readMagRaw() {
@@ -35,21 +38,27 @@ class HMC5883L {
 
             Wire.requestFrom(HMC5883L_ADDRESS, 6);
             
-            magX = (Wire.read() << 8) | Wire.read();
-            magZ = (Wire.read() << 8) | Wire.read();
-            magY = (Wire.read() << 8) | Wire.read();
+            magXraw = (Wire.read() << 8) | Wire.read();
+            magZraw = (Wire.read() << 8) | Wire.read();
+            magYraw = (Wire.read() << 8) | Wire.read();
             
-            /*
-            Serial.print(magX);
-            Serial.write(', ');
-            Serial.print(magY);
-            Serial.write(', ');
-            Serial.print(magZ);
-            Serial.println(); 
-            */
+            // start single conversion
+            sensors.i2c_write8(HMC5883L_ADDRESS, HMC5883L_RA_MODE, HMC5883L_MODE_SINGLE);            
         };
         
-        void evaluateMag() {
+        void evaluateMag() {            
+            const double cosRoll =  cos(kinematicsAngleX);
+            const double sinRoll =  sin(kinematicsAngleX);
+            const double cosPitch = cos(kinematicsAngleY);
+            const double sinPitch = sin(kinematicsAngleY);  
+
+            magX = magXraw * cosPitch + magYraw * sinRoll * sinPitch + magZraw * cosRoll * sinPitch;
+            magY = magYraw * cosRoll - magZraw * sinRoll;
+
+            const double norm = sqrt(magX * magX + magY * magY);
+            
+            magHeadingX = magX / norm;
+            magHeadingY = -magY / norm;           
         };
 };
 
@@ -61,4 +70,8 @@ void SensorArray::initializeMag() {
 
 void SensorArray::readMag() {
     hmc5883l.readMagRaw();
+}
+
+void SensorArray::evaluateMag() {
+    hmc5883l.evaluateMag();
 }
