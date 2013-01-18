@@ -83,10 +83,10 @@ class MPU6050 {
     public: 
         // Constructor
         MPU6050() {
-            // Range = +1000 to -1000 (2000) 1000dps
-            // 16 bit scale (2^16) = 65536
-            // to get the scale factor in radians = radians(2000.0 / 65536.0)
-            gyroScaleFactor = radians(2000.0 / 65536.0);
+            // Range = +-1000 dps
+            // Scale factor = positive range / positive sensitivity
+            // or you can use full range / full sensitivity, which will result in the same output.
+            gyroScaleFactor = radians(1000.0 / 32768.0); // 0.030517578125
             
             // Manually defined accel bias
             // To calculate accel bias measure maximum positive and maximum negative value for axis
