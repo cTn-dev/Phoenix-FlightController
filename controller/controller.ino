@@ -88,15 +88,26 @@ void setup() {
     pinMode(LED_ORIENTATION, OUTPUT); // orientation lights
     
     // Initialize serial communication
-    Serial.begin(115200);
+    Serial.begin(115200); // Virtual USB Serial on teensy 3.0 is always 12 Mbit/sec (can be initialized with baud rate 0)
 
     #ifdef GPS
         Serial2.begin(38400);
     #endif
  
-    // Join i2c bus as master
+    // Join I2C bus as master
     Wire.begin();
 
+    // I2C bus hardware specific settings
+    #if defined(__MK20DX128__)
+        I2C0_F = 0x00; // 2.4 MHz (prescaler 20)
+        I2C0_FLT = 4;
+    #endif
+    
+    #if defined(__AVR__)
+        TWBR = 12; // 400 KHz (maximum supported frequency)
+    #endif
+    
+    
     initializeESC();    
     initializeReceiver();
     

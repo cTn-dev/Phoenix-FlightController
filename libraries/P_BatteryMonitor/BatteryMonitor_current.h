@@ -1,3 +1,7 @@
+/*  Current monitor based on ACS758X 100B Hall Effect Linear Current Sensor
+
+    Could use some optimizations and better documentation.
+*/
 int16_t current;
 double currentAmps;
 double batteryMonitorCapacityUsed = 0.0;
