@@ -1,5 +1,6 @@
 var connectionId = -1;
 var port_list = true;
+var reading = false;
 
 var graph_gyro;
 var graph_accel;
@@ -60,9 +61,13 @@ $(document).ready(function() {
             bitrate: selected_baud
         }, onOpen);
         
+        reading = true;
+        
         $(this).text('Disconnect');
     }, function() {
-        chrome.serial.close(connectionId, onClosed); // Seems to be broken
+        chrome.serial.close(connectionId, onClosed);
+        
+        reading = false;
         
         $(this).text('Connect');
     });
@@ -205,7 +210,7 @@ function onCharRead(readInfo) {
         //ar[7] = 0; // Pitch disabled
         //ar[8] = 0; // YAW disabled
         
-        $('#cube').css('-webkit-transform', 'rotateY(' +(ar[8] - yaw_fix) + 'deg)');
+        cube.css('-webkit-transform', 'rotateY(' +(ar[8] - yaw_fix) + 'deg)');
         $('#cubePITCH', cube).css('-webkit-transform', 'rotateX(' + ar[7] + 'deg)');
         $('#cubeROLL', cube).css('-webkit-transform', 'rotateZ(' + ar[6] + 'deg)');        
         
@@ -236,10 +241,9 @@ function onCharRead(readInfo) {
         $('.motor.two', cube).css('background-color', 'rgb(' + ar[19] + ', 0, 0)');
         $('.motor.three', cube).css('background-color', 'rgb(' + ar[20] + ', 0, 0)');
         $('.motor.four', cube).css('background-color', 'rgb(' + ar[21]  + ', 0, 0)');
-        
-        
     }
-    chrome.serial.read(connectionId, 1000, onCharRead);
+    
+    if (reading) chrome.serial.read(connectionId, 1000, onCharRead);
 }
 
 var ab2str = function(buf) {
