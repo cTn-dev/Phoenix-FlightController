@@ -96,9 +96,9 @@ class MPU6050 {
             
             // The calibration output isn't really "working" for me, i will enter the X and Y axis
             // values manually.
-            accel_bias[0] = -390;
-            accel_bias[1] = 150;
-            accel_bias[2] = 380;
+            accel_bias[0] = -425;
+            accel_bias[1] = 260;
+            accel_bias[2] = 400;
             
             // Accel scale factor = 9.81 m/s^2 / scale
             // 9.81 / 8192 = 0.00119751
@@ -152,6 +152,41 @@ class MPU6050 {
             gyro_offset[0] = -xSum / count;
             gyro_offset[1] = -ySum / count;
             gyro_offset[2] = -zSum / count; 
+        };
+        
+        // ~1280ms (only runs when requested)
+        void calibrate_accel() {
+            uint8_t i, count = 128;
+            int32_t xSum = 0, ySum = 0, zSum = 0;
+
+            for(i = 0; i < count; i++) {
+                readAccelRaw();
+                xSum += accelX;
+                ySum += accelY;
+                zSum += accelZ;
+                delay(10);
+            }
+            
+            accel_bias[0] = xSum / count;
+            accel_bias[1] = ySum / count;
+            accel_bias[2] = zSum / count;
+
+            // Code will stop here, printing out the calibration data in serial console.
+            // Re-Calibrating each loop.
+            // Offsets to the values returned on a flat surface are meant to be either hardcoded during initialization
+            // or stored inside eeprom.
+            while (1) {
+                Serial.print(accel_bias[0]);
+                Serial.write('\t');
+                Serial.print(accel_bias[1]);
+                Serial.write('\t');
+                Serial.print(accel_bias[2]);
+                Serial.write('\t');
+                Serial.println();
+                
+                delay(5000);
+                calibrate_accel();
+            }
         };
         
         void readGyroRaw() {
@@ -289,6 +324,8 @@ MPU6050 mpu;
 void SensorArray::initializeGyro() {
     mpu.initialize();
     mpu.calibrate_gyro();
+    
+    //mpu.calibrate_accel(); // used only during initial sensor setup (programmers assistance required)
 }
 
 void SensorArray::initializeAccel() {
