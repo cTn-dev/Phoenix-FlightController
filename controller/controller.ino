@@ -27,6 +27,7 @@
     #define Magnetometer
     #define AltitudeHoldBaro
     #define AltitudeHoldSonar
+    #define BatteryMonitorCurrent
     #define GPS
     
     // Critical sensors on board (gyro/accel)
@@ -43,6 +44,9 @@
     
     // GPS (ublox neo 6m)
     #include <GPS_ublox.h>
+    
+    // Current sensor
+    #include <BatteryMonitor_current.h>
     
     // Kinematics used
     #include <kinematics_CMP.h>
@@ -306,6 +310,10 @@ void process10HzTask() {
         sensors.evaluateMag();
     #endif
     
+    #ifdef BatteryMonitorCurrent
+        readBatteryMonitorCurrent();
+    #endif
+    
     // Print itterations per 100ms
     #ifdef DISPLAY_ITTERATIONS
         Serial.println(itterations);
@@ -319,7 +327,7 @@ void process1HzTask() {
     // Blink LED to indicated activity
     Alive_LED_state = !Alive_LED_state;
     digitalWrite(LED_PIN, Alive_LED_state);
-
+    
     // Orientation ligts
     // also displaying armed / dis-armed status
     if (armed) {
