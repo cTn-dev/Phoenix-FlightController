@@ -185,7 +185,13 @@ a:hover {
             width: 100px;
             
             -webkit-transform-style: preserve-3d;
-        }  
+        }
+            #cubePITCH {
+                -webkit-transform-style: preserve-3d;
+            }
+            #cubeROLL {
+                -webkit-transform-style: preserve-3d;
+            }
             #cube .face {
                 position: absolute;
                 

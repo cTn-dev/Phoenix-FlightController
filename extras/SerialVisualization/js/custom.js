@@ -70,6 +70,7 @@ $(document).ready(function() {
     // Reset Z axis in 3D visualization
     $('div#interactive_block > a.reset').click(function() {
         yaw_fix = ar[8];
+        console.log("YAW reset to 0");
     });
     
     
@@ -204,8 +205,9 @@ function onCharRead(readInfo) {
         //ar[7] = 0; // Pitch disabled
         //ar[8] = 0; // YAW disabled
         
-        
-        cube.css('-webkit-transform', 'rotateX(' + ar[7] + 'deg) rotateY(' + (ar[8] - yaw_fix) + 'deg) rotateZ(' + ar[6] + 'deg)');
+        $('#cube').css('-webkit-transform', 'rotateY(' +(ar[8] - yaw_fix) + 'deg)');
+        $('#cubePITCH', cube).css('-webkit-transform', 'rotateX(' + ar[7] + 'deg)');
+        $('#cubeROLL', cube).css('-webkit-transform', 'rotateZ(' + ar[6] + 'deg)');        
         
         // TX
         ar[9] = parseInt(ar[9]); // TX Roll
