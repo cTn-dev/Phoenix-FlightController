@@ -74,6 +74,15 @@ double accelXsum, accelYsum, accelZsum;
 double gyroXsumRate, gyroYsumRate, gyroZsumRate;
 double accelXsumAvr, accelYsumAvr, accelZsumAvr;
 
+// New data storage
+int16_t gyroRaw[3];
+double gyroSum[3];
+double gyro[3];
+
+int16_t accelRaw[3];
+double accelSum[3];
+double accel[3];
+
 class MPU6050 {
     public: 
         // Constructor
@@ -89,15 +98,13 @@ class MPU6050 {
             // accelXpositive and accelXnegative should be an average of at least 500 samples
             // biasX = (accelXpositive + accelXnegative) / 2;
             
-            // The calibration output isn't really "working" for me, i will enter the X and Y axis
-            // values manually.
+            // Hardcoded accel bias
             accel_bias[0] = -425;
             accel_bias[1] = 260;
             accel_bias[2] = 400;
             
             // Accel scale factor = 9.81 m/s^2 / scale
-            // 9.81 / 8192 = 0.00119751
-            accelScaleFactor = 9.81 / 8192.0;
+            accelScaleFactor = 9.81 / 8192.0; // 0.001197509765625
         };
         
         void initialize() {
@@ -108,6 +115,8 @@ class MPU6050 {
             delay(100);  
             
             // Enable auxiliary I2C bus bypass
+            // *NOT* Necessary for all setups, but some boards have magnetometer attached to the auxiliary I2C bus
+            // and without this settings magnetometer won't be accessible.
             sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_INT_PIN_CFG, 0x02); // I2C _BYPASS _EN 1
             
             // Wake Up device and select GyroZ clock (better performance)
@@ -117,7 +126,7 @@ class MPU6050 {
             // Sample rate = 1kHz 
             sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_SMPLRT_DIV, 0x00);
 
-            // FS & DLPF   FS = 1000 degrees/s (dps), DLPF = 42Hz (low pass filter)
+            // FS & DLPF, FS = 1000 degrees/s (dps), DLPF = 42Hz (low pass filter)
             sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_CONFIG, BITS_DLPF_CFG_42HZ); 
 
             // Gyro scale 1000 degrees/s (dps)
