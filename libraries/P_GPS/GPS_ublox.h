@@ -123,8 +123,8 @@ class UBLOX {
         void process_data() {
             if (UBX_class == 0x01) { // NAV
                 if (UBX_id == 0x02) { // NAV:POSLLH
-                    gpsData.lat = ubloxMessage.nav_posllh.lat;
-                    gpsData.lon = ubloxMessage.nav_posllh.lon;
+                    gpsData.lat = ubloxMessage.nav_posllh.lat; // +- 90 deg  - degrees multiplied by 10000000
+                    gpsData.lon = ubloxMessage.nav_posllh.lon; // +- 180 deg - degrees multiplied by 10000000
                     gpsData.height = ubloxMessage.nav_posllh.height;
                     gpsData.accuracy = ubloxMessage.nav_posllh.hAcc;
                     gpsData.fixtime = ubloxMessage.nav_posllh.iTow;
