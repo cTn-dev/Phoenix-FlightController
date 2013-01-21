@@ -1,18 +1,5 @@
 Flight Controller based on K20DX128 (Teensy 3.0)
 =================================================
-
-I2C Setup
----------
-This is required for getting higher data reading speeds (mostly for gyro and accel)
-  - In Arduino/libraries/Wire/Wire.cpp change I2C0_F = 0x27; to I2C0_F = 0x00;
-  - I also added the modified Wire library to the repository
-  
-This will set the I2C Bus Speed to FM (Fast-mode), reaching speeds up to 2.4Mbit/s
-By having faster I2C Bus to work with, we get a "spare" time between sensor reads
-which will give us quite a bit of spare computing time that we can utilize elsewhere
-(6 registers for gyro + 6 registers for) = 12 bytes = 96 bits 
-at 1Khz update rate that is 1000 * 96 bits = 96 000 bits/s + [protocol overhead]
-
 PIN setup (Teensy 3.0 pin numbering)
 ------------------------------------
   - I2C SCL 19
@@ -27,12 +14,15 @@ PIN setup (Teensy 3.0 pin numbering)
   
   - Orientation lights / Armed-Disarmed indicator 14
   
+  - Battery Monitor (current sensor) 17
+  
 Filters, kinematics, data handling
 ----------------------------------
   - Initial raw data from sensors (read every 1ms = 1000Hz) is being averaged by a simple averaging filter
   - Averaged data from sensors are being processed every 10ms (100Hz)
   - By default i am using my own complementary kinematics algorythm
   - ARG kinematics (from aeroquad) is also supported (can be enabled by simple include change)
+  - DCM kinematics (from FreeIMU)
   - Flight controller supports 2 modes
     - Rate | (ACRO) gyro only
     - Attitude | gyro with accel corrections
