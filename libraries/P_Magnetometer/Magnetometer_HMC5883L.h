@@ -13,8 +13,6 @@
 #define HMC5883L_MODE_SINGLE        0x01
 #define HMC5883L_MODE_IDLE          0x02
 
-int16_t magXraw, magYraw, magZraw;
-double magX, magY;
 double magHeadingX, magHeadingY;
 
 class HMC5883L {
@@ -38,9 +36,9 @@ class HMC5883L {
 
             Wire.requestFrom(HMC5883L_ADDRESS, 6);
             
-            magXraw = (Wire.read() << 8) | Wire.read();
-            magZraw = (Wire.read() << 8) | Wire.read();
-            magYraw = (Wire.read() << 8) | Wire.read();
+            magRaw[XAXIS] = (Wire.read() << 8) | Wire.read();
+            magRaw[ZAXIS] = (Wire.read() << 8) | Wire.read();
+            magRaw[YAXIS] = (Wire.read() << 8) | Wire.read();
             
             // start single conversion
             sensors.i2c_write8(HMC5883L_ADDRESS, HMC5883L_RA_MODE, HMC5883L_MODE_SINGLE);            
@@ -52,14 +50,18 @@ class HMC5883L {
             const double cosPitch = cos(kinematicsAngleY);
             const double sinPitch = sin(kinematicsAngleY);  
 
-            magX = magXraw * cosPitch + magYraw * sinRoll * sinPitch + magZraw * cosRoll * sinPitch;
-            magY = magYraw * cosRoll - magZraw * sinRoll;
+            magX = magRaw[XAXIS] * cosPitch + magRaw[YAXIS] * sinRoll * sinPitch + magRaw[ZAXIS] * cosRoll * sinPitch;
+            magY = magRaw[YAXIS] * cosRoll - magRaw[ZAXIS] * sinRoll;
 
             const double norm = sqrt(magX * magX + magY * magY);
             
             magHeadingX = magX / norm;
             magHeadingY = -magY / norm;           
         };
+        
+    private:
+        int16_t magRaw[3];
+        double magX, magY;
 };
 
 HMC5883L hmc5883l;

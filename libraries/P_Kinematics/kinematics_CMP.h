@@ -12,7 +12,7 @@
 
 unsigned long kinematics_timer;
 
-void kinematics_update(double* accelX, double* accelY, double* accelZ, double* gyroX, double* gyroY, double* gyroZ) {
+void kinematics_update(double* gyroX, double* gyroY, double* gyroZ, double* accelX, double* accelY, double* accelZ) {
 
     // Normalize accel values
     double norm = sqrt(*accelX * *accelX + *accelY * *accelY + *accelZ * *accelZ);

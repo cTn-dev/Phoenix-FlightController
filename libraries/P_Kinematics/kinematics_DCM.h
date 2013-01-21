@@ -106,7 +106,7 @@ void AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az) {
 }
 
 
-void kinematics_update(double* accelX, double* accelY, double* accelZ, double* gyroX, double* gyroY, double* gyroZ) {
+void kinematics_update(double* gyroX, double* gyroY, double* gyroZ, double* accelX, double* accelY, double* accelZ) {
     unsigned long now = micros();
     sampleFreq = 1.0 / ((now - kinematics_timer) / 1000000.0);
     kinematics_timer = now;

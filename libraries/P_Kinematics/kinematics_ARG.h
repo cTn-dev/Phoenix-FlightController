@@ -103,7 +103,7 @@ void argUpdate(float gx, float gy, float gz, float ax, float ay, float az, float
     q3 = q3 / norm;
 }
 
-void kinematics_update(double* accelX, double* accelY, double* accelZ, double* gyroX, double* gyroY, double* gyroZ) {    
+void kinematics_update(double* gyroX, double* gyroY, double* gyroZ, double* accelX, double* accelY, double* accelZ) {    
     // Convert/Cast accel INT to float
     float accelXfloat = *accelX;
     float accelYfloat = -*accelY;

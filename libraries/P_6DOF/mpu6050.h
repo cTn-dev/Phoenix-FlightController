@@ -64,24 +64,9 @@
 #define BIT_I2C_IF_DIS          0x10
 #define BIT_INT_STATUS_DATA     0x01
 
-int16_t gyroX, gyroY, gyroZ;
-int16_t accelX, accelY, accelZ;
-int16_t gyro_temperature;
-
-double gyroXsum, gyroYsum, gyroZsum;
-double accelXsum, accelYsum, accelZsum;
-
-double gyroXsumRate, gyroYsumRate, gyroZsumRate;
-double accelXsumAvr, accelYsumAvr, accelZsumAvr;
-
-// New data storage
-int16_t gyroRaw[3];
-double gyroSum[3];
 double gyro[3];
-
-int16_t accelRaw[3];
-double accelSum[3];
 double accel[3];
+int16_t gyro_temperature;
 
 class MPU6050 {
     public: 
@@ -147,15 +132,15 @@ class MPU6050 {
 
             for(i = 0; i < count; i++) {
                 readGyroRaw();
-                xSum += gyroX;
-                ySum += gyroY;
-                zSum += gyroZ;
+                xSum += gyroRaw[XAXIS];
+                ySum += gyroRaw[YAXIS];
+                zSum += gyroRaw[ZAXIS];
                 delay(10);
             }
             
-            gyro_offset[0] = -xSum / count;
-            gyro_offset[1] = -ySum / count;
-            gyro_offset[2] = -zSum / count; 
+            gyro_offset[XAXIS] = -xSum / count;
+            gyro_offset[YAXIS] = -ySum / count;
+            gyro_offset[ZAXIS] = -zSum / count; 
         };
         
         // ~1280ms (only runs when requested)
@@ -165,15 +150,15 @@ class MPU6050 {
 
             for(i = 0; i < count; i++) {
                 readAccelRaw();
-                xSum += accelX;
-                ySum += accelY;
-                zSum += accelZ;
+                xSum += accelRaw[XAXIS];
+                ySum += accelRaw[YAXIS];
+                zSum += accelRaw[ZAXIS];
                 delay(10);
             }
             
-            accel_bias[0] = xSum / count;
-            accel_bias[1] = ySum / count;
-            accel_bias[2] = zSum / count;
+            accel_bias[XAXIS] = xSum / count;
+            accel_bias[YAXIS] = ySum / count;
+            accel_bias[ZAXIS] = zSum / count;
 
             // Code will stop here, printing out the calibration data in serial console.
             // Re-Calibrating each loop.
@@ -200,9 +185,9 @@ class MPU6050 {
             
             Wire.requestFrom(MPU6050_ADDRESS, 6);
             
-            gyroX = (Wire.read() << 8) | Wire.read();
-            gyroY = (Wire.read() << 8) | Wire.read();
-            gyroZ = (Wire.read() << 8) | Wire.read();
+            gyroRaw[XAXIS] = (Wire.read() << 8) | Wire.read();
+            gyroRaw[YAXIS] = (Wire.read() << 8) | Wire.read();
+            gyroRaw[ZAXIS] = (Wire.read() << 8) | Wire.read();
         };
         
         void readAccelRaw() {
@@ -212,17 +197,17 @@ class MPU6050 {
             
             Wire.requestFrom(MPU6050_ADDRESS, 6);
             
-            accelX = (Wire.read() << 8) | Wire.read();
-            accelY = (Wire.read() << 8) | Wire.read(); 
-            accelZ = (Wire.read() << 8) | Wire.read();
+            accelRaw[XAXIS] = (Wire.read() << 8) | Wire.read();
+            accelRaw[YAXIS] = (Wire.read() << 8) | Wire.read(); 
+            accelRaw[ZAXIS] = (Wire.read() << 8) | Wire.read();
         };        
         
         void readGyroSum() {
             readGyroRaw();
             
-            gyroXsum += gyroX;
-            gyroYsum += gyroY;
-            gyroZsum += gyroZ;
+            gyroSum[XAXIS] += gyroRaw[XAXIS];
+            gyroSum[YAXIS] += gyroRaw[YAXIS];
+            gyroSum[ZAXIS] += gyroRaw[ZAXIS];
             
             gyroSamples++;
         };        
@@ -230,73 +215,57 @@ class MPU6050 {
         void readAccelSum() {
             readAccelRaw();
             
-            accelXsum += accelX;
-            accelYsum += accelY;
-            accelZsum += accelZ;  
+            accelSum[XAXIS] += accelRaw[XAXIS];
+            accelSum[YAXIS] += accelRaw[YAXIS];
+            accelSum[ZAXIS] += accelRaw[ZAXIS];  
 
             accelSamples++;
         };
         
         void evaluateGyro() {
             // Calculate average
-            gyroXsumRate = gyroXsum / gyroSamples;
-            gyroYsumRate = -(gyroYsum / gyroSamples);
-            gyroZsumRate = gyroZsum / gyroSamples;  
+            gyro[XAXIS] = gyroSum[XAXIS] / gyroSamples;
+            gyro[YAXIS] = -(gyroSum[YAXIS] / gyroSamples);
+            gyro[ZAXIS] = gyroSum[ZAXIS] / gyroSamples;    
             
             // Apply offsets
-            gyroXsumRate += gyro_offset[0];
-            gyroYsumRate += gyro_offset[1];
-            gyroZsumRate += gyro_offset[2];         
+            gyro[XAXIS] += gyro_offset[XAXIS];
+            gyro[YAXIS] += gyro_offset[YAXIS];
+            gyro[ZAXIS] += gyro_offset[ZAXIS];         
             
             // Apply correct scaling (at this point gyroNsumRate is in radians)
-            gyroXsumRate *= gyroScaleFactor;
-            gyroYsumRate *= gyroScaleFactor;
-            gyroZsumRate *= gyroScaleFactor;
+            gyro[XAXIS] *= gyroScaleFactor;
+            gyro[YAXIS] *= gyroScaleFactor;
+            gyro[ZAXIS] *= gyroScaleFactor;
             
             // Reset SUM variables
-            gyroXsum = 0;
-            gyroYsum = 0;
-            gyroZsum = 0;
-            gyroSamples = 0;
+            gyroSum[XAXIS] = 0;
+            gyroSum[YAXIS] = 0;
+            gyroSum[ZAXIS] = 0;
+            gyroSamples = 0;            
         };
         
         void evaluateAccel() {
             // Calculate average
-            accelXsumAvr = accelXsum / accelSamples;
-            accelYsumAvr = accelYsum / accelSamples;
-            accelZsumAvr = accelZsum / accelSamples;  
+            accel[XAXIS] = accelSum[XAXIS] / accelSamples;
+            accel[YAXIS] = accelSum[YAXIS] / accelSamples;
+            accel[ZAXIS] = accelSum[ZAXIS] / accelSamples;  
             
             // Apply offsets
-            accelXsumAvr += accel_bias[0];
-            accelYsumAvr += accel_bias[1];
-            accelZsumAvr += accel_bias[2];
+            accel[XAXIS] += accel_bias[XAXIS];
+            accel[YAXIS] += accel_bias[YAXIS];
+            accel[ZAXIS] += accel_bias[ZAXIS];
             
             // Apply correct scaling (at this point accelNsumAvr reprensents +- 1g = 9.81 m/s^2)
-            accelXsumAvr *= accelScaleFactor;
-            accelYsumAvr *= accelScaleFactor;
-            accelZsumAvr *= accelScaleFactor;
+            accel[XAXIS] *= accelScaleFactor;
+            accel[YAXIS] *= accelScaleFactor;
+            accel[ZAXIS] *= accelScaleFactor;
             
             // Reset SUM variables
-            accelXsum = 0;
-            accelYsum = 0;
-            accelZsum = 0;
+            accelSum[XAXIS] = 0;
+            accelSum[YAXIS] = 0;
+            accelSum[ZAXIS] = 0;
             accelSamples = 0;
-        };
-        
-        void readGyroCalibrated() {
-            readGyroRaw();
-            
-            gyroX += gyro_offset[0];
-            gyroY += gyro_offset[1];
-            gyroZ += gyro_offset[2];
-        };
-        
-        void readAccelCalibrated() {
-            readAccelRaw();
-            
-            accelX += accel_bias[0];
-            accelY += accel_bias[1];
-            accelZ += accel_bias[2];
         };
         
         void readGyroTemperatutre() {
@@ -315,6 +284,12 @@ class MPU6050 {
         double gyroScaleFactor;
         double accelScaleFactor; 
 
+        int16_t gyroRaw[3];
+        double gyroSum[3];
+
+        int16_t accelRaw[3];
+        double accelSum[3];
+        
         uint8_t gyroSamples = 0;
         uint8_t accelSamples = 0;        
 };

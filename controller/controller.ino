@@ -67,9 +67,9 @@ PID yaw_command_pid(&kinematicsAngleZ, &YawCommandPIDSpeed, &commandYaw, 4.0, 0.
 PID pitch_command_pid(&kinematicsAngleY, &PitchCommandPIDSpeed, &commandPitch, 4.0, 0.0, 0.0, 25.0);
 PID roll_command_pid(&kinematicsAngleX, &RollCommandPIDSpeed, &commandRoll, 4.0, 0.0, 0.0, 25.0);
 
-PID yaw_motor_pid(&gyroZsumRate, &YawMotorSpeed, &YawCommandPIDSpeed, 200.0, 5.0, 0.0, 1000.0);
-PID pitch_motor_pid(&gyroYsumRate, &PitchMotorSpeed, &PitchCommandPIDSpeed, 80.0, 0.0, -3.0, 1000.0);
-PID roll_motor_pid(&gyroXsumRate, &RollMotorSpeed, &RollCommandPIDSpeed, 80.0, 0.0, -3.0, 1000.0);
+PID yaw_motor_pid(&gyro[ZAXIS], &YawMotorSpeed, &YawCommandPIDSpeed, 200.0, 5.0, 0.0, 1000.0);
+PID pitch_motor_pid(&gyro[YAXIS], &PitchMotorSpeed, &PitchCommandPIDSpeed, 80.0, 0.0, -3.0, 1000.0);
+PID roll_motor_pid(&gyro[XAXIS], &RollMotorSpeed, &RollCommandPIDSpeed, 80.0, 0.0, -3.0, 1000.0);
 
 #ifdef AltitudeHoldBaro
     PID altitude_hold_baro_pid(&baroAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &baroAltitudeRunning, 25.0, 0.6, -10.0, 25.0);
@@ -203,7 +203,7 @@ void process100HzTask() {
     #endif
     
     // Update kinematics with latest data
-    kinematics_update(&accelXsumAvr, &accelYsumAvr, &accelZsumAvr, &gyroXsumRate, &gyroYsumRate, &gyroZsumRate);
+    kinematics_update(&gyro[XAXIS], &gyro[YAXIS], &gyro[ZAXIS], &accel[XAXIS], &accel[YAXIS], &accel[ZAXIS]);
     
     if (flightMode == ATTITUDE_MODE) {
         // Compute command PIDs (with kinematics correction)
@@ -241,19 +241,19 @@ void process100HzTask() {
 
     #ifdef DATA_VISUALIZATION
         // Gyro data
-        Serial.print(gyroXsumRate);
+        Serial.print(gyro[XAXIS]);
         Serial.write(',');
-        Serial.print(gyroYsumRate);
+        Serial.print(gyro[YAXIS]);
         Serial.write(',');
-        Serial.print(gyroZsumRate);
+        Serial.print(gyro[ZAXIS]);
         Serial.write(',');        
         
         // Accel data
-        Serial.print(accelXsumAvr);
+        Serial.print(accel[XAXIS]);
         Serial.write(',');
-        Serial.print(accelYsumAvr);
+        Serial.print(accel[YAXIS]);
         Serial.write(','); 
-        Serial.print(accelZsumAvr);
+        Serial.print(accel[ZAXIS]);
         Serial.write(',');         
         
         // Kinematics data
