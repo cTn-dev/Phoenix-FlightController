@@ -90,6 +90,9 @@ class MPU6050 {
             
             // Accel scale factor = 9.81 m/s^2 / scale
             accelScaleFactor = 9.81 / 8192.0; // 0.001197509765625
+            
+            gyroSamples = 0;
+            accelSamples = 0;
         };
         
         void initialize() {
@@ -290,8 +293,8 @@ class MPU6050 {
         int16_t accelRaw[3];
         double accelSum[3];
         
-        uint8_t gyroSamples = 0;
-        uint8_t accelSamples = 0;        
+        uint8_t gyroSamples;
+        uint8_t accelSamples;        
 };
 
 MPU6050 mpu;
