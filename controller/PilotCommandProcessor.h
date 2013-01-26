@@ -1,5 +1,4 @@
 int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_mode, TX_altitude, TX_cam, TX_last;
-int16_t throttle = 1000;
 bool throttlePanic = false;
 
 void processPilotCommands() {

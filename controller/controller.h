@@ -38,6 +38,11 @@ double kinematicsAngleZ = 0.0;
 // FlightController commands definitions
 double commandYaw, commandYawAttitude, commandPitch, commandRoll, commandThrottle;
 
+// PID variables
+double YawCommandPIDSpeed, PitchCommandPIDSpeed, RollCommandPIDSpeed;
+double YawMotorSpeed, PitchMotorSpeed, RollMotorSpeed, AltitudeHoldMotorSpeed;
+int16_t throttle = 1000;
+
 // Custom definitions
 //#define DATA_VISUALIZATION
 //#define DISPLAY_ITTERATIONS

@@ -56,13 +56,13 @@
     
     // Motor / ESC setup
     #include <ESC_teensy3_HW.h>    
+    
+    // Frame type definition
+    #include <FrameType_QuadX.h>    
 #endif
 // == END of Hardware setup ==
 
-// PID definitions
-double YawCommandPIDSpeed, PitchCommandPIDSpeed, RollCommandPIDSpeed;
-double YawMotorSpeed, PitchMotorSpeed, RollMotorSpeed, AltitudeHoldMotorSpeed;
-
+// PID object definitions
 PID yaw_command_pid(&kinematicsAngleZ, &YawCommandPIDSpeed, &commandYaw, 4.0, 0.0, 0.0, 25.0);
 PID pitch_command_pid(&kinematicsAngleY, &PitchCommandPIDSpeed, &commandPitch, 4.0, 0.0, 0.0, 25.0);
 PID roll_command_pid(&kinematicsAngleX, &RollCommandPIDSpeed, &commandRoll, 4.0, 0.0, 0.0, 25.0);
@@ -222,15 +222,10 @@ void process100HzTask() {
     pitch_motor_pid.Compute();
     roll_motor_pid.Compute();     
     
-    // This code should be re-written, currently it supports only quadX config, which is very limiting
+    // This section is place where the actual "force" gets applied
     if (armed) {
-        // All of the motor outputs are constrained to standard 1000 - 2000 us PWM
-        MotorOut[0] = constrain(throttle + PitchMotorSpeed + RollMotorSpeed + YawMotorSpeed, 1000, 2000);
-        MotorOut[1] = constrain(throttle + PitchMotorSpeed - RollMotorSpeed - YawMotorSpeed, 1000, 2000);
-        MotorOut[2] = constrain(throttle - PitchMotorSpeed - RollMotorSpeed + YawMotorSpeed, 1000, 2000);
-        MotorOut[3] = constrain(throttle - PitchMotorSpeed + RollMotorSpeed - YawMotorSpeed, 1000, 2000);
-
-        updateMotors();
+        updateMotorsMix(); // Frame specific motor mix
+        updateMotors(); // Update ESCs
     } else {
         MotorOut[0] = 1000;
         MotorOut[1] = 1000;
@@ -238,7 +233,15 @@ void process100HzTask() {
         MotorOut[3] = 1000;
         
         updateMotors();
-    }
+    } 
+}
+
+void process50HzTask() {
+    processPilotCommands();
+    
+    #ifdef AltitudeHoldBaro
+        sensors.evaluateBaroAltitude();
+    #endif   
 
     #ifdef DATA_VISUALIZATION
         // Gyro data
@@ -297,15 +300,7 @@ void process100HzTask() {
         Serial.print(MotorOut[3]);
         
         Serial.println();     
-    #endif    
-}
-
-void process50HzTask() {
-    processPilotCommands();
-    
-    #ifdef AltitudeHoldBaro
-        sensors.evaluateBaroAltitude();
-    #endif    
+    #endif       
 }
 
 void process10HzTask() {
