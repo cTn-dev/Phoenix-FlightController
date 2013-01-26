@@ -1,16 +1,18 @@
 /*  ESC signal generation via shared timer1.
 
-    Big thanks to kha from #aeroquad for setting up the shared timer.
-
-    This port for atmega328p is UNTESTED.    
+    MotorOuts array was added to separate variables changed by the FC in real time and PWM motor variables
+    that are used inside the interrupt (without this, unpleasant behavior could occrur while system is writing to the 
+    MotorOut array and timer triggers interrupt).
+    
+    Big thanks to kha from #aeroquad for setting up the shared timer.   
 */
 
 #define MOTORS 4
-unsigned int MotorOut[4] = {1000, 1000, 1000, 1000};
-unsigned int MotorOuts[4] = {1000, 1000, 1000, 1000};  
-unsigned int motorCounter = 0;
-unsigned int motorTotal = 0;
-unsigned char motorPins[MOTORS] = {2, 3, 4, 5};
+uint16_t MotorOut[4] = {1000, 1000, 1000, 1000};
+uint16_t MotorOuts[4] = {1000, 1000, 1000, 1000};
+uint8_t motorCounter = 0;
+uint16_t motorTotal = 0;
+uint8_t motorPins[MOTORS] = {2, 3, 4, 5};
 
 // Comparison Interrupt Vector
 ISR(TIMER1_COMPA_vect) { 

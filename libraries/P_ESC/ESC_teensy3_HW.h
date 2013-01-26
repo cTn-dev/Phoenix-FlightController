@@ -24,7 +24,7 @@
     FTM0_CH7 - PTD7 - 5   
 */
     
-unsigned int MotorOut[4] = {1000, 1000, 1000, 1000}; 
+uint16_t MotorOut[4] = {1000, 1000, 1000, 1000}; 
 
 void setupFTM0() {
     // Flex timer0 configuration

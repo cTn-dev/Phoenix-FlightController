@@ -222,8 +222,9 @@ void process100HzTask() {
     pitch_motor_pid.Compute();
     roll_motor_pid.Compute();     
     
+    // This code should be re-written, currently it supports only quadX config, which is very limiting
     if (armed) {
-        // All of the motor outputs are constrained to standard 1000-2000us)
+        // All of the motor outputs are constrained to standard 1000 - 2000 us PWM
         MotorOut[0] = constrain(throttle + PitchMotorSpeed + RollMotorSpeed + YawMotorSpeed, 1000, 2000);
         MotorOut[1] = constrain(throttle + PitchMotorSpeed - RollMotorSpeed - YawMotorSpeed, 1000, 2000);
         MotorOut[2] = constrain(throttle - PitchMotorSpeed - RollMotorSpeed + YawMotorSpeed, 1000, 2000);
@@ -325,6 +326,10 @@ void process10HzTask() {
         readBatteryMonitorCurrent();
     #endif
     
+    // Blink LED to indicated activity
+    Alive_LED_state = !Alive_LED_state;
+    digitalWrite(LED_PIN, Alive_LED_state);    
+    
     // Print itterations per 100ms
     #ifdef DISPLAY_ITTERATIONS
         Serial.println(itterations);
@@ -335,10 +340,6 @@ void process10HzTask() {
 }
 
 void process1HzTask() {   
-    // Blink LED to indicated activity
-    Alive_LED_state = !Alive_LED_state;
-    digitalWrite(LED_PIN, Alive_LED_state);
-    
     // Orientation ligts
     // also displaying armed / dis-armed status
     if (armed) {
