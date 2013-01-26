@@ -54,11 +54,11 @@
     // Receiver
     #include <Receiver_teensy3_HW_PPM.h>
     
-    // Motor / ESC setup
-    #include <ESC_teensy3_HW.h>    
-    
     // Frame type definition
-    #include <FrameType_QuadX.h>    
+    #include <FrameType_QuadX.h> 
+
+    // Motor / ESC setup
+    #include <ESC_teensy3_HW.h>        
 #endif
 // == END of Hardware setup ==
 

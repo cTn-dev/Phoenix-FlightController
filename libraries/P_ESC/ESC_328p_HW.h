@@ -5,11 +5,11 @@
     MotorOut array and timer triggers interrupt).
     
     Big thanks to kha from #aeroquad for setting up the shared timer.   
+    
+    This section is unfinished, default motor amount is still hardcoded to 4
 */
 
-#define MOTORS 4
-uint16_t MotorOut[4] = {1000, 1000, 1000, 1000};
-uint16_t MotorOuts[4] = {1000, 1000, 1000, 1000};
+uint16_t MotorOuts[MOTORS];
 uint8_t motorCounter = 0;
 uint16_t motorTotal = 0;
 uint8_t motorPins[MOTORS] = {2, 3, 4, 5};
@@ -57,5 +57,11 @@ void updateMotors() {
 }
 
 void initializeESC() {
+    // We will also initialize the separate MotorOuts array values here
+    for (uint8_t i = 0; i < MOTORS; i++) {
+        MotorOuts[i] = MotorOut[i];
+    }    
+    
+    // Standard timer initialization
     setupTimer1Esc();
 }

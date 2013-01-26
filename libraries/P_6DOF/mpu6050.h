@@ -133,7 +133,7 @@ class MPU6050 {
             uint8_t i, count = 128;
             int16_t xSum = 0, ySum = 0, zSum = 0;
 
-            for(i = 0; i < count; i++) {
+            for (i = 0; i < count; i++) {
                 readGyroRaw();
                 xSum += gyroRaw[XAXIS];
                 ySum += gyroRaw[YAXIS];
@@ -159,7 +159,7 @@ class MPU6050 {
             uint8_t i, count = 128;
             int32_t xSum = 0, ySum = 0, zSum = 0;
 
-            for(i = 0; i < count; i++) {
+            for (i = 0; i < count; i++) {
                 readAccelRaw();
                 xSum += accelRaw[XAXIS];
                 ySum += accelRaw[YAXIS];
