@@ -128,7 +128,7 @@ class MPU6050 {
             delay(1500);
         };
         
-        // ~1280ms
+        // ~1280ms (in case of error ~ms = calibration sanity passed)
         void calibrate_gyro() {
             uint8_t i, count = 128;
             int16_t xSum = 0, ySum = 0, zSum = 0;
@@ -144,6 +144,14 @@ class MPU6050 {
             gyro_offset[XAXIS] = -xSum / count;
             gyro_offset[YAXIS] = -ySum / count;
             gyro_offset[ZAXIS] = -zSum / count; 
+            
+            // Calibration sanity check
+            while (abs(gyro_offset[XAXIS] + gyro_offset[YAXIS] + gyro_offset[ZAXIS]) > 300) {
+                // gyro calibration failed, run again   
+                
+                delay(1000); // small delay before next gyro calibration
+                calibrate_gyro();
+            }
         };
         
         // ~1280ms (only runs when requested)
@@ -168,11 +176,11 @@ class MPU6050 {
             // Offsets to the values returned on a flat surface are meant to be either hardcoded during initialization
             // or stored inside eeprom.
             while (1) {
-                Serial.print(accel_bias[0]);
+                Serial.print(accel_bias[XAXIS]);
                 Serial.write('\t');
-                Serial.print(accel_bias[1]);
+                Serial.print(accel_bias[YAXIS]);
                 Serial.write('\t');
-                Serial.print(accel_bias[2]);
+                Serial.print(accel_bias[ZAXIS]);
                 Serial.write('\t');
                 Serial.println();
                 
