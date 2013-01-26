@@ -29,6 +29,8 @@ void readBatteryMonitorCurrent() {
 
         // Save time for next comparison
         batteryMonitorCurrent_timer = now;
+    } else {
+        currentAmps = 0.0;
     }
 }
 
