@@ -1,5 +1,4 @@
-/*  ADXL345 - on AQ shield v 2.0 
-    (ADXL345 is on separate breakout)
+/*  ADXL345 - (ADXL345 is on separate breakout)
 
     Beware ! ADXL345 sends the data in reverse (LOW, HIGH)
     
