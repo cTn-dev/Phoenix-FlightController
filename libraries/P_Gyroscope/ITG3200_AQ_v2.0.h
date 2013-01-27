@@ -1,10 +1,10 @@
-/* ITG3200, 9DOF stick library
-
-    This library requires some more documentation
-    (code was tested and works perfectly fine)
+/* ITG3200 - on AQ shield v 2.0 
+   (ITG3200 is on separate breakout)
+   
+   This library requires some more documentation
 */
 
-#define ITG3200_ADDRESS                 0x68
+#define ITG3200_ADDRESS                 0x69
 
 #define ITG3200_IDENTITY                0x68
 #define ITG3200_IDENTITY_MASK           0x7E
@@ -62,11 +62,11 @@ class ITG3200 {
             
             // Calibration sanity check
             while (abs(gyro_offset[XAXIS] + gyro_offset[YAXIS] + gyro_offset[ZAXIS]) > 300) {
-                // gyro calibration failed, run again   
+                // gyro calibration failed, run again
                 
                 delay(1000); // small delay before next gyro calibration
                 calibrate_gyro();
-            }
+            }            
         };
 
         void readGyroRaw() {
@@ -76,9 +76,9 @@ class ITG3200 {
             
             Wire.requestFrom(ITG3200_ADDRESS, ITG3200_BUFFER_SIZE);  
 
-            gyroRaw[YAXIS] = (Wire.read() << 8) | Wire.read();
             gyroRaw[XAXIS] = (Wire.read() << 8) | Wire.read();
-            gyroRaw[ZAXIS] = -((Wire.read() << 8) | Wire.read());
+            gyroRaw[YAXIS] = -((Wire.read() << 8) | Wire.read());
+            gyroRaw[ZAXIS] = -((Wire.read() << 8) | Wire.read());      
         };
         
         void readGyroSum() {
@@ -100,9 +100,9 @@ class ITG3200 {
             // Apply offsets
             gyro[XAXIS] += gyro_offset[XAXIS];
             gyro[YAXIS] += gyro_offset[YAXIS];
-            gyro[ZAXIS] += gyro_offset[ZAXIS];
+            gyro[ZAXIS] += gyro_offset[ZAXIS];         
             
-            // Apply correct scaling (at this point gyro is in radians)
+            // Apply correct scaling (at this point gyroNsumRate is in radians)
             gyro[XAXIS] *= gyroScaleFactor;
             gyro[YAXIS] *= gyroScaleFactor;
             gyro[ZAXIS] *= gyroScaleFactor;
@@ -111,13 +111,13 @@ class ITG3200 {
             gyroSum[XAXIS] = 0;
             gyroSum[YAXIS] = 0;
             gyroSum[ZAXIS] = 0;
-            gyroSamples = 0;
+            gyroSamples = 0;            
         };        
     private:  
         int16_t gyro_offset[3];
         int16_t gyroRaw[3];
         double gyroSum[3];
-        double gyroScaleFactor;
+        double gyroScaleFactor;   
 
         uint8_t gyroSamples;
 };
