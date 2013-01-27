@@ -31,6 +31,11 @@ void setupFTM0() {
     FTM0_C0SC = 0x28;
     
     // Initial values (3000 = 1ms)
+    /* needs to be finished 
+    #if MOTORS == 4
+    #endif
+    */
+    
     FTM0_C0V = 3000;
     FTM0_C1V = 3000;
     // FTM0_C2V = 3000;
