@@ -244,7 +244,7 @@ class MPU6050 {
             gyro[YAXIS] += gyro_offset[YAXIS];
             gyro[ZAXIS] += gyro_offset[ZAXIS];         
             
-            // Apply correct scaling (at this point gyroNsumRate is in radians)
+            // Apply correct scaling (at this point gyro is in radians)
             gyro[XAXIS] *= gyroScaleFactor;
             gyro[YAXIS] *= gyroScaleFactor;
             gyro[ZAXIS] *= gyroScaleFactor;
@@ -267,7 +267,7 @@ class MPU6050 {
             accel[YAXIS] += accel_bias[YAXIS];
             accel[ZAXIS] += accel_bias[ZAXIS];
             
-            // Apply correct scaling (at this point accelNsumAvr reprensents +- 1g = 9.81 m/s^2)
+            // Apply correct scaling (at this point accel reprensents +- 1g = 9.81 m/s^2)
             accel[XAXIS] *= accelScaleFactor;
             accel[YAXIS] *= accelScaleFactor;
             accel[ZAXIS] *= accelScaleFactor;
@@ -312,7 +312,7 @@ void SensorArray::initializeGyro() {
     mpu.calibrate_gyro();
     
     // used only during initial sensor setup (programmers assistance required)
-    //mpu.calibrate_accel();
+    // mpu.calibrate_accel();
 }
 
 void SensorArray::initializeAccel() {
