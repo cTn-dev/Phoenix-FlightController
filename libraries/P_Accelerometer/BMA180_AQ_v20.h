@@ -30,7 +30,7 @@ class BMA180 {
     public:
         // Constructor
         BMA180() {
-            accelScaleFactor = 9.81 / 2048;
+            accelScaleFactor = 9.81 / 2048.0;
             
             accel_bias[XAXIS] = 0;
             accel_bias[YAXIS] = 0;
