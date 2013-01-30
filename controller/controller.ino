@@ -78,6 +78,24 @@ PID roll_motor_pid(&gyro[XAXIS], &RollMotorSpeed, &RollCommandPIDSpeed, 80.0, 0.
 #ifdef AltitudeHoldSonar    
     PID altitude_hold_sonar_pid(&sonarAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &sonarAltitude, 60.0, 0.6, -10.0, 25.0);
 #endif  
+
+void reset_PID_integrals() {
+    yaw_command_pid.IntegralReset();
+    pitch_command_pid.IntegralReset();
+    roll_command_pid.IntegralReset();
+    
+    yaw_motor_pid.IntegralReset();
+    pitch_motor_pid.IntegralReset();
+    roll_motor_pid.IntegralReset();
+    
+    #ifdef AltitudeHoldBaro
+        altitude_hold_baro_pid.IntegralReset();
+    #endif
+    
+    #ifdef AltitudeHoldSonar
+        altitude_hold_sonar_pid.IntegralReset();
+    #endif      
+}
   
 // Include this last as it contains objects from previous declarations
 #include "PilotCommandProcessor.h"  

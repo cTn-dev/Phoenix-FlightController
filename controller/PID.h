@@ -5,14 +5,14 @@
     
     Input = Kinematics or sensor input
     Output = PID output
-    SetPoint = input value
+    SetPoint = Desired output
     windupGuard = maximum and minimum constrain on I term
 */
 class PID {
     public:
         PID(double* Input, double* Output, double* Setpoint, double kp, double ki, double kd, double windupGuard) {
-            previous_error = 0;
-            integral = 0;
+            previous_error = 0.0;
+            integral = 0.0;
             
             PID_input = Input;
             PID_output = Output;
@@ -35,6 +35,10 @@ class PID {
             previous_error = *PID_input;
             last_time = now;
         };
+        
+        void IntegralReset() {
+            integral = 0.0;
+        };
     
     private:
         double *PID_input;
@@ -47,4 +51,4 @@ class PID {
         double previous_error;
         double integral;
         unsigned long last_time;
-};    
+}; 

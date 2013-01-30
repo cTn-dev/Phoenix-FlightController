@@ -18,16 +18,20 @@ void processPilotCommands() {
     
     // Arming-Disarming sequence
     if (TX_throttle < 1100 && TX_yaw > 1850) {
-        // controller is now armed
-        armed = true;
+        if (armed == false) {
+            // We just armed the controller
+            
+            reset_PID_integrals(); // Reset all integrals inside PID controllers to 0
+        }
         
-        // Depending
         if (flightMode = ATTITUDE_MODE) {
             commandYawAttitude = kinematicsAngleZ;
             commandYaw = commandYawAttitude;
         } else if (flightMode == RATE_MODE)  {
             commandYaw = 0.0;
-        }    
+        } 
+        
+        armed = true;
     } else if (TX_throttle < 1100 && TX_yaw < 1250) {
         // controller is now dis-armed
         armed = false;
