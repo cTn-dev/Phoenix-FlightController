@@ -42,7 +42,7 @@ class MS5611 {
             baroAltitude = 0.0;
             
             pressureFactor = 1.0 / 5.255;
-            baroSmoothFactor = 0.02;
+            baroSmoothFactor = 0.03;
             
             pressure = 0.0;
             
