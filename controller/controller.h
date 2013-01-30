@@ -25,10 +25,13 @@ bool Alive_LED_state = false;
 #define TASK_10HZ 10
 #define TASK_1HZ 100
 
-// Axis deifnitions
+// Axis definitions
 #define XAXIS 0
 #define YAXIS 1
 #define ZAXIS 2
+
+#define OFF 0
+#define ON 1
 
 // Kinematics variable defnitions
 double kinematicsAngleX = 0.0;
