@@ -11,11 +11,13 @@
 // Arduino standard library imports
 #include <Arduino.h>
 #include <Wire.h>
+#include <EEPROM.h>
 
 // Custom imports
 #include "controller.h"
 #include "sensors.h"
 #include "math.h"
+#include "dataStorage.h"
 #include "PID.h"
 
 // == Hardware setup/s == 
