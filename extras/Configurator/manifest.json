@@ -1,0 +1,17 @@
+{
+    "name": "Phoenix Configurator - Alpha",
+    "description": "Application required to change Phoenix configuration stored in EEPROM",
+    "version": "0.1",
+    "manifest_version": 2,
+    "minimum_chrome_version": "23", 
+    
+    "app": {
+        "background": {
+            "scripts": [ "background.js" ]
+        }
+    },
+    
+    "permissions": [
+        "serial"
+    ]    
+}
