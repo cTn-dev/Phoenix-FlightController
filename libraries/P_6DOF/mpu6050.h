@@ -95,6 +95,13 @@ class MPU6050 {
             accelSamples = 0;
         };
         
+        void initialize(int bias0, int bias1, int bias2) {
+            accel_bias[0] = bias0;
+            accel_bias[1] = bias1;
+            accel_bias[2] = bias2;
+            initialize();
+        }
+
         void initialize() {
             // Chip reset
             sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_PWR_MGMT_1, BIT_H_RESET);
@@ -308,7 +315,7 @@ class MPU6050 {
 MPU6050 mpu;
 
 void SensorArray::initializeGyro() {
-    mpu.initialize();
+    mpu.initialize(CONFIG.data.ACCEL_BIAS[0], CONFIG.data.ACCEL_BIAS[1], CONFIG.data.ACCEL_BIAS[2]);
     mpu.calibrate_gyro();
     
     // used only during initial sensor setup (programmers assistance required)
