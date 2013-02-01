@@ -83,26 +83,19 @@ class MPU6050 {
             // accelXpositive and accelXnegative should be an average of at least 500 samples
             // biasX = (accelXpositive + accelXnegative) / 2;
             
-            // Hardcoded accel bias
-            accel_bias[0] = -425;
-            accel_bias[1] = 260;
-            accel_bias[2] = 400;
-            
             // Accel scale factor = 9.81 m/s^2 / scale
             accelScaleFactor = 9.81 / 8192.0; // 0.001197509765625
             
             gyroSamples = 0;
             accelSamples = 0;
         };
-        
-        void initialize(int bias0, int bias1, int bias2) {
-            accel_bias[0] = bias0;
-            accel_bias[1] = bias1;
-            accel_bias[2] = bias2;
-            initialize();
-        }
 
-        void initialize() {
+        void initialize(int bias0, int bias1, int bias2) {
+            // Setup accel bias from EEPROM
+            accel_bias[XAXIS] = bias0;
+            accel_bias[YAXIS] = bias1;
+            accel_bias[ZAXIS] = bias2;       
+        
             // Chip reset
             sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_PWR_MGMT_1, BIT_H_RESET);
             

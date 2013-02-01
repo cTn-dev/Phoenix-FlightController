@@ -14,21 +14,15 @@ class ADXL345 {
         // Constructor
         ADXL345() {
             accelScaleFactor = 9.81 / 256.0;
-            
-            accel_bias[XAXIS] = 0;
-            accel_bias[YAXIS] = 0;
-            accel_bias[ZAXIS] = 0;
-        
             accelSamples = 0;
         };
+    
         void initialize(int bias0, int bias1, int bias2) {
+            // Setup accel bias from EEPROM
             accel_bias[XAXIS] = bias0;
             accel_bias[YAXIS] = bias1;
-            accel_bias[ZAXIS] = bias2;
-            initialize();
-        };
-    
-        void initialize() {
+            accel_bias[ZAXIS] = bias2;  
+            
             sensors.i2c_write8(ADXL345_ADDRESS, 0x2D, 1 << 3);     // set device to *measure*
             sensors.i2c_write8(ADXL345_ADDRESS, 0x31, 0x09);       // set full range and +/- 4G
             sensors.i2c_write8(ADXL345_ADDRESS, 0x2C, 8 + 2 + 1);  // 200hz sampling

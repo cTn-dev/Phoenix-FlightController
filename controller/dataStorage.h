@@ -11,6 +11,9 @@ struct CONFIG_struct {
     uint8_t version;
     bool calibrateESC;
     
+    // Accelerometer
+    int ACCEL_BIAS[3];    
+    
     // Attitude
     double PID_YAW_c[4];
     double PID_PITCH_c[4];
@@ -21,17 +24,8 @@ struct CONFIG_struct {
     double PID_PITCH_m[4];
     double PID_ROLL_m[4];    
     
-    #ifdef AltitudeHoldBaro
-        double PID_BARO[4];
-    #endif
-    
-    #ifdef AltitudeHoldSonar
-        double PID_SONAR[4];
-    #endif    
-
-	#ifdef Accelerometer
-        int ACCEL_BIAS[3];
-	#endif
+    double PID_BARO[4];
+    double PID_SONAR[4]; 
 };
 
 union CONFIG_union {
@@ -45,6 +39,11 @@ void initializeEEPROM() {
     // Default settings should be initialized here
     CONFIG.data.version = 1;
     CONFIG.data.calibrateESC = 0;
+
+    // Accelerometer
+    CONFIG.data.ACCEL_BIAS[0] = -425;
+    CONFIG.data.ACCEL_BIAS[1] = 260;
+    CONFIG.data.ACCEL_BIAS[2] = 400;
     
     // Attitude
     CONFIG.data.PID_YAW_c[P]  = 4.0;
@@ -77,26 +76,18 @@ void initializeEEPROM() {
     CONFIG.data.PID_ROLL_m[I]  = 0.0;
     CONFIG.data.PID_ROLL_m[D]  = -3.0;
     CONFIG.data.PID_ROLL_m[WG] = 1000.0;    
- 
-    #ifdef AltitudeHoldBaro
-        CONFIG.data.PID_BARO[P]  = 25.0;
-        CONFIG.data.PID_BARO[I]  = 0.6;
-        CONFIG.data.PID_BARO[D]  = -10.0;
-        CONFIG.data.PID_BARO[WG] = 25.0;    
-    #endif    
     
-    #ifdef AltitudeHoldSonar
-        CONFIG.data.PID_SONAR[P]  = 60.0;
-        CONFIG.data.PID_SONAR[I]  = 0.6;
-        CONFIG.data.PID_SONAR[D]  = -10.0;
-        CONFIG.data.PID_SONAR[WG] = 25.0;    
-    #endif
-
-	#ifdef Accelerometer
-        CONFIG.data.ACCEL_BIAS[0] = -425;
-        CONFIG.data.ACCEL_BIAS[1] = 260;
-        CONFIG.data.ACCEL_BIAS[2] = 400;
-	#endif
+    // Baro
+    CONFIG.data.PID_BARO[P]  = 25.0;
+    CONFIG.data.PID_BARO[I]  = 0.6;
+    CONFIG.data.PID_BARO[D]  = -10.0;
+    CONFIG.data.PID_BARO[WG] = 25.0;       
+    
+    // Sonar
+    CONFIG.data.PID_SONAR[P]  = 60.0;
+    CONFIG.data.PID_SONAR[I]  = 0.6;
+    CONFIG.data.PID_SONAR[D]  = -10.0;
+    CONFIG.data.PID_SONAR[WG] = 25.0;    
     
     // This function will only initialize data "locally"
     // writeEEPROM() have to be called manually to store this data in EEPROM

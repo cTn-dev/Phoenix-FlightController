@@ -18,6 +18,7 @@
 #include "sensors.h"
 #include "math.h"
 #include "PID.h"
+#include "dataStorage.h"
 
 // == Hardware setup/s == 
 #define Maggie
@@ -30,9 +31,6 @@
     #define AltitudeHoldSonar
     #define BatteryMonitorCurrent
     #define GPS
-	
-	// INCLUDE dataStorage AFTER #defines so it can be configured, but before others include so it can be accessed on then as well.
-	#include "dataStorage.h"
 
     // Critical sensors on board (gyro/accel)
     #include <mpu6050.h>
