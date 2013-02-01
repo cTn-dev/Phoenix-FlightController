@@ -12,7 +12,7 @@ struct CONFIG_struct {
     bool calibrateESC;
     
     // Accelerometer
-    int ACCEL_BIAS[3];    
+    int16_t ACCEL_BIAS[3];    
     
     // Attitude
     double PID_YAW_c[4];
