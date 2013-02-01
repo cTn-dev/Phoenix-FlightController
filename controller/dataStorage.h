@@ -12,22 +12,22 @@ struct CONFIG_struct {
     bool calibrateESC;
     
     // Attitude
-    double PID_YAW_command[4];
-    double PID_PITCH_command[4];
-    double PID_ROLL_command[4];
+    double PID_YAW_c[4];
+    double PID_PITCH_c[4];
+    double PID_ROLL_c[4];
     
     // Rate
-    double PID_YAW_motor[4];
-    double PID_PITCH_motor[4];
-    double PID_ROLL_motor[4];    
+    double PID_YAW_m[4];
+    double PID_PITCH_m[4];
+    double PID_ROLL_m[4];    
     
-    #ifdef AltitudeHoldBaro   
+    #ifdef AltitudeHoldBaro
         double PID_BARO[4];
     #endif
     
     #ifdef AltitudeHoldSonar
         double PID_SONAR[4];
-    #endif
+    #endif    
 };
 
 union CONFIG_union {
@@ -35,6 +35,60 @@ union CONFIG_union {
     uint8_t raw[sizeof(data)];
 } CONFIG;
 
+void initializeEEPROM() {
+    // Default settings should be initialized here
+    CONFIG.data.version = 1;
+    CONFIG.data.calibrateESC = 0;
+    
+    // Attitude
+    CONFIG.data.PID_YAW_c[P]  = 4.0;
+    CONFIG.data.PID_YAW_c[I]  = 0.0;
+    CONFIG.data.PID_YAW_c[D]  = 0.0;
+    CONFIG.data.PID_YAW_c[WG] = 25.0;
+    
+    CONFIG.data.PID_PITCH_c[P]  = 4.0;
+    CONFIG.data.PID_PITCH_c[I]  = 0.0;
+    CONFIG.data.PID_PITCH_c[D]  = 0.0;
+    CONFIG.data.PID_PITCH_c[WG] = 25.0;
+
+    CONFIG.data.PID_ROLL_c[P]  = 4.0;
+    CONFIG.data.PID_ROLL_c[I]  = 0.0;
+    CONFIG.data.PID_ROLL_c[D]  = 0.0;
+    CONFIG.data.PID_ROLL_c[WG] = 25.0;
+
+    // Rate
+    CONFIG.data.PID_YAW_m[P]  = 200.0;
+    CONFIG.data.PID_YAW_m[I]  = 5.0;
+    CONFIG.data.PID_YAW_m[D]  = 0.0;
+    CONFIG.data.PID_YAW_m[WG] = 1000.0;
+    
+    CONFIG.data.PID_PITCH_m[P]  = 80.0;
+    CONFIG.data.PID_PITCH_m[I]  = 0.0;
+    CONFIG.data.PID_PITCH_m[D]  = -3.0;
+    CONFIG.data.PID_PITCH_m[WG] = 1000.0;
+
+    CONFIG.data.PID_ROLL_m[P]  = 80.0;
+    CONFIG.data.PID_ROLL_m[I]  = 0.0;
+    CONFIG.data.PID_ROLL_m[D]  = -3.0;
+    CONFIG.data.PID_ROLL_m[WG] = 1000.0;    
+ 
+    #ifdef AltitudeHoldBaro
+        CONFIG.data.PID_BARO[P]  = 25.0;
+        CONFIG.data.PID_BARO[I]  = 0.6;
+        CONFIG.data.PID_BARO[D]  = -10.0;
+        CONFIG.data.PID_BARO[WG] = 25.0;    
+    #endif    
+    
+    #ifdef AltitudeHoldSonar
+        CONFIG.data.PID_SONAR[P]  = 60.0;
+        CONFIG.data.PID_SONAR[I]  = 0.6;
+        CONFIG.data.PID_SONAR[D]  = -10.0;
+        CONFIG.data.PID_SONAR[WG] = 25.0;    
+    #endif
+    
+    // This function will only initialize data "locally"
+    // writeEEPROM() have to be called manually to store this data in EEPROM
+}
 
 void writeEEPROM() {
     for (uint16_t i = 0; i < sizeof(CONFIG_struct); i++) {
@@ -46,67 +100,14 @@ void writeEEPROM() {
     }
 }
 
-void initializeEEPROM() {
-    // Default settings should be initialized here
-    CONFIG.data.version = 1;
-    CONFIG.data.calibrateESC = 0;
-    
-    // Attitude
-    CONFIG.data.PID_YAW_command[P]  = 4.0;
-    CONFIG.data.PID_YAW_command[I]  = 0.0;
-    CONFIG.data.PID_YAW_command[D]  = 0.0;
-    CONFIG.data.PID_YAW_command[WG] = 25.0;
-    
-    CONFIG.data.PID_PITCH_command[P]  = 4.0;
-    CONFIG.data.PID_PITCH_command[I]  = 0.0;
-    CONFIG.data.PID_PITCH_command[D]  = 0.0;
-    CONFIG.data.PID_PITCH_command[WG] = 25.0;
-
-    CONFIG.data.PID_ROLL_command[P]  = 4.0;
-    CONFIG.data.PID_ROLL_command[I]  = 0.0;
-    CONFIG.data.PID_ROLL_command[D]  = 0.0;
-    CONFIG.data.PID_ROLL_command[WG] = 25.0;
-
-    // Rate
-    CONFIG.data.PID_YAW_motor[P]  = 200.0;
-    CONFIG.data.PID_YAW_motor[I]  = 5.0;
-    CONFIG.data.PID_YAW_motor[D]  = 0.0;
-    CONFIG.data.PID_YAW_motor[WG] = 1000.0;
-    
-    CONFIG.data.PID_PITCH_motor[P]  = 80.0;
-    CONFIG.data.PID_PITCH_motor[I]  = 0.0;
-    CONFIG.data.PID_PITCH_motor[D]  = -3.0;
-    CONFIG.data.PID_PITCH_motor[WG] = 1000.0;
-
-    CONFIG.data.PID_ROLL_motor[P]  = 80.0;
-    CONFIG.data.PID_ROLL_motor[I]  = 0.0;
-    CONFIG.data.PID_ROLL_motor[D]  = -3.0;
-    CONFIG.data.PID_ROLL_motor[WG] = 1000.0;    
-
-    #ifdef AltitudeHoldBaro  
-        CONFIG.data.PID_BARO[P]  = 25.0;
-        CONFIG.data.PID_BARO[I]  = 0.6;
-        CONFIG.data.PID_BARO[D]  = -10.0;
-        CONFIG.data.PID_BARO[WG] = 25.0;    
-    #endif
-    
-    #ifdef AltitudeHoldSonar
-        CONFIG.data.PID_SONAR[P]  = 60.0;
-        CONFIG.data.PID_SONAR[I]  = 0.6;
-        CONFIG.data.PID_SONAR[D]  = -10.0;
-        CONFIG.data.PID_SONAR[WG] = 25.0;    
-    #endif
-    
-    writeEEPROM();
-}
-
 void readEEPROM() {
     if (EEPROM.read(0) == 255) {
-        // No EEPROM values detected, re-initialize
+        // No EEPROM values detected, automatic re-initialize
         initializeEEPROM();
-    }
-
-    for (uint16_t i = 0; i < sizeof(CONFIG_struct); i++) {
-        CONFIG.raw[i] = EEPROM.read(i);
+    } else {
+        // There "is" data in the EEPROM, read it all
+        for (uint16_t i = 0; i < sizeof(CONFIG_struct); i++) {
+            CONFIG.raw[i] = EEPROM.read(i);
+        }
     }
 }
