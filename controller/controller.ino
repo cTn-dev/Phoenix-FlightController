@@ -19,6 +19,7 @@
 #include "math.h"
 #include "PID.h"
 #include "dataStorage.h"
+#include "SerialCommunication.h"
 
 // == Hardware setup/s == 
 #define Maggie
@@ -361,6 +362,10 @@ void process10HzTask() {
     #ifdef BatteryMonitorCurrent
         readBatteryMonitorCurrent();
     #endif
+    
+    // Listens/read Serial commands on Serial1 interface 
+    // (used to pass configuration data from configurator)
+    readSerial();
     
     // Blink LED to indicated activity
     Alive_LED_state = !Alive_LED_state;
