@@ -123,8 +123,86 @@ void initializeESC() {
     if (CONFIG.data.calibrateESC) {
         // Calibration sequence requested
         
+        // Signal range TOP maximum
+        #if MOTORS == 3
+            MotorOut[0] = 2000;
+            MotorOut[1] = 2000;
+            MotorOut[2] = 2000;
+            
+            updateMotors();
+        #elif MOTORS == 4
+            MotorOut[0] = 2000;
+            MotorOut[1] = 2000;
+            MotorOut[2] = 2000;
+            MotorOut[3] = 2000;
+            
+            updateMotors();
+        #elif MOTORS == 6
+            MotorOut[0] = 2000;
+            MotorOut[1] = 2000;
+            MotorOut[2] = 2000;
+            MotorOut[3] = 2000;
+            MotorOut[4] = 2000;
+            MotorOut[5] = 2000;    
+
+            updateMotors();
+        #elif MOTORS == 8
+            MotorOut[0] = 2000;
+            MotorOut[1] = 2000;
+            MotorOut[2] = 2000;
+            MotorOut[3] = 2000;
+            MotorOut[4] = 2000;
+            MotorOut[5] = 2000;  
+            MotorOut[6] = 2000;
+            MotorOut[7] = 2000;
+            
+            updateMotors();
+        #endif
         
-        // Calibration done, disable the calibration flag and update EEPROM
+        // Wait for all ESCs to acknowledge (1 beep)
+        delay(5000);
+        
+        // Signal range BOTTOM minimum
+        #if MOTORS == 3
+            MotorOut[0] = 1000;
+            MotorOut[1] = 1000;
+            MotorOut[2] = 1000;
+            
+            updateMotors();
+        #elif MOTORS == 4
+            MotorOut[0] = 1000;
+            MotorOut[1] = 1000;
+            MotorOut[2] = 1000;
+            MotorOut[3] = 1000;
+            
+            updateMotors();
+        #elif MOTORS == 6
+            MotorOut[0] = 1000;
+            MotorOut[1] = 1000;
+            MotorOut[2] = 1000;
+            MotorOut[3] = 1000;
+            MotorOut[4] = 1000;
+            MotorOut[5] = 1000;    
+
+            updateMotors();
+        #elif MOTORS == 8
+            MotorOut[0] = 1000;
+            MotorOut[1] = 1000;
+            MotorOut[2] = 1000;
+            MotorOut[3] = 1000;
+            MotorOut[4] = 1000;
+            MotorOut[5] = 1000;  
+            MotorOut[6] = 1000;
+            MotorOut[7] = 1000;
+            
+            updateMotors();
+        #endif      
+
+        // Wait for all ESCs to acknowledge (2 + 1 beep)
+        delay(4000);        
+        
+        // Calibration done
+        // disabling the calibration flag and updating EEPROM
         CONFIG.data.calibrateESC = 0;
         writeEEPROM();
     }
