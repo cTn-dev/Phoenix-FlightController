@@ -90,7 +90,7 @@ class MPU6050 {
             accelSamples = 0;
         };
 
-        void initialize(int bias0, int bias1, int bias2) {
+        void initialize(int16_t bias0, int16_t bias1, int16_t bias2) {
             // Setup accel bias from EEPROM
             accel_bias[XAXIS] = bias0;
             accel_bias[YAXIS] = bias1;
