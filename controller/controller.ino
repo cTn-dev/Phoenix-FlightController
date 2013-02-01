@@ -30,7 +30,10 @@
     #define AltitudeHoldSonar
     #define BatteryMonitorCurrent
     #define GPS
-    
+	
+	// INCLUDE dataStorage AFTER #defines so it can be configured, but before others include so it can be accessed on then as well.
+	#include "dataStorage.h"
+
     // Critical sensors on board (gyro/accel)
     #include <mpu6050.h>
     
@@ -100,7 +103,6 @@ void reset_PID_integrals() {
 }
   
 // Include this last as it contains objects from previous declarations
-#include "dataStorage.h"
 #include "PilotCommandProcessor.h"  
   
 void setup() {

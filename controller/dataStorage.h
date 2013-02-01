@@ -28,12 +28,18 @@ struct CONFIG_struct {
     #ifdef AltitudeHoldSonar
         double PID_SONAR[4];
     #endif    
+
+	#ifdef Accelerometer
+        int ACCEL_BIAS[3];
+	#endif
 };
 
 union CONFIG_union {
     struct CONFIG_struct data;
     uint8_t raw[sizeof(data)];
-} CONFIG;
+};
+
+CONFIG_union CONFIG;
 
 void initializeEEPROM() {
     // Default settings should be initialized here
@@ -85,6 +91,12 @@ void initializeEEPROM() {
         CONFIG.data.PID_SONAR[D]  = -10.0;
         CONFIG.data.PID_SONAR[WG] = 25.0;    
     #endif
+
+	#ifdef Accelerometer
+        CONFIG.data.ACCEL_BIAS[0] = -425;
+        CONFIG.data.ACCEL_BIAS[1] = 260;
+        CONFIG.data.ACCEL_BIAS[2] = 400;
+	#endif
     
     // This function will only initialize data "locally"
     // writeEEPROM() have to be called manually to store this data in EEPROM

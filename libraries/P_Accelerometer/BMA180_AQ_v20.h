@@ -38,112 +38,119 @@ class BMA180 {
         
             accelSamples = 0;
         };
+
+        void initialize(int bias0, int bias1, int bias2) {
+                accel_bias[XAXIS] = bias0;
+                accel_bias[YAXIS] = bias1;
+                accel_bias[ZAXIS] = bias2;
+                initialize();
+        };
     
-    void initialize() {
-        sensors.i2c_write8(BMA180_ADDRESS, BMA180_RESET_REGISTER, BMA180_TRIGER_RESET_VALUE); // reset
-        delay(10);
-        
-        sensors.i2c_write8(BMA180_ADDRESS, BMA180_ENABLE_WRITE_CONTROL_REGISTER, BMA180_CONTROL_REGISTER); // enable writing to control registers
-        
-        Wire.beginTransmission(BMA180_ADDRESS);
-        Wire.write(BMA180_BW_TCS);
-        Wire.endTransmission(); 
-
-        Wire.requestFrom(BMA180_ADDRESS, 1);
-        uint8_t data = Wire.read();
-        
-        sensors.i2c_write8(BMA180_ADDRESS, BMA180_LOW_PASS_FILTER_REGISTER, data & BMA180_1200HZ_LOW_PASS_FILTER_VALUE); // set low pass filter to 1.2kHz (value = 0000xxxx)
-        
-        Wire.beginTransmission(BMA180_ADDRESS);
-        Wire.write(BMA180_OFFSET_REGISTER);
-        Wire.endTransmission();   
-
-        Wire.requestFrom(BMA180_ADDRESS, 1);
-        data = Wire.read();
-        data &= 0xF1;
-        data |= 0x08; // set range select bits for +/-4g
-        sensors.i2c_write8(BMA180_ADDRESS, BMA180_OFFSET_REGISTER, data);
-    };
-    
-    // ~1280ms (only runs when requested)
-    void calibrate_accel() {
-        uint8_t i, count = 128;
-        int32_t xSum = 0, ySum = 0, zSum = 0;
-
-        for(i = 0; i < count; i++) {
-            readAccelRaw();
-            xSum += accelRaw[XAXIS];
-            ySum += accelRaw[YAXIS];
-            zSum += accelRaw[ZAXIS];
+        void initialize() {
+            sensors.i2c_write8(BMA180_ADDRESS, BMA180_RESET_REGISTER, BMA180_TRIGER_RESET_VALUE); // reset
             delay(10);
-        }
-        
-        accel_bias[XAXIS] = xSum / count;
-        accel_bias[YAXIS] = ySum / count;
-        accel_bias[ZAXIS] = zSum / count;
-
-        // Code will stop here, printing out the calibration data in serial console.
-        // Re-Calibrating each loop.
-        // Offsets to the values returned on a flat surface are meant to be either hardcoded during initialization
-        // or stored inside eeprom.
-        while (1) {
-            Serial.print(accel_bias[XAXIS]);
-            Serial.write('\t');
-            Serial.print(accel_bias[YAXIS]);
-            Serial.write('\t');
-            Serial.print(accel_bias[ZAXIS]);
-            Serial.write('\t');
-            Serial.println();
             
-            delay(5000);
-            calibrate_accel();
-        }
-    };    
-    
-    void readAccelRaw() {
-        Wire.beginTransmission(BMA180_ADDRESS);
-        Wire.write(BMA180_READ_ROLL_ADDRESS);
-        Wire.endTransmission();
-        
-        Wire.requestFrom(BMA180_ADDRESS, BMA180_BUFFER_SIZE);   
- 
-        accelRaw[XAXIS] = -(Wire.read() | (Wire.read() << 8)) >> 2;
-        accelRaw[YAXIS] = (Wire.read() | (Wire.read() << 8)) >> 2; 
-        accelRaw[ZAXIS] = (Wire.read() | (Wire.read() << 8)) >> 2;    
-    };
-    
-    void readAccelSum() {
-        readAccelRaw();
-        
-        accelSum[XAXIS] += accelRaw[XAXIS];
-        accelSum[YAXIS] += accelRaw[YAXIS];
-        accelSum[ZAXIS] += accelRaw[ZAXIS];  
+            sensors.i2c_write8(BMA180_ADDRESS, BMA180_ENABLE_WRITE_CONTROL_REGISTER, BMA180_CONTROL_REGISTER); // enable writing to control registers
 
-        accelSamples++;
-    };    
+            Wire.beginTransmission(BMA180_ADDRESS);
+            Wire.write(BMA180_BW_TCS);
+            Wire.endTransmission();
 
-    void evaluateAccel() {
-        // Calculate average
-        accel[XAXIS] = accelSum[XAXIS] / accelSamples;
-        accel[YAXIS] = accelSum[YAXIS] / accelSamples;
-        accel[ZAXIS] = accelSum[ZAXIS] / accelSamples;  
+            Wire.requestFrom(BMA180_ADDRESS, 1);
+            uint8_t data = Wire.read();
+
+            sensors.i2c_write8(BMA180_ADDRESS, BMA180_LOW_PASS_FILTER_REGISTER, data & BMA180_1200HZ_LOW_PASS_FILTER_VALUE); // set low pass filter to 1.2kHz (value = 0000xxxx)
+
+            Wire.beginTransmission(BMA180_ADDRESS);
+            Wire.write(BMA180_OFFSET_REGISTER);
+            Wire.endTransmission();
+    
+            Wire.requestFrom(BMA180_ADDRESS, 1);
+            data = Wire.read();
+            data &= 0xF1;
+            data |= 0x08; // set range select bits for +/-4g
+            sensors.i2c_write8(BMA180_ADDRESS, BMA180_OFFSET_REGISTER, data);
+        };
         
-        // Apply offsets
-        accel[XAXIS] += accel_bias[XAXIS];
-        accel[YAXIS] += accel_bias[YAXIS];
-        accel[ZAXIS] += accel_bias[ZAXIS];
+        // ~1280ms (only runs when requested)
+        void calibrate_accel() {
+            uint8_t i, count = 128;
+            int32_t xSum = 0, ySum = 0, zSum = 0;
+
+            for(i = 0; i < count; i++) {
+                readAccelRaw();
+                xSum += accelRaw[XAXIS];
+                ySum += accelRaw[YAXIS];
+                zSum += accelRaw[ZAXIS];
+                delay(10);
+            }
+
+            accel_bias[XAXIS] = xSum / count;
+            accel_bias[YAXIS] = ySum / count;
+            accel_bias[ZAXIS] = zSum / count;
+    
+            // Code will stop here, printing out the calibration data in serial console.
+            // Re-Calibrating each loop.
+            // Offsets to the values returned on a flat surface are meant to be either hardcoded during initialization
+            // or stored inside eeprom.
+            while (1) {
+                Serial.print(accel_bias[XAXIS]);
+                Serial.write('\t');
+                Serial.print(accel_bias[YAXIS]);
+                Serial.write('\t');
+                Serial.print(accel_bias[ZAXIS]);
+                Serial.write('\t');
+                Serial.println();
+
+                delay(5000);
+                calibrate_accel();
+            }
+        };
         
-        // Apply correct scaling (at this point accelNsumAvr reprensents +- 1g = 9.81 m/s^2)
-        accel[XAXIS] *= accelScaleFactor;
-        accel[YAXIS] *= accelScaleFactor;
-        accel[ZAXIS] *= accelScaleFactor;
+        void readAccelRaw() {
+            Wire.beginTransmission(BMA180_ADDRESS);
+            Wire.write(BMA180_READ_ROLL_ADDRESS);
+            Wire.endTransmission();
+
+            Wire.requestFrom(BMA180_ADDRESS, BMA180_BUFFER_SIZE);
+
+            accelRaw[XAXIS] = -(Wire.read() | (Wire.read() << 8)) >> 2;
+            accelRaw[YAXIS] = (Wire.read() | (Wire.read() << 8)) >> 2;
+            accelRaw[ZAXIS] = (Wire.read() | (Wire.read() << 8)) >> 2;
+        };
         
-        // Reset SUM variables
-        accelSum[XAXIS] = 0;
-        accelSum[YAXIS] = 0;
-        accelSum[ZAXIS] = 0;
-        accelSamples = 0;
-    };
+        void readAccelSum() {
+            readAccelRaw();
+
+            accelSum[XAXIS] += accelRaw[XAXIS];
+            accelSum[YAXIS] += accelRaw[YAXIS];
+            accelSum[ZAXIS] += accelRaw[ZAXIS];
+
+            accelSamples++;
+        };
+
+        void evaluateAccel() {
+            // Calculate average
+            accel[XAXIS] = accelSum[XAXIS] / accelSamples;
+            accel[YAXIS] = accelSum[YAXIS] / accelSamples;
+            accel[ZAXIS] = accelSum[ZAXIS] / accelSamples;
+
+            // Apply offsets
+            accel[XAXIS] += accel_bias[XAXIS];
+            accel[YAXIS] += accel_bias[YAXIS];
+            accel[ZAXIS] += accel_bias[ZAXIS];
+
+            // Apply correct scaling (at this point accelNsumAvr reprensents +- 1g = 9.81 m/s^2)
+            accel[XAXIS] *= accelScaleFactor;
+            accel[YAXIS] *= accelScaleFactor;
+            accel[ZAXIS] *= accelScaleFactor;
+
+            // Reset SUM variables
+            accelSum[XAXIS] = 0;
+            accelSum[YAXIS] = 0;
+            accelSum[ZAXIS] = 0;
+            accelSamples = 0;
+        };
     
     private:
         int16_t accel_bias[3];
@@ -158,7 +165,7 @@ class BMA180 {
 BMA180 bma;
 
 void SensorArray::initializeAccel() {
-    bma.initialize();
+    bma.initialize(CONFIG.data.ACCEL_BIAS[0], CONFIG.data.ACCEL_BIAS[1], CONFIG.data.ACCEL_BIAS[2]);
 }
 
 void SensorArray::readAccelSum() {
