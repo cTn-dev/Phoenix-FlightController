@@ -7,10 +7,10 @@ PIN setup (Teensy 3.0 pin numbering)
   
   - PPM in (receiver) 3
   
-  - Rotor 1 20
-  - Rotor 2 21
-  - Rotor 3 22
-  - Rotor 4 23
+  - Rotor 1 22
+  - Rotor 2 23
+  - Rotor 3 9
+  - Rotor 4 10
   
   - Orientation lights / Armed-Disarmed indicator 14
   
