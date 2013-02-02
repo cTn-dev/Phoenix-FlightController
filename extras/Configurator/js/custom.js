@@ -92,9 +92,17 @@ $(document).ready(function() {
         var message = str2ab("[2:0]");
         
         chrome.serial.write(connectionId, message, function(writeInfo) {
-            console.log("Written: " + writeInfo.bytesWritten + " bytes");
+            console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
         });
-    });    
+    });
+
+    $('#content').delegate('.getDATA', 'click', function() {
+        var message = str2ab("[1:0]");
+        
+        chrome.serial.write(connectionId, message, function(writeInfo) {
+            console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+        });        
+    });
     
 });
 
@@ -123,15 +131,93 @@ function readPoll() {
     chrome.serial.read(connectionId, 24, onCharRead);
 };
 
+
+var packet_state = 0;
+var command = 0;
+var message = new Array();
+var chars_read = 0;
 function onCharRead(readInfo) {
     if (readInfo && readInfo.bytesRead > 0 && readInfo.data) {
         var data = new Uint8Array(readInfo.data);
         
         for (var i = 0; i < data.length; i++) {
-            console.log(data[i]);
+            switch (packet_state) {
+                case 0:
+                    if (data[i] == 91) { // [
+                        // Reset variables
+                        message.length = 0; // empty array
+                        chars_read = 0;
+                        command = 0;
+                        
+                        packet_state++;
+                    }
+                break;
+                case 1:
+                    command = data[i];
+                    packet_state++;
+                break;
+                case 2:
+                    if (data[i] == 58) { // :
+                        packet_state++;
+                    }
+                break;
+                case 3:
+                    if (data[i] != 93) { // ]
+                        message[chars_read] = data[i];
+                        chars_read++;
+                    } else { // Ending char received, process data
+                        process_data();
+                        
+                        packet_state = 0;
+                    }                    
+                break;
+            }
         }
     }
 };
+
+function process_data() {
+    switch (command) {
+        case 49: // configuration data // 1
+            var eepromConfigBytes = new ArrayBuffer(264);
+            var eepromConfigBytesView = new Uint8Array(eepromConfigBytes);
+            for (var i = 0; i < message.length; i++) {
+                eepromConfigBytesView[i] = message[i];
+            }
+            
+            var view = new jDataView(eepromConfigBytes, 0, undefined, true);
+   
+            var parser = new jParser(view, {
+                eepromConfigDefinition: {
+                    version: 'uint8',
+                    calibrateESC: 'uint8',
+
+                    ACCEL_BIAS: ['array', 'int16', 3],
+
+                    PID_YAW_c: ['array', 'float64', 4],
+                    PID_PITCH_c: ['array', 'float64', 4],
+                    PID_ROLL_c: ['array', 'float64', 4],
+
+                    PID_YAW_m: ['array', 'float64', 4],
+                    PID_PITCH_m: ['array', 'float64', 4],
+                    PID_ROLL_m: ['array', 'float64', 4],
+
+                    PID_BARO: ['array', 'float64', 4],
+                    PID_SONAR: ['array', 'float64', 4]
+                }
+            });
+
+            var eepromConfig = parser.parse('eepromConfigDefinition');
+            
+            console.log(eepromConfig);
+        break;
+        case 50: // 2
+        break;
+        case 57: // ACK // 9
+            console.log(message);
+        break;
+    }
+}
 
 
 // String to array buffer

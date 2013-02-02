@@ -54,64 +54,15 @@ class Configurator {
             
             switch (command) {
                 case 1: // Requesting configuration union
+                    Serial.write(0x5B); // [
+                    Serial.write(0x31); // 1
+                    Serial.write(0x3A); // :
+                    
                     for (uint16_t i = 0; i < sizeof(CONFIG_struct); i++) {
                         Serial.write(CONFIG.raw[i]);
-                    }                
-                    
-                    /*
-                    Serial.print(CONFIG.data.version);
-                    
-                    Serial.print(CONFIG.data.ACCEL_BIAS[0]);
-                    Serial.print(CONFIG.data.ACCEL_BIAS[1]);
-                    Serial.print(CONFIG.data.ACCEL_BIAS[2]);   
-                    
-                    // Altitude
-                    Serial.print(CONFIG.data.PID_YAW_c[P], 4);
-                    Serial.print(CONFIG.data.PID_YAW_c[I], 4);
-                    Serial.print(CONFIG.data.PID_YAW_c[D], 4);
-                    Serial.print(CONFIG.data.PID_YAW_c[WG], 4);
-                    
-                    Serial.print(CONFIG.data.PID_PITCH_c[P], 4);
-                    Serial.print(CONFIG.data.PID_PITCH_c[I], 4);
-                    Serial.print(CONFIG.data.PID_PITCH_c[D], 4);
-                    Serial.print(CONFIG.data.PID_PITCH_c[WG], 4);
-                    
-                    Serial.print(CONFIG.data.PID_ROLL_c[P], 4);
-                    Serial.print(CONFIG.data.PID_ROLL_c[I], 4);
-                    Serial.print(CONFIG.data.PID_ROLL_c[D], 4);
-                    Serial.print(CONFIG.data.PID_ROLL_c[WG], 4);
-                    
-                    // Rate
-                    Serial.print(CONFIG.data.PID_YAW_m[P], 4);
-                    Serial.print(CONFIG.data.PID_YAW_m[I], 4);
-                    Serial.print(CONFIG.data.PID_YAW_m[D], 4);
-                    Serial.print(CONFIG.data.PID_YAW_m[WG], 4);
+                    }  
 
-                    Serial.print(CONFIG.data.PID_PITCH_m[P], 4);
-                    Serial.print(CONFIG.data.PID_PITCH_m[I], 4);
-                    Serial.print(CONFIG.data.PID_PITCH_m[D], 4);
-                    Serial.print(CONFIG.data.PID_PITCH_m[WG], 4);
-
-                    Serial.print(CONFIG.data.PID_ROLL_m[P], 4);
-                    Serial.print(CONFIG.data.PID_ROLL_m[I], 4);
-                    Serial.print(CONFIG.data.PID_ROLL_m[D], 4);
-                    Serial.print(CONFIG.data.PID_ROLL_m[WG], 4);  
-
-                    // Baro
-                    Serial.print(CONFIG.data.PID_BARO[P], 4);
-                    Serial.print(CONFIG.data.PID_BARO[I], 4);
-                    Serial.print(CONFIG.data.PID_BARO[D], 4);
-                    Serial.print(CONFIG.data.PID_BARO[WG], 4);
-
-                    // Sonar
-                    Serial.print(CONFIG.data.PID_SONAR[P], 4);
-                    Serial.print(CONFIG.data.PID_SONAR[I], 4);
-                    Serial.print(CONFIG.data.PID_SONAR[D], 4);
-                    Serial.print(CONFIG.data.PID_SONAR[WG], 4);
-
-                    // End of packet
-                    Serial.println();
-                    */
+                    Serial.write(0x5D); // ]
                 break;
                 case 2: // Activating ESC calibration
                     CONFIG.data.calibrateESC = 1;
@@ -120,7 +71,11 @@ class Configurator {
                     writeEEPROM();
                     
                     // ACKownledge
-                    Serial.write(0x31); // ASCII 1, HEX 0x31, DEC 49
+                    Serial.write(0x5B); // [
+                    Serial.write(0x39); // 9
+                    Serial.write(0x3A); // :
+                    Serial.write(0x30); // 0
+                    Serial.write(0x5D); // ]
                 break;
             }
         };
