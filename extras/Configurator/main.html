@@ -5,7 +5,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="author" content="cTn" />
         <link type="text/css" rel="stylesheet" href="./css/style.css" media="all" /> 
-        <script type="text/javascript" src="./js/jquery-1.8.3.min.js"></script>
+        <script type="text/javascript" src="./js/jquery-1.9.0.min.js"></script>
         <script type="text/javascript" src="./js/custom.js"></script>        
     </head>
     <body>
@@ -31,13 +31,40 @@
                         </select>
                     </dt>
                     <dd>Baud</dd>
+                    <dt>
+                        <select id="delay">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </dt>
+                    <dd>Delay</dd>
                 </dl>
                 <div class="left">
                     <a class="refresh" href="#" title="">Refresh</a>
                     <a class="connect" href="#" title="">Connect</a>
                 </div>    
             </div>
-            <div class="clear-both"></div>        
+            <div class="clear-both"></div>
+            <div id="tabs">
+                <ul>
+                    <li class="first active"><a href="#" title="Initial Setup">Initial Setup</a></li>
+                    <li><a href="#" title="Sensor data">Sensor Data</a></li>
+                    <li class="last"><a href="#" title="test">test</a>
+                </ul>
+                <div class="clear-both"></div>
+            </div>            
+            <div id="content">
+                
+            </div>
         </div>
     </body>
 </html>            

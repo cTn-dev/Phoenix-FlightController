@@ -5,6 +5,7 @@ var serial_poll;
 $(document).ready(function() { 
     var port_picker = $('div#port-picker .port');
     var baud_picker = $('div#port-picker #baud');
+    var delay_picker = $('div#port-picker #delay');
     
     $('div#port-picker a.refresh').click(function() {
         console.log("Available port list requested.");
@@ -29,27 +30,47 @@ $(document).ready(function() {
             }
         });
     });
+    
     // software click to refresh port picker select during first load
     $('div#port-picker a.refresh').click();
     
-    $('div#port-picker a.connect').toggle(function() {
-        var selected_port = $('select#port', port_picker).val();
-        var selected_baud = parseInt(baud_picker.val());
+    $('div#port-picker a.connect').click(function() {
+        var clicks = $(this).data('clicks');
         
-        chrome.serial.open(selected_port, {
-            bitrate: selected_baud
-        }, onOpen);
+        if (clicks) { // odd number of clicks
+            chrome.serial.close(connectionId, onClosed);
+            
+            clearInterval(serial_poll);
+            
+            $(this).text('Connect');        
+        } else { // even number of clicks         
+            var selected_port = $('select#port', port_picker).val();
+            var selected_baud = parseInt(baud_picker.val());
+            var selected_delay = parseInt(delay_picker);
+            
+            chrome.serial.open(selected_port, {
+                bitrate: selected_baud
+            }, onOpen);
+            
+            setTimeout(function() {
+                serial_poll = setInterval(readPoll, 10);
+            }, selected_delay * 1000);    
+            
+            $(this).text('Disconnect');            
+        }
         
-        serial_poll = setInterval(readPoll, 10);
+        $(this).data("clicks", !clicks);
+    }); 
+
+    // Tabs
+    var tabs = $('#tabs > ul');
+    $('a', tabs).click(function() {
+        // disable previous active button
+        $('li', tabs).removeClass('active');
         
-        $(this).text('Disconnect');
-    }, function() {
-        chrome.serial.close(connectionId, onClosed);
-        
-        clearInterval(serial_poll);
-        
-        $(this).text('Connect');
-    });    
+        // Highlight selected button
+        $(this).parent().addClass('active');
+    });
 });
 
 function onOpen(openInfo) {
@@ -77,11 +98,12 @@ function readPoll() {
     chrome.serial.read(connectionId, 2, onCharRead);
 };
 
-function onCharRead() {
+function onCharRead(readInfo) {
     if (readInfo && readInfo.bytesRead > 0 && readInfo.data) {
         var data = new Uint8Array(readInfo.data);
         
         for (var i = 0; i < data.length; i++) {
+            console.log(data[i]);
         }
     }
 };
