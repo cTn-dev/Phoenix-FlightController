@@ -7,7 +7,7 @@
     #define EEPROM_SIZE 512
 #endif    
 
-struct CONFIG_struct {
+struct __attribute__((packed)) CONFIG_struct {
     uint8_t version;
     bool calibrateESC;
     

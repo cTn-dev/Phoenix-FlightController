@@ -91,7 +91,6 @@ $(document).ready(function() {
     $('#content').delegate('.calibrateESC', 'click', function() {
         var message = str2ab("[2:0]");
         
-        console.log(message);
         chrome.serial.write(connectionId, message, function(writeInfo) {
             console.log("Written: " + writeInfo.bytesWritten + " bytes");
         });
