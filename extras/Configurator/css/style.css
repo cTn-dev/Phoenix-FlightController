@@ -134,6 +134,9 @@ a:hover {
         }
 #content {
     margin-top: 27px;
+    
+    padding: 10px;
+    
     background-color: white;
     min-height: 100px;
     

@@ -53,11 +53,11 @@ class Configurator {
             int16_t command = atoi(command_buffer);
             
             switch (command) {
-                case 1:
+                case 1: // Requesting configuration union
                     for (uint16_t i = 0; i < sizeof(CONFIG_struct); i++) {
                         Serial.write(CONFIG.raw[i]);
                     }                
-                
+                    
                     /*
                     Serial.print(CONFIG.data.version);
                     
@@ -113,7 +113,14 @@ class Configurator {
                     Serial.println();
                     */
                 break;
-                case 2:
+                case 2: // Activating ESC calibration
+                    CONFIG.data.calibrateESC = 1;
+                    
+                    // Write config to EEPROM
+                    writeEEPROM();
+                    
+                    // ACKownledge
+                    Serial.write(0x31); // ASCII 1, HEX 0x31, DEC 49
                 break;
             }
         };

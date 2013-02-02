@@ -70,7 +70,33 @@ $(document).ready(function() {
         
         // Highlight selected button
         $(this).parent().addClass('active');
+        
+        switch ($(this).parent().index()) {
+            case 0: // initial setup
+                $('#content').load("./tabs/initial_setup.html");
+            break;
+            case 1: // sensor data
+                $('#content').load("./tabs/sensor_data.html");
+            break;
+            case 2: // test
+                $('#content').load("./tabs/test.html");
+            break;
+        }
     });
+ 
+    // Load initial tab to content div
+    $('li > a:first', tabs).click(); 
+    
+    // Specific functions in content
+    $('#content').delegate('.calibrateESC', 'click', function() {
+        var message = str2ab("[2:0]");
+        
+        console.log(message);
+        chrome.serial.write(connectionId, message, function(writeInfo) {
+            console.log("Written: " + writeInfo.bytesWritten + " bytes");
+        });
+    });    
+    
 });
 
 function onOpen(openInfo) {
@@ -95,7 +121,7 @@ function onClosed(result) {
 };
 
 function readPoll() {
-    chrome.serial.read(connectionId, 2, onCharRead);
+    chrome.serial.read(connectionId, 24, onCharRead);
 };
 
 function onCharRead(readInfo) {
@@ -106,4 +132,17 @@ function onCharRead(readInfo) {
             console.log(data[i]);
         }
     }
+};
+
+
+// String to array buffer
+function str2ab(str) {
+    var buf = new ArrayBuffer(str.length);
+    var bufView = new Uint8Array(buf);
+    
+    for (var i = 0, strLen = str.length; i < strLen; i++) {
+        bufView[i] = str.charCodeAt(i);
+    }
+    
+    return buf;
 };

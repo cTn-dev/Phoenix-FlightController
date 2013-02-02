@@ -113,7 +113,7 @@ void setup() {
     Serial.begin(115200); // Virtual USB Serial on teensy 3.0 is always 12 Mbit/sec (can be initialized with baud rate 0)
 
     #ifdef GPS
-        Serial2.begin(38400);
+        Serial3.begin(38400);
     #endif
  
     // Join I2C bus as master
