@@ -133,8 +133,11 @@ function readPoll() {
 
 
 var packet_state = 0;
-var command = 0;
-var message = new Array();
+var command_buffer = new Array();
+var command_i = 0;
+var command;
+
+var message_buffer = new Array();
 var chars_read = 0;
 function onCharRead(readInfo) {
     if (readInfo && readInfo.bytesRead > 0 && readInfo.data) {
@@ -145,7 +148,8 @@ function onCharRead(readInfo) {
                 case 0:
                     if (data[i] == 91) { // [
                         // Reset variables
-                        message.length = 0; // empty array
+                        command_buffer.length = 0; // empty array
+                        message_buffer.length = 0; // empty array
                         chars_read = 0;
                         command = 0;
                         
@@ -153,19 +157,19 @@ function onCharRead(readInfo) {
                     }
                 break;
                 case 1:
-                    command = data[i];
-                    packet_state++;
+                    if (data[i] != 58) { // :
+                        command_buffer = data[i];
+                        command_i++;
+                    } else {    
+                        packet_state++;
+                    }    
                 break;
                 case 2:
-                    if (data[i] == 58) { // :
-                        packet_state++;
-                    }
-                break;
-                case 3:
                     if (data[i] != 93) { // ]
-                        message[chars_read] = data[i];
+                        message_buffer[chars_read] = data[i];
                         chars_read++;
                     } else { // Ending char received, process data
+                        command = String.fromCharCode(command_buffer);
                         process_data();
                         
                         packet_state = 0;
@@ -178,11 +182,11 @@ function onCharRead(readInfo) {
 
 function process_data() {
     switch (command) {
-        case 49: // configuration data // 1
+        case '1': // configuration data // 1
             var eepromConfigBytes = new ArrayBuffer(264);
             var eepromConfigBytesView = new Uint8Array(eepromConfigBytes);
-            for (var i = 0; i < message.length; i++) {
-                eepromConfigBytesView[i] = message[i];
+            for (var i = 0; i < message_buffer.length; i++) {
+                eepromConfigBytesView[i] = message_buffer[i];
             }
             
             var view = new jDataView(eepromConfigBytes, 0, undefined, true);
@@ -213,8 +217,14 @@ function process_data() {
         break;
         case 50: // 2
         break;
-        case 57: // ACK // 9
-            console.log(message);
+        case '9': // ACK // 9
+            var message = String.fromCharCode(message_buffer);
+            
+            if (message == '1') {
+                console.log("ACK");
+            } else {
+                console.log("REFUSED");
+            }
         break;
     }
 }

@@ -71,13 +71,25 @@ class Configurator {
                     writeEEPROM();
                     
                     // ACKownledge
-                    Serial.write(0x5B); // [
-                    Serial.write(0x39); // 9
-                    Serial.write(0x3A); // :
-                    Serial.write(0x30); // 0
-                    Serial.write(0x5D); // ]
+                    ACK();
                 break;
             }
+        };
+        
+        void ACK() {
+            Serial.write(0x5B); // [
+            Serial.write(0x39); // 9
+            Serial.write(0x3A); // :
+            Serial.write(0x31); // 1
+            Serial.write(0x5D); // ]        
+        };
+        
+        void REFUSED() {
+            Serial.write(0x5B); // [
+            Serial.write(0x39); // 9
+            Serial.write(0x3A); // :
+            Serial.write(0x30); // 0
+            Serial.write(0x5D); // ]          
         };
     
     private:
