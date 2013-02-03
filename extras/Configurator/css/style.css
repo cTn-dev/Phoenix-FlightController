@@ -90,13 +90,20 @@ a:hover {
         }
     #port-picker a.connect {
         margin-top: 5px;
-        background-color: #51c7b5;
+        background-color: #be2222;
         color: white;
     }
         #port-picker a.connect:hover {
             text-decoration: none;
-            background-color: #2d7066;
+            background-color: #ea3131;
         }
+    #port-picker a.connect.active {
+        background-color: #0fab16;
+    }
+        #port-picker a.connect.active:hover {
+            background-color: #13d81d;
+        }       
+        
 #command-log {
     float: right;
     
@@ -164,9 +171,13 @@ table.pid_tuning {
 }
     table.pid_tuning, table.pid_tuning th, table.pid_tuning td {
         padding: 5px;
-        border: 1px solid silver;
+        border: 1px solid #8b8b8b;
     }
     table.pid_tuning input {
+        width: 130px;
+        height: 18px;
+        line-height: 18px;
+        
         padding: 0 5px 0 5px;
         border: 1px solid silver;
         text-align: right;

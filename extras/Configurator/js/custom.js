@@ -44,7 +44,8 @@ $(document).ready(function() {
             
             clearInterval(serial_poll);
             
-            $(this).text('Connect');        
+            $(this).text('Connect');
+            $(this).removeClass('active');            
         } else { // even number of clicks         
             var selected_port = $('select#port', port_picker).val();
             var selected_baud = parseInt(baud_picker.val());
@@ -59,7 +60,8 @@ $(document).ready(function() {
                 serial_poll = setInterval(readPoll, 10);
             }, selected_delay * 1000);    
             
-            $(this).text('Disconnect');            
+            $(this).text('Disconnect');  
+            $(this).addClass('active');
         }
         
         $(this).data("clicks", !clicks);
@@ -120,7 +122,22 @@ $(document).ready(function() {
                     $('#content .motor-roll input').each(function() {
                         $(this).val(eepromConfig.PID_ROLL_m[i]);
                         i++;
+                    });
+
+                    // Baro
+                    i = 0; // reset
+                    $('#content .baro input').each(function() {
+                        $(this).val(eepromConfig.PID_BARO[i]);
+                        i++;
+                    });
+                    
+                    // Sonar
+                    i = 0; // reset
+                    $('#content .sonar input').each(function() {
+                        $(this).val(eepromConfig.PID_SONAR[i]);
+                        i++;
                     });                    
+                    
                 });
             break;            
             case 2: // sensor data
@@ -142,6 +159,19 @@ $(document).ready(function() {
             }    
         });
     });
+    
+    $('#content').delegate('.pid_tuning a.update', 'click', function() {
+        var parent = $(this).parent().parent();
+        var i = 0;
+        $('input', parent).each(function() {
+            val = $(this).val();
+            
+            console.log(val);
+            
+            i++;
+        });
+    });
+    
 });
 
 
@@ -168,12 +198,14 @@ function onOpen(openInfo) {
 function onClosed(result) {
     if (result) { // All went as expected
         console.log('Connection closed successfully.');
+        command_log('Connection closed -- <span style="color: green;">OK</span>');
         
         connectionId = -1; // reset connection id
         $('#content').empty(); // empty content
         $('#tabs > ul li').removeClass('active'); // de-select any selected tabs
     } else { // Something went wrong
         console.log('There was an error that happened during "connection-close" procedure.');
+        command_log('Connection closed -- <span style="color: red;">ERROR</span>');
     }    
 };
 
@@ -265,7 +297,6 @@ function process_data() {
             eepromConfig = parser.parse('eepromConfigDefinition');
             
             $('#tabs li a:first').click();
-            
             command_log('Configuration UNION received -- <span style="color: green">OK</span>');
         break;
         case 50: // 2
@@ -282,10 +313,9 @@ function process_data() {
     }
 }
 
-
 function command_log(message) {
     var d = new Date();
-    var time = d.getHours() + ':' + d.getMinutes() + ':' + ((d.getSeconds() < 10) ? '0' + d.getSeconds(): d.getSeconds());
+    var time = d.getHours() + ':' + ((d.getMinutes() < 10) ? '0' + d.getMinutes(): d.getMinutes()) + ':' + ((d.getSeconds() < 10) ? '0' + d.getSeconds(): d.getSeconds());
     
     $('div#command-log > div.wrapper').append('<p>' + time + ' -- ' + message + '</p>');
     $('div#command-log').scrollTop($('div#command-log div.wrapper').height());    
