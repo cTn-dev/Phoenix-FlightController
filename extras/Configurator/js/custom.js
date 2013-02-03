@@ -2,6 +2,10 @@ var connectionId = -1;
 var port_list;
 var serial_poll;
 
+var eepromConfig;
+
+var testing = 0;
+
 $(document).ready(function() { 
     var port_picker = $('div#port-picker .port');
     var baud_picker = $('div#port-picker #baud');
@@ -53,6 +57,7 @@ $(document).ready(function() {
             }, onOpen);
             
             setTimeout(function() {
+                // start polling
                 serial_poll = setInterval(readPoll, 10);
             }, selected_delay * 1000);    
             
@@ -75,11 +80,11 @@ $(document).ready(function() {
             case 0: // initial setup
                 $('#content').load("./tabs/initial_setup.html");
             break;
-            case 1: // sensor data
+            case 1: // pid tuning
+                $('#content').load("./tabs/pid_tuning.html");
+            break;            
+            case 2: // sensor data
                 $('#content').load("./tabs/sensor_data.html");
-            break;
-            case 2: // test
-                $('#content').load("./tabs/test.html");
             break;
         }
     });
@@ -88,23 +93,21 @@ $(document).ready(function() {
     $('li > a:first', tabs).click(); 
     
     // Specific functions in content
-    $('#content').delegate('.calibrateESC', 'click', function() {
-        var message = str2ab("[2:0]");
-        
-        chrome.serial.write(connectionId, message, function(writeInfo) {
-            console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+    $('#content').delegate('.calibrateESC', 'click', function() {  
+        chrome.serial.write(connectionId, str2ab("[2:0]"), function(writeInfo) {
+            if (writeInfo.bytesWritten > 0) {
+                console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+                
+                var d = new Date();
+                var time = d.getHours() + ':' + d.getMinutes() + ':' + ((d.getSeconds() < 10) ? '0' + d.getSeconds(): d.getSeconds());
+                
+                $('div#command-log > div.wrapper').append('<p>' + time + ' -- ESC Calibration at next start of FC/UAV requested ... <span style="color: green;">ACK</span></p>');
+                $('div#command-log').scrollTop($('div#command-log div.wrapper').height());
+            }    
         });
     });
-
-    $('#content').delegate('.getDATA', 'click', function() {
-        var message = str2ab("[1:0]");
-        
-        chrome.serial.write(connectionId, message, function(writeInfo) {
-            console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
-        });        
-    });
-    
 });
+
 
 function onOpen(openInfo) {
     connectionId = openInfo.connectionId;
@@ -114,6 +117,11 @@ function onOpen(openInfo) {
         
         // Start reading
         chrome.serial.read(connectionId, 1, onCharRead);
+        
+        // request configuration data (so we have something to work with)
+        chrome.serial.write(connectionId, str2ab("[1:0]"), function(writeInfo) {
+            console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+        });  
     } else {
         console.log('There was a problem in opening the connection.');
     }    
@@ -150,8 +158,9 @@ function onCharRead(readInfo) {
                         // Reset variables
                         command_buffer.length = 0; // empty array
                         message_buffer.length = 0; // empty array
+                        
+                        command_i = 0;
                         chars_read = 0;
-                        command = 0;
                         
                         packet_state++;
                     }
@@ -211,7 +220,7 @@ function process_data() {
                 }
             });
 
-            var eepromConfig = parser.parse('eepromConfigDefinition');
+            eepromConfig = parser.parse('eepromConfigDefinition');
             
             console.log(eepromConfig);
         break;

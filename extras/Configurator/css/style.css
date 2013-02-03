@@ -29,11 +29,12 @@ a:hover {
 }
 #main-wrapper {
     width: 940px;
-    margin: 20px auto 0 auto;
+    margin: 10px auto 0 auto;
     
     padding: 0 10px 0 10px;
 }
 #port-picker {
+    float: left;
 }
     #port-picker dl {
         float: left;
@@ -96,6 +97,21 @@ a:hover {
             text-decoration: none;
             background-color: #2d7066;
         }
+#command-log {
+    float: right;
+    
+    width: 680px;
+    height: 60px;
+    
+    border: 1px solid silver;
+    
+    background-color: white;
+    
+    overflow: auto;
+} 
+    #command-log .wrapper {
+        padding: 5px;
+    }
 #tabs {
     position: absolute;
     margin-top: 1px;
@@ -138,7 +154,15 @@ a:hover {
     padding: 10px;
     
     background-color: white;
-    min-height: 100px;
+    min-height: 355px;
     
     border: 1px solid #848484;
 }
+table.pid_tuning {
+    width: 100%;
+    border-collapse:collapse;    
+}
+    table.pid_tuning, table.pid_tuning td, table.pid_tuning th {
+        padding: 5px;
+        border: 1px solid silver;
+    }
