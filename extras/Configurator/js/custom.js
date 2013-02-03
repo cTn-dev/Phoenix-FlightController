@@ -138,11 +138,7 @@ $(document).ready(function() {
             if (writeInfo.bytesWritten > 0) {
                 console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
                 
-                var d = new Date();
-                var time = d.getHours() + ':' + d.getMinutes() + ':' + ((d.getSeconds() < 10) ? '0' + d.getSeconds(): d.getSeconds());
-                
-                $('div#command-log > div.wrapper').append('<p>' + time + ' -- ESC Calibration at next start of FC/UAV requested ... <span style="color: green;">ACK</span></p>');
-                $('div#command-log').scrollTop($('div#command-log div.wrapper').height());
+                command_log('ESC Calibration at next start of FC/UAV requested ...');
             }    
         });
     });
@@ -154,6 +150,7 @@ function onOpen(openInfo) {
     
     if (connectionId != -1) {
         console.log('Connection was opened with ID: ' + connectionId);
+        command_log('Connection to the serial BUS was opened with ID: ' + connectionId);
         
         // Start reading
         chrome.serial.read(connectionId, 1, onCharRead);
@@ -161,6 +158,7 @@ function onOpen(openInfo) {
         // request configuration data (so we have something to work with)
         chrome.serial.write(connectionId, str2ab("[1:0]"), function(writeInfo) {
             console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+            command_log('Requesting configuration UNION from Flight Controller');
         });  
     } else {
         console.log('There was a problem in opening the connection.');
@@ -267,6 +265,8 @@ function process_data() {
             eepromConfig = parser.parse('eepromConfigDefinition');
             
             $('#tabs li a:first').click();
+            
+            command_log('Configuration UNION received -- <span style="color: green">OK</span>');
         break;
         case 50: // 2
         break;
@@ -283,6 +283,14 @@ function process_data() {
 }
 
 
+function command_log(message) {
+    var d = new Date();
+    var time = d.getHours() + ':' + d.getMinutes() + ':' + ((d.getSeconds() < 10) ? '0' + d.getSeconds(): d.getSeconds());
+    
+    $('div#command-log > div.wrapper').append('<p>' + time + ' -- ' + message + '</p>');
+    $('div#command-log').scrollTop($('div#command-log div.wrapper').height());    
+}
+
 // String to array buffer
 function str2ab(str) {
     var buf = new ArrayBuffer(str.length);
@@ -293,4 +301,4 @@ function str2ab(str) {
     }
     
     return buf;
-};
+}

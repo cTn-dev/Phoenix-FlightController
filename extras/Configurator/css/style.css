@@ -167,7 +167,9 @@ table.pid_tuning {
         border: 1px solid silver;
     }
     table.pid_tuning input {
+        padding: 0 5px 0 5px;
         border: 1px solid silver;
+        text-align: right;
     }
     table.pid_tuning a.update {
         display: block;
