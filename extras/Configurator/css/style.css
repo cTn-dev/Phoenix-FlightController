@@ -162,7 +162,27 @@ table.pid_tuning {
     width: 100%;
     border-collapse:collapse;    
 }
-    table.pid_tuning, table.pid_tuning td, table.pid_tuning th {
+    table.pid_tuning, table.pid_tuning th, table.pid_tuning td {
         padding: 5px;
         border: 1px solid silver;
+    }
+    table.pid_tuning input {
+        border: 1px solid silver;
+    }
+    table.pid_tuning a.update {
+        display: block;
+        
+        width: 60px;
+        height: 18px;
+        line-height: 18px;
+        
+        color: white;
+        text-align: center;
+        
+        border: 1px solid silver;
+        background-color: #078814;
+    }
+    table.pid_tuning a.update:hover {
+        text-decoration: none;
+        background-color: #13b723;
     }

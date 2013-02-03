@@ -4,8 +4,6 @@ var serial_poll;
 
 var eepromConfig;
 
-var testing = 0;
-
 $(document).ready(function() { 
     var port_picker = $('div#port-picker .port');
     var baud_picker = $('div#port-picker #baud');
@@ -70,6 +68,9 @@ $(document).ready(function() {
     // Tabs
     var tabs = $('#tabs > ul');
     $('a', tabs).click(function() {
+        if (connectionId < 1) { // if there is no active connection, return
+            return;
+        }
         // disable previous active button
         $('li', tabs).removeClass('active');
         
@@ -81,7 +82,46 @@ $(document).ready(function() {
                 $('#content').load("./tabs/initial_setup.html");
             break;
             case 1: // pid tuning
-                $('#content').load("./tabs/pid_tuning.html");
+                $('#content').load("./tabs/pid_tuning.html", function() {
+                    var i = 0;
+                    
+                    // Command
+                    $('#content .command-yaw input').each(function() {
+                        $(this).val(eepromConfig.PID_YAW_c[i]);
+                        i++;
+                    });
+                    
+                    i = 0; // reset
+                    $('#content .command-pitch input').each(function() {
+                        $(this).val(eepromConfig.PID_PITCH_c[i]);
+                        i++;
+                    });
+                    
+                    i = 0; // reset
+                    $('#content .command-roll input').each(function() {
+                        $(this).val(eepromConfig.PID_ROLL_c[i]);
+                        i++;
+                    });
+
+                    // Motor
+                    i = 0; // reset
+                    $('#content .motor-yaw input').each(function() {
+                        $(this).val(eepromConfig.PID_YAW_m[i]);
+                        i++;
+                    });
+                    
+                    i = 0; // reset
+                    $('#content .motor-pitch input').each(function() {
+                        $(this).val(eepromConfig.PID_PITCH_m[i]);
+                        i++;
+                    });
+                    
+                    i = 0; // reset
+                    $('#content .motor-roll input').each(function() {
+                        $(this).val(eepromConfig.PID_ROLL_m[i]);
+                        i++;
+                    });                    
+                });
             break;            
             case 2: // sensor data
                 $('#content').load("./tabs/sensor_data.html");
@@ -130,6 +170,10 @@ function onOpen(openInfo) {
 function onClosed(result) {
     if (result) { // All went as expected
         console.log('Connection closed successfully.');
+        
+        connectionId = -1; // reset connection id
+        $('#content').empty(); // empty content
+        $('#tabs > ul li').removeClass('active'); // de-select any selected tabs
     } else { // Something went wrong
         console.log('There was an error that happened during "connection-close" procedure.');
     }    
@@ -222,7 +266,7 @@ function process_data() {
 
             eepromConfig = parser.parse('eepromConfigDefinition');
             
-            console.log(eepromConfig);
+            $('#tabs li a:first').click();
         break;
         case 50: // 2
         break;
