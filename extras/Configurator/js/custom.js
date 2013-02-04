@@ -89,59 +89,63 @@ $(document).ready(function() {
                     
                     // Command
                     $('#content .command-yaw input').each(function() {
-                        $(this).val(eepromConfig.PID_YAW_c[i]);
-                        i++;
+                        $(this).val(eepromConfig.PID_YAW_c[i++]);
                     });
                     
-                    i = 0; // reset
+                    i = 0;
                     $('#content .command-pitch input').each(function() {
-                        $(this).val(eepromConfig.PID_PITCH_c[i]);
-                        i++;
+                        $(this).val(eepromConfig.PID_PITCH_c[i++]);
                     });
                     
-                    i = 0; // reset
+                    i = 0;
                     $('#content .command-roll input').each(function() {
-                        $(this).val(eepromConfig.PID_ROLL_c[i]);
-                        i++;
+                        $(this).val(eepromConfig.PID_ROLL_c[i++]);
                     });
 
                     // Motor
-                    i = 0; // reset
+                    i = 0;
                     $('#content .motor-yaw input').each(function() {
-                        $(this).val(eepromConfig.PID_YAW_m[i]);
-                        i++;
+                        $(this).val(eepromConfig.PID_YAW_m[i++]);
                     });
                     
-                    i = 0; // reset
+                    i = 0;
                     $('#content .motor-pitch input').each(function() {
-                        $(this).val(eepromConfig.PID_PITCH_m[i]);
-                        i++;
+                        $(this).val(eepromConfig.PID_PITCH_m[i++]);
                     });
                     
-                    i = 0; // reset
+                    i = 0;
                     $('#content .motor-roll input').each(function() {
-                        $(this).val(eepromConfig.PID_ROLL_m[i]);
-                        i++;
+                        $(this).val(eepromConfig.PID_ROLL_m[i++]);
                     });
 
                     // Baro
-                    i = 0; // reset
+                    i = 0;
                     $('#content .baro input').each(function() {
-                        $(this).val(eepromConfig.PID_BARO[i]);
-                        i++;
+                        $(this).val(eepromConfig.PID_BARO[i++]);
                     });
                     
                     // Sonar
-                    i = 0; // reset
+                    i = 0;
                     $('#content .sonar input').each(function() {
-                        $(this).val(eepromConfig.PID_SONAR[i]);
-                        i++;
+                        $(this).val(eepromConfig.PID_SONAR[i++]);
                     });                    
                     
                 });
             break;            
-            case 2: // sensor data
+            case 2: // Sensor data
                 $('#content').load("./tabs/sensor_data.html");
+            break;
+            case 3: // TX/RX data
+                $('#content').load("./tabs/rx.html");
+            break;
+            case 4: // 3D vehicle view
+                $('#content').load("./tabs/vehicle_view.html");
+            break;
+            case 5: // Motor output
+                $('#content').load("./tabs/motor_output.html");
+            break;
+            case 6: // About
+                $('#content').load("./tabs/about.html");
             break;
         }
     });
@@ -151,7 +155,7 @@ $(document).ready(function() {
     
     // Specific functions in content
     $('#content').delegate('.calibrateESC', 'click', function() {  
-        chrome.serial.write(connectionId, str2ab("[2:0]"), function(writeInfo) {
+        chrome.serial.write(connectionId, str2ab("[3:0]"), function(writeInfo) {
             if (writeInfo.bytesWritten > 0) {
                 console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
                 
@@ -299,15 +303,15 @@ function process_data() {
             $('#tabs li a:first').click();
             command_log('Configuration UNION received -- <span style="color: green">OK</span>');
         break;
-        case 50: // 2
-        break;
         case '9': // ACK // 9
             var message = String.fromCharCode(message_buffer);
             
             if (message == '1') {
                 console.log("ACK");
+                command_log('Flight Controller responds with -- <span style="color: green">ACK</span>');
             } else {
                 console.log("REFUSED");
+                command_log('Flight Controller responds with -- <span style="color: red">REFUSED</span>');
             }
         break;
     }

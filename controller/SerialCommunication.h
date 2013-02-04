@@ -43,9 +43,6 @@ class Configurator {
                         }
                     break;
                 }
-                
-                // Used for debugging (for now)
-                //Serial.println(data, HEX);
             }        
         };
         
@@ -64,16 +61,7 @@ class Configurator {
 
                     Serial.write(0x5D); // ]
                 break;
-                case 2: // Activating ESC calibration
-                    CONFIG.data.calibrateESC = 1;
-                    
-                    // Write config to EEPROM
-                    writeEEPROM();
-                    
-                    // ACKownledge
-                    ACK();
-                break;
-                case 11: // Received configuration union
+                case 2: // Received configuration union
                     if (sizeof(data_buffer) == sizeof(CONFIG_struct)) {
                         // process data from buffer (throw it inside union)
                         for (uint16_t i = 0; i < sizeof(data_buffer); i++) {
@@ -89,6 +77,27 @@ class Configurator {
                         // Refuse (buffer size doesn't match struct memory size)
                         REFUSED();
                     }
+                break;                
+                case 3: // Activating ESC calibration
+                    CONFIG.data.calibrateESC = 1;
+                    
+                    // Write config to EEPROM
+                    writeEEPROM();
+                    
+                    // ACKownledge
+                    ACK();
+                break;
+                case 4: // Requesting Sensor Data (gyro + accel)
+                    
+                break;
+                case 5: // Requesting TX (RX) Data
+                
+                break;
+                case 6: // Requesting 3D vehicle view
+                
+                break;
+                case 7: // Requesting Motor Output
+                
                 break;
             }
         };
