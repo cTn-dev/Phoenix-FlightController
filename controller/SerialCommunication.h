@@ -73,38 +73,23 @@ class Configurator {
                     // ACKownledge
                     ACK();
                 break;
-                case 11: // Command YAW data
-                /*  WOW, this takes so much sketch size.. NO WAY !
-                    char* Kp_ = strtok(data_buffer, ",");
-                    char* Ki_ = strtok(NULL, ",");
-                    char* Kd_ = strtok(NULL, ",");
-                    char* WG_ = strtok(NULL, ",");
-                    
-                    // Apply new pid settings and save to EEPROM
-                    CONFIG.data.PID_YAW_c[P] = atof(Kp_);
-                    CONFIG.data.PID_YAW_c[I] = atof(Ki_);
-                    CONFIG.data.PID_YAW_c[D] = atof(Kd_);
-                    CONFIG.data.PID_YAW_c[WG] = atoi(WG_);
-                    
-                    writeEEPROM();
-                */                    
+                case 11: // Received configuration union
+                    if (sizeof(data_buffer) == sizeof(CONFIG_struct)) {
+                        // process data from buffer (throw it inside union)
+                        for (uint16_t i = 0; i < sizeof(data_buffer); i++) {
+                            CONFIG.raw[i] = data_buffer[i];
+                        }
+
+                        // Write config to EEPROM
+                        writeEEPROM();
+
+                        // ACKownledge
+                        ACK();
+                    } else {
+                        // Refuse (buffer size doesn't match struct memory size)
+                        REFUSED();
+                    }
                 break;
-                /*
-                case 12: // Command PITCH data
-                break;
-                case 13: // Command ROLL data
-                break;
-                case 14: // Motor YAW data
-                break;  
-                case 15: // Motor PITCH data
-                break;  
-                case 16: // Motor ROLL data
-                break;  
-                case 17: // Baro data
-                break;  
-                case 18: // Sonar data
-                break;
-                */
             }
         };
         
@@ -130,7 +115,7 @@ class Configurator {
         uint8_t state;
         
         char command_buffer[4];
-        char data_buffer[20];
+        char data_buffer[300]; // Current UNION size = 264 bytes = 2112 bits
         
         uint8_t command_i;
         uint8_t data_i;
