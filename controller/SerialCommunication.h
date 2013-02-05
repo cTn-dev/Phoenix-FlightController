@@ -27,6 +27,7 @@ class Configurator {
                             command_buffer[command_i] = data;
                             command_i++;
                         } else {
+                            command = atoi(command_buffer);
                             state++;
                         }
                     break;
@@ -46,9 +47,7 @@ class Configurator {
             }        
         };
         
-        void process_data() {
-            int16_t command = atoi(command_buffer);
-            
+        void process_data() {            
             switch (command) {
                 case 1: // Requesting configuration union
                     Serial.write(0x5B); // [
@@ -62,7 +61,8 @@ class Configurator {
                     Serial.write(0x5D); // ]
                 break;
                 case 2: // Received configuration union
-                    if (sizeof(data_buffer) == sizeof(CONFIG_struct)) {
+                    Serial.print(data_i);
+                    if (data_i == sizeof(CONFIG_struct)) {
                         // process data from buffer (throw it inside union)
                         for (uint16_t i = 0; i < sizeof(data_buffer); i++) {
                             CONFIG.raw[i] = data_buffer[i];
@@ -126,8 +126,10 @@ class Configurator {
         char command_buffer[4];
         char data_buffer[300]; // Current UNION size = 264 bytes = 2112 bits
         
+        uint8_t command;
         uint8_t command_i;
-        uint8_t data_i;
+        
+        uint16_t data_i; // 16 bytes because configuration union is bigger then 0-255
 } configurator;
 
 void readSerial() {

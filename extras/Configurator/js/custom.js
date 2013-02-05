@@ -4,6 +4,27 @@ var serial_poll;
 
 var eepromConfig;
 
+var eepromConfigDefinition = {
+    eepromConfigDefinition: {
+        version:      'uint8',
+        calibrateESC: 'uint8',
+
+        ACCEL_BIAS:  ['array', 'int16', 3],
+
+        PID_YAW_c:   ['array', 'float64', 4],
+        PID_PITCH_c: ['array', 'float64', 4],
+        PID_ROLL_c:  ['array', 'float64', 4],
+
+        PID_YAW_m:   ['array', 'float64', 4],
+        PID_PITCH_m: ['array', 'float64', 4],
+        PID_ROLL_m:  ['array', 'float64', 4],
+
+        PID_BARO:    ['array', 'float64', 4],
+        PID_SONAR:   ['array', 'float64', 4]
+    }
+}; 
+
+
 $(document).ready(function() { 
     var port_picker = $('div#port-picker .port');
     var baud_picker = $('div#port-picker #baud');
@@ -166,14 +187,78 @@ $(document).ready(function() {
     
     $('#content').delegate('.pid_tuning a.update', 'click', function() {
         var parent = $(this).parent().parent();
+        
         var i = 0;
-        $('input', parent).each(function() {
-            val = $(this).val();
-            
-            console.log(val);
-            
-            i++;
+        switch (parent.index()) {
+            case 1: // command yaw
+                $('input', parent).each(function() {
+                    eepromConfig.PID_YAW_c[i] = parseFloat($(this).val());
+                    i++;
+                });            
+            break;
+            case 2: // command pitch
+                $('input', parent).each(function() {
+                    eepromConfig.PID_PITCH_c[i] = parseFloat($(this).val());
+                    i++;
+                });  
+            break;
+            case 3: // command roll
+                $('input', parent).each(function() {
+                    eepromConfig.PID_ROLL_c[i] = parseFloat($(this).val());
+                    i++;
+                });              
+            break;
+            case 5: // yaw
+                $('input', parent).each(function() {
+                    eepromConfig.PID_YAW_m[i] = parseFloat($(this).val());
+                    i++;
+                });              
+            break;
+            case 6: // pitch
+                $('input', parent).each(function() {
+                    eepromConfig.PID_PITCH_m[i] = parseFloat($(this).val());
+                    i++;
+                });              
+            break;
+            case 7: // roll
+                $('input', parent).each(function() {
+                    eepromConfig.PID_ROLL_m[i] = parseFloat($(this).val());
+                    i++;
+                });              
+            break;
+            case 9: // baro
+                $('input', parent).each(function() {
+                    eepromConfig.PID_BARO[i] = parseFloat($(this).val());
+                    i++;
+                });              
+            break;
+            case 10: // sonar
+                $('input', parent).each(function() {
+                    eepromConfig.PID_SONAR[i] = parseFloat($(this).val());
+                    i++;
+                });              
+            break;
+        }
+        
+        // Testing
+        var eepromConfigBytes = new ArrayBuffer(264);
+        var view = new jDataView(eepromConfigBytes, 0, undefined, true);
+        
+        var composer = new jComposer(view, eepromConfigDefinition);
+        var eepromBuffer = view.buffer;
+        composer.compose(['eepromConfigDefinition'], eepromConfig);
+
+        chrome.serial.write(connectionId, str2ab("[2:"), function(writeInfo) {});
+        
+        chrome.serial.write(connectionId, eepromConfigBytes, function(writeInfo) {
+            if (writeInfo.bytesWritten > 0) {
+                console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+                
+                command_log('Sending Congihuration UNION to Flight Controller ...');
+            }    
         });
+        
+        chrome.serial.write(connectionId, str2ab("]"), function(writeInfo) {});
     });
     
 });
@@ -278,25 +363,7 @@ function process_data() {
             
             var view = new jDataView(eepromConfigBytes, 0, undefined, true);
    
-            var parser = new jParser(view, {
-                eepromConfigDefinition: {
-                    version: 'uint8',
-                    calibrateESC: 'uint8',
-
-                    ACCEL_BIAS: ['array', 'int16', 3],
-
-                    PID_YAW_c: ['array', 'float64', 4],
-                    PID_PITCH_c: ['array', 'float64', 4],
-                    PID_ROLL_c: ['array', 'float64', 4],
-
-                    PID_YAW_m: ['array', 'float64', 4],
-                    PID_PITCH_m: ['array', 'float64', 4],
-                    PID_ROLL_m: ['array', 'float64', 4],
-
-                    PID_BARO: ['array', 'float64', 4],
-                    PID_SONAR: ['array', 'float64', 4]
-                }
-            });
+            var parser = new jParser(view, eepromConfigDefinition);
 
             eepromConfig = parser.parse('eepromConfigDefinition');
             
