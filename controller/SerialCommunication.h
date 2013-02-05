@@ -73,7 +73,6 @@ class Configurator {
 
                     Serial.write(0x5D); // ]
                     
-                    // ACKownledge
                     ACK();                    
                 break;
                 case 2: // Received configuration union
@@ -87,7 +86,6 @@ class Configurator {
                         // Write config to EEPROM
                         writeEEPROM();
 
-                        // ACKownledge
                         ACK();
                     } else {
                         // Refuse (buffer size doesn't match struct memory size)
@@ -95,17 +93,86 @@ class Configurator {
                     }
                 break;                
                 case 3: // Requesting Sensor Data (gyro + accel)
-                    
+                    ACK();
+                    output_sensor_data = 1;
                 break;
                 case 4: // Requesting TX (RX) Data
-                
+                    ACK();
+                    output_RX_data = 1;
                 break;
                 case 5: // Requesting 3D vehicle view
-                
+                    ACK();
+                    output_kinematics = 1;
                 break;
                 case 6: // Requesting Motor Output
-                
+                    ACK();
+                    output_motor_out = 1;
                 break;
+                default: // Unrecognized command
+                    REFUSED();
+            }
+        };
+        
+        void process_output() {
+            if (output_sensor_data) {
+                dataType = 3;
+                byte vBuffer[12];    
+                
+                /*
+                // Gyro
+                vBuffer[0] = highByte((int16_t) (gyro[XAXIS] * gyro_scale));
+                vBuffer[1] = lowByte((int16_t) (gyro[XAXIS] * gyro_scale));
+                vBuffer[2] = highByte((int16_t) (gyro[YAXIS] * gyro_scale));
+                vBuffer[3] = lowByte((int16_t) (gyro[YAXIS] * gyro_scale));
+                vBuffer[4] = highByte((int16_t) (gyro[ZAXIS] * gyro_scale));
+                vBuffer[5] = lowByte((int16_t) (gyro[ZAXIS] * gyro_scale)); 
+                
+                // Accel
+                vBuffer[6] = highByte((int16_t) (accel[XAXIS] * accel_scale));
+                vBuffer[7] = lowByte((int16_t) (accel[XAXIS] * accel_scale));
+                vBuffer[8] = highByte((int16_t) (accel[YAXIS] * accel_scale));
+                vBuffer[9] = lowByte((int16_t) (accel[YAXIS] * accel_scale));
+                vBuffer[10] = highByte((int16_t) (accel[ZAXIS] * accel_scale));
+                vBuffer[11] = lowByte((int16_t) (accel[ZAXIS] * accel_scale));   
+                */
+            }
+            
+            if (output_RX_data) {
+                dataType = 4;
+                vBuffer[16];  
+            }
+            
+            if (output_kinematics) {
+                dataType = 5;
+                vBuffer[6];   
+                
+                vBuffer[0] = highByte((int16_t) (kinematicsAngleX * kinematics_scale));
+                vBuffer[1] = lowByte((int16_t) (kinematicsAngleX * kinematics_scale));
+                vBuffer[2] = highByte((int16_t) (kinematicsAngleY * kinematics_scale));
+                vBuffer[3] = lowByte((int16_t) (kinematicsAngleY * kinematics_scale));
+                vBuffer[4] = highByte((int16_t) (kinematicsAngleZ * kinematics_scale));
+                vBuffer[5] = lowByte((int16_t) (kinematicsAngleZ * kinematics_scale));              
+            }
+            
+            if (output_motor_out) {
+                dataType = 6;
+                #if MOTORS == 3
+                    vBuffer[6];
+                #elif MOTORS == 4
+                    vBuffer[8];
+                #elif MOTORS == 6
+                    vBuffer[12];
+                #elif MOTORS == 8
+                    vBuffer[16];
+                #endif
+            }
+            
+            if (output_sensor_data || output_RX_data || output_kinematics || output_motor_out) {
+                Serial.write(0x5B); // [
+                Serial.write(dataType); // DataType
+                Serial.write(0x3A); // :
+                Serial.write(vBuffer, sizeof(vBuffer));
+                Serial.write(0x5D); // ] 
             }
         };
         
@@ -131,14 +198,29 @@ class Configurator {
         uint8_t state;
         
         char command_buffer[4];
-        char data_buffer[300]; // Current UNION size = 264 bytes = 2112 bits
-        
         uint8_t command;
         uint8_t command_i;
         
+        char data_buffer[300]; // Current UNION size = 264 bytes = 2112 bits
         uint16_t data_i; // 16 bytes because configuration union is bigger then 0-255
+
+        bool output_sensor_data = 0;
+        bool output_RX_data = 0;
+        bool output_kinematics = 0;
+        bool output_motor_out = 0;
+        
+        // Variables used in the data output section
+        uint8_t dataType;
+        uint8_t vBuffer[];
+        
+        // Scale factors used to transmit double/float data over serial with just 2 bytes
+        int16_t gyro_scale = 65535.0 / 20.0;
+        int16_t accel_scale = 65535.0 / 3.0;   
+        int16_t kinematics_scale = 65535.0 / TWO_PI;    
+        int16_t motor_scale = 65535.0 / 3000.0;
 } configurator;
 
 void readSerial() {
     configurator.read_packet();
+    configurator.process_output();
 }
