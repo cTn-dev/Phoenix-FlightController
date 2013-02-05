@@ -176,13 +176,26 @@ $(document).ready(function() {
     
     // Specific functions in content
     $('#content').delegate('.calibrateESC', 'click', function() {  
-        chrome.serial.write(connectionId, str2ab("[3:0]"), function(writeInfo) {
+        eepromConfig.calibrateESC = parseInt(1);
+        
+        var eepromConfigBytes = new ArrayBuffer(264);
+        var view = new jDataView(eepromConfigBytes, 0, undefined, true);
+        
+        var composer = new jComposer(view, eepromConfigDefinition);
+        var eepromBuffer = view.buffer;
+        composer.compose(['eepromConfigDefinition'], eepromConfig);
+
+        chrome.serial.write(connectionId, str2ab("[2:"), function(writeInfo) {});
+        
+        chrome.serial.write(connectionId, eepromConfigBytes, function(writeInfo) {
             if (writeInfo.bytesWritten > 0) {
                 console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
                 
-                command_log('ESC Calibration at next start of FC/UAV requested ...');
+                command_log('Sending Congihuration UNION to Flight Controller ...');
             }    
         });
+        
+        chrome.serial.write(connectionId, str2ab("]"), function(writeInfo) {});
     });
     
     $('#content').delegate('.pid_tuning a.update', 'click', function() {
@@ -240,7 +253,6 @@ $(document).ready(function() {
             break;
         }
         
-        // Testing
         var eepromConfigBytes = new ArrayBuffer(264);
         var view = new jDataView(eepromConfigBytes, 0, undefined, true);
         

@@ -32,15 +32,28 @@ class Configurator {
                         }
                     break;
                     case 2:
-                        if (data != 0x5D) { // Ending char ]
-                            data_buffer[data_i] = data;
-                            data_i++;
+                        if (command == 2) { // this ugly protection needs to be changed
+                            if (data_i < 264) {
+                                data_buffer[data_i] = data;
+                                data_i++;
+                            } else {
+                                // Message received
+                                // process data and return to beginning
+                                process_data();
+                                
+                                state = 0;
+                            }
                         } else {
-                            // Message received
-                            // process data and return to beginning
-                            process_data();
-                            
-                            state = 0;
+                            if (data != 0x5D) { // Ending char ]
+                                data_buffer[data_i] = data;
+                                data_i++;
+                            } else {
+                                // Message received
+                                // process data and return to beginning
+                                process_data();
+                                
+                                state = 0;
+                            }
                         }
                     break;
                 }
@@ -59,6 +72,9 @@ class Configurator {
                     }  
 
                     Serial.write(0x5D); // ]
+                    
+                    // ACKownledge
+                    ACK();                    
                 break;
                 case 2: // Received configuration union
                     Serial.print(data_i);
@@ -78,25 +94,16 @@ class Configurator {
                         REFUSED();
                     }
                 break;                
-                case 3: // Activating ESC calibration
-                    CONFIG.data.calibrateESC = 1;
-                    
-                    // Write config to EEPROM
-                    writeEEPROM();
-                    
-                    // ACKownledge
-                    ACK();
-                break;
-                case 4: // Requesting Sensor Data (gyro + accel)
+                case 3: // Requesting Sensor Data (gyro + accel)
                     
                 break;
-                case 5: // Requesting TX (RX) Data
+                case 4: // Requesting TX (RX) Data
                 
                 break;
-                case 6: // Requesting 3D vehicle view
+                case 5: // Requesting 3D vehicle view
                 
                 break;
-                case 7: // Requesting Motor Output
+                case 6: // Requesting Motor Output
                 
                 break;
             }
