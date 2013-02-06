@@ -12,13 +12,6 @@ class Configurator {
                 switch (state) {
                     case 0:
                         if (data == 0x5B) { // Sync char [
-                            // reset variables
-                            memset(command_buffer, 0, sizeof(command_buffer));
-                            memset(data_buffer, 0, sizeof(data_buffer));
-                            
-                            command_i = 0;
-                            data_i = 0;
-                            
                             state++;
                         }
                     break;
@@ -52,6 +45,13 @@ class Configurator {
                                 // process data and return to beginning
                                 process_data();
                                 
+                                // reset variables
+                                memset(command_buffer, 0, sizeof(command_buffer));
+                                memset(data_buffer, 0, sizeof(data_buffer));
+                                
+                                command_i = 0;
+                                data_i = 0;
+                                
                                 state = 0;
                             }
                         }
@@ -63,20 +63,19 @@ class Configurator {
         void process_data() {            
             switch (command) {
                 case 1: // Requesting configuration union
-                    Serial.write(0x5B); // [
-                    Serial.write(0x31); // 1
-                    Serial.write(0x3A); // :
+                    ACK();
                     
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x01); // command
+                    Serial.write(highByte(sizeof(CONFIG_struct))); // payload length MSB
+                    Serial.write(highByte(sizeof(CONFIG_struct))); // payload LSB  
+            
                     for (uint16_t i = 0; i < sizeof(CONFIG_struct); i++) {
                         Serial.write(CONFIG.raw[i]);
-                    }  
-
-                    Serial.write(0x5D); // ]
-                    
-                    ACK();                    
+                    }              
                 break;
                 case 2: // Received configuration union
-                    Serial.print(data_i);
                     if (data_i == sizeof(CONFIG_struct)) {
                         // process data from buffer (throw it inside union)
                         for (uint16_t i = 0; i < sizeof(data_buffer); i++) {
@@ -238,19 +237,21 @@ class Configurator {
         };
         
         void ACK() {
-            Serial.write(0x5B); // [
-            Serial.write(0x39); // 9
-            Serial.write(0x3A); // :
-            Serial.write(0x31); // 1
-            Serial.write(0x5D); // ]        
+            Serial.write(0xB5); // sync char 1
+            Serial.write(0x62); // sync char 2
+            Serial.write(0x09); // command
+            Serial.write((uint8_t) 0x00); // payload length MSB
+            Serial.write(0x01); // payload LSB  
+            Serial.write(0x01); // payload
         };
         
         void REFUSED() {
-            Serial.write(0x5B); // [
-            Serial.write(0x39); // 9
-            Serial.write(0x3A); // :
-            Serial.write(0x30); // 0
-            Serial.write(0x5D); // ]          
+            Serial.write(0xB5); // sync char 1
+            Serial.write(0x62); // sync char 2
+            Serial.write(0x09); // command
+            Serial.write((uint8_t) 0x00); // payload length MSB
+            Serial.write(0x01); // payload LSB  
+            Serial.write((uint8_t) 0x00); // payload      
         };
     
     private:

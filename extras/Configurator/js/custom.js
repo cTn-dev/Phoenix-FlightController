@@ -317,11 +317,12 @@ function readPoll() {
 
 var packet_state = 0;
 var command_buffer = new Array();
-var command_i = 0;
 var command;
 
+var message_length_expected = 0;
+var message_length_received = 0;
 var message_buffer = new Array();
-var chars_read = 0;
+
 function onCharRead(readInfo) {
     if (readInfo && readInfo.bytesRead > 0 && readInfo.data) {
         var data = new Uint8Array(readInfo.data);
@@ -329,35 +330,47 @@ function onCharRead(readInfo) {
         for (var i = 0; i < data.length; i++) {
             switch (packet_state) {
                 case 0:
-                    if (data[i] == 91) { // [
-                        // Reset variables
-                        command_buffer.length = 0; // empty array
-                        message_buffer.length = 0; // empty array
-                        
-                        command_i = 0;
-                        chars_read = 0;
-                        
+                    if (data[i] == 0xB5) { // sync char 1                 
                         packet_state++;
                     }
                 break;
                 case 1:
-                    if (data[i] != 58) { // :
-                        command_buffer = data[i];
-                        command_i++;
-                    } else {    
+                    if (data[i] == 0x62) { // sync char 2                 
                         packet_state++;
-                    }    
+                    } else {
+                        packet_state = 0; // Restart and try again
+                    }                    
                 break;
-                case 2:
-                    if (data[i] != 93) { // ]
-                        message_buffer[chars_read] = data[i];
-                        chars_read++;
-                    } else { // Ending char received, process data
-                        command = String.fromCharCode(command_buffer);
+                case 2: // command
+                    command = data[i];
+                    
+                    packet_state++;
+                break;
+                case 3: // payload length MSB
+                    message_length_expected = 0; // reset
+                    message_length_expected = data[i] << 8;
+                    
+                    packet_state++;
+                break;
+                case 4: // payload length LSB
+                    message_length_expected |= data[i];
+                    
+                    packet_state++;
+                break;
+                case 5: // payload
+                    message_buffer[message_length_received] = data[i];
+                    message_length_received++;
+                    
+                    if (message_length_received >= message_length_expected) {
+                        // message received, process
                         process_data();
                         
+                        // Reset variables
+                        message_buffer.length = 0; // empty array
+                        message_length_received = 0;
+                        
                         packet_state = 0;
-                    }                    
+                    }
                 break;
             }
         }
@@ -366,7 +379,7 @@ function onCharRead(readInfo) {
 
 function process_data() {
     switch (command) {
-        case '1': // configuration data // 1
+        case 1: // configuration data // 1
             var eepromConfigBytes = new ArrayBuffer(264);
             var eepromConfigBytesView = new Uint8Array(eepromConfigBytes);
             for (var i = 0; i < message_buffer.length; i++) {
@@ -382,10 +395,10 @@ function process_data() {
             $('#tabs li a:first').click();
             command_log('Configuration UNION received -- <span style="color: green">OK</span>');
         break;
-        case '9': // ACK // 9
-            var message = String.fromCharCode(message_buffer);
+        case 9: // ACK // 9
+            var message = parseInt(message_buffer);
             
-            if (message == '1') {
+            if (message == 1) {
                 console.log("ACK");
                 command_log('Flight Controller responds with -- <span style="color: green">ACK</span>');
             } else {
