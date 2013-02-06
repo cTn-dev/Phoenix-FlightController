@@ -118,7 +118,6 @@ class Configurator {
                 dataType = 3;
                 byte vBuffer[12];    
                 
-                /*
                 // Gyro
                 vBuffer[0] = highByte((int16_t) (gyro[XAXIS] * gyro_scale));
                 vBuffer[1] = lowByte((int16_t) (gyro[XAXIS] * gyro_scale));
@@ -134,12 +133,28 @@ class Configurator {
                 vBuffer[9] = lowByte((int16_t) (accel[YAXIS] * accel_scale));
                 vBuffer[10] = highByte((int16_t) (accel[ZAXIS] * accel_scale));
                 vBuffer[11] = lowByte((int16_t) (accel[ZAXIS] * accel_scale));   
-                */
             }
             
             if (output_RX_data) {
                 dataType = 4;
-                vBuffer[16];  
+                vBuffer[16];
+
+                vBuffer[0] = highByte((int16_t) (RX[0] * rx_scale));
+                vBuffer[1] = lowByte((int16_t) (RX[0] * rx_scale));
+                vBuffer[2] = highByte((int16_t) (RX[1] * rx_scale));
+                vBuffer[3] = lowByte((int16_t) (RX[1] * rx_scale));
+                vBuffer[4] = highByte((int16_t) (RX[2] * rx_scale));
+                vBuffer[5] = lowByte((int16_t) (RX[2] * rx_scale));
+                vBuffer[6] = highByte((int16_t) (RX[3] * rx_scale));
+                vBuffer[7] = lowByte((int16_t) (RX[3] * rx_scale));
+                vBuffer[8] = highByte((int16_t) (RX[4] * rx_scale));
+                vBuffer[9] = lowByte((int16_t) (RX[4] * rx_scale));
+                vBuffer[10] = highByte((int16_t) (RX[5] * rx_scale));
+                vBuffer[11] = lowByte((int16_t) (RX[5] * rx_scale));
+                vBuffer[12] = highByte((int16_t) (RX[6] * rx_scale));
+                vBuffer[13] = lowByte((int16_t) (RX[6] * rx_scale));
+                vBuffer[14] = highByte((int16_t) (RX[7] * rx_scale));
+                vBuffer[15] = lowByte((int16_t) (RX[7] * rx_scale));                
             }
             
             if (output_kinematics) {
@@ -158,12 +173,58 @@ class Configurator {
                 dataType = 6;
                 #if MOTORS == 3
                     vBuffer[6];
+                    
+                    vBuffer[0] = highByte((int16_t) (MotorOut[0] * motor_scale));
+                    vBuffer[1] = lowByte((int16_t) (MotorOut[0] * motor_scale));
+                    vBuffer[2] = highByte((int16_t) (MotorOut[1] * motor_scale));
+                    vBuffer[3] = lowByte((int16_t) (MotorOut[1] * motor_scale));
+                    vBuffer[4] = highByte((int16_t) (MotorOut[2] * motor_scale));
+                    vBuffer[5] = lowByte((int16_t) (MotorOut[2] * motor_scale));
                 #elif MOTORS == 4
                     vBuffer[8];
+                    
+                    vBuffer[0] = highByte((int16_t) (MotorOut[0] * motor_scale));
+                    vBuffer[1] = lowByte((int16_t) (MotorOut[0] * motor_scale));
+                    vBuffer[2] = highByte((int16_t) (MotorOut[1] * motor_scale));
+                    vBuffer[3] = lowByte((int16_t) (MotorOut[1] * motor_scale));
+                    vBuffer[4] = highByte((int16_t) (MotorOut[2] * motor_scale));
+                    vBuffer[5] = lowByte((int16_t) (MotorOut[2] * motor_scale));
+                    vBuffer[6] = highByte((int16_t) (MotorOut[3] * motor_scale));
+                    vBuffer[7] = lowByte((int16_t) (MotorOut[3] * motor_scale));
                 #elif MOTORS == 6
                     vBuffer[12];
+                    
+                    vBuffer[0] = highByte((int16_t) (MotorOut[0] * motor_scale));
+                    vBuffer[1] = lowByte((int16_t) (MotorOut[0] * motor_scale));
+                    vBuffer[2] = highByte((int16_t) (MotorOut[1] * motor_scale));
+                    vBuffer[3] = lowByte((int16_t) (MotorOut[1] * motor_scale));
+                    vBuffer[4] = highByte((int16_t) (MotorOut[2] * motor_scale));
+                    vBuffer[5] = lowByte((int16_t) (MotorOut[2] * motor_scale));
+                    vBuffer[6] = highByte((int16_t) (MotorOut[3] * motor_scale));
+                    vBuffer[7] = lowByte((int16_t) (MotorOut[3] * motor_scale));
+                    vBuffer[8] = highByte((int16_t) (MotorOut[4] * motor_scale));
+                    vBuffer[9] = lowByte((int16_t) (MotorOut[4] * motor_scale));
+                    vBuffer[10] = highByte((int16_t) (MotorOut[5] * motor_scale));
+                    vBuffer[11] = lowByte((int16_t) (MotorOut[5] * motor_scale));                    
                 #elif MOTORS == 8
                     vBuffer[16];
+                    
+                    vBuffer[0] = highByte((int16_t) (MotorOut[0] * motor_scale));
+                    vBuffer[1] = lowByte((int16_t) (MotorOut[0] * motor_scale));
+                    vBuffer[2] = highByte((int16_t) (MotorOut[1] * motor_scale));
+                    vBuffer[3] = lowByte((int16_t) (MotorOut[1] * motor_scale));
+                    vBuffer[4] = highByte((int16_t) (MotorOut[2] * motor_scale));
+                    vBuffer[5] = lowByte((int16_t) (MotorOut[2] * motor_scale));
+                    vBuffer[6] = highByte((int16_t) (MotorOut[3] * motor_scale));
+                    vBuffer[7] = lowByte((int16_t) (MotorOut[3] * motor_scale));
+                    vBuffer[8] = highByte((int16_t) (MotorOut[4] * motor_scale));
+                    vBuffer[9] = lowByte((int16_t) (MotorOut[4] * motor_scale));
+                    vBuffer[10] = highByte((int16_t) (MotorOut[5] * motor_scale));
+                    vBuffer[11] = lowByte((int16_t) (MotorOut[5] * motor_scale));  
+                    vBuffer[12] = highByte((int16_t) (MotorOut[6] * motor_scale));
+                    vBuffer[13] = lowByte((int16_t) (MotorOut[6] * motor_scale));  
+                    vBuffer[14] = highByte((int16_t) (MotorOut[7] * motor_scale));
+                    vBuffer[15] = lowByte((int16_t) (MotorOut[7] * motor_scale));  
                 #endif
             }
             
@@ -216,8 +277,9 @@ class Configurator {
         // Scale factors used to transmit double/float data over serial with just 2 bytes
         int16_t gyro_scale = 65535.0 / 20.0;
         int16_t accel_scale = 65535.0 / 3.0;   
-        int16_t kinematics_scale = 65535.0 / TWO_PI;    
-        int16_t motor_scale = 65535.0 / 3000.0;
+        int16_t kinematics_scale = 65535.0 / TWO_PI;
+        int16_t rx_scale = 65535.0 / 4000.0;
+        int16_t motor_scale = 65535.0 / 4000.0;
 } configurator;
 
 void readSerial() {

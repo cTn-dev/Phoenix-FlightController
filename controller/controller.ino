@@ -19,7 +19,6 @@
 #include "math.h"
 #include "PID.h"
 #include "dataStorage.h"
-#include "SerialCommunication.h"
 
 // == Hardware setup/s == 
 #define Maggie
@@ -102,7 +101,8 @@ void reset_PID_integrals() {
 }
   
 // Include this last as it contains objects from previous declarations
-#include "PilotCommandProcessor.h"  
+#include "PilotCommandProcessor.h"
+#include "SerialCommunication.h"  
   
 void setup() {
     // PIN settings
