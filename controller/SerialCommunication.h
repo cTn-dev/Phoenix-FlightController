@@ -11,49 +11,47 @@ class Configurator {
                 
                 switch (state) {
                     case 0:
-                        if (data == 0x5B) { // Sync char [
+                        if (data == 0xB5) { // sync char 1  
                             state++;
                         }
                     break;
                     case 1:
-                        if (data != 0x3A) { // Divider char :
-                            command_buffer[command_i] = data;
-                            command_i++;
-                        } else {
-                            command = atoi(command_buffer);
+                        if (data == 0x62) { // sync char 2  
                             state++;
-                        }
-                    break;
-                    case 2:
-                        if (command == 2) { // this ugly protection needs to be changed
-                            if (data_i < 264) {
-                                data_buffer[data_i] = data;
-                                data_i++;
-                            } else {
-                                // Message received
-                                // process data and return to beginning
-                                process_data();
-                                
-                                state = 0;
-                            }
                         } else {
-                            if (data != 0x5D) { // Ending char ]
-                                data_buffer[data_i] = data;
-                                data_i++;
-                            } else {
-                                // Message received
-                                // process data and return to beginning
-                                process_data();
-                                
-                                // reset variables
-                                memset(command_buffer, 0, sizeof(command_buffer));
-                                memset(data_buffer, 0, sizeof(data_buffer));
-                                
-                                command_i = 0;
-                                data_i = 0;
-                                
-                                state = 0;
-                            }
+                            state = 0; // Restart and try again
+                        }                        
+                    break;
+                    case 2: // command
+                        command = data;
+                        
+                        state++;
+                    break;
+                    case 3: // payload length MSB
+                        payload_length_expected = 0; // reset
+                        payload_length_expected = data << 8;
+                        
+                        state++;
+                    break; // payload length LSB
+                    case 4:
+                        payload_length_expected |= data;
+                        
+                        state++;
+                    break;
+                    case 5: // payload
+                        data_buffer[payload_length_received] = data;
+                        payload_length_received++;
+                        
+                        if (payload_length_received >= payload_length_expected) {
+                            process_data();
+                            
+                            // reset variables
+                            memset(command_buffer, 0, sizeof(command_buffer));
+                            memset(data_buffer, 0, sizeof(data_buffer));
+                            
+                            payload_length_received = 0;
+                            
+                            state = 0;
                         }
                     break;
                 }
@@ -76,7 +74,7 @@ class Configurator {
                     }              
                 break;
                 case 2: // Received configuration union
-                    if (data_i == sizeof(CONFIG_struct)) {
+                    if (payload_length_received == sizeof(CONFIG_struct)) {
                         // process data from buffer (throw it inside union)
                         for (uint16_t i = 0; i < sizeof(data_buffer); i++) {
                             CONFIG.raw[i] = data_buffer[i];
@@ -261,10 +259,11 @@ class Configurator {
         
         char command_buffer[4];
         uint8_t command;
-        uint8_t command_i;
+        
+        uint16_t payload_length_expected = 0;
+        uint16_t payload_length_received = 0;
         
         char data_buffer[300]; // Current UNION size = 264 bytes = 2112 bits
-        uint16_t data_i; // 16 bytes because configuration union is bigger then 0-255
 
         bool output_sensor_data = 0;
         bool output_RX_data = 0;

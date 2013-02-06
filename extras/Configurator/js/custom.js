@@ -185,17 +185,24 @@ $(document).ready(function() {
         var eepromBuffer = view.buffer;
         composer.compose(['eepromConfigDefinition'], eepromConfig);
 
-        chrome.serial.write(connectionId, str2ab("[2:"), function(writeInfo) {});
+        var bufferOut = new ArrayBuffer(5);
+        var bufView = new Uint8Array(bufferOut);
+        
+        bufView[0] = 0xB5; // sync char 1
+        bufView[1] = 0x62; // sync char 2
+        bufView[2] = 0x02; // command
+        bufView[3] = 0x01; // payload length MSB (0x108)
+        bufView[4] = 0x08; // payload length LSB   
+        
+        chrome.serial.write(connectionId, bufferOut, function(writeInfo) {});
         
         chrome.serial.write(connectionId, eepromConfigBytes, function(writeInfo) {
             if (writeInfo.bytesWritten > 0) {
                 console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
                 
-                command_log('Sending Congihuration UNION to Flight Controller ...');
+                command_log('Sending Configuration UNION to Flight Controller ...');
             }    
         });
-        
-        chrome.serial.write(connectionId, str2ab("]"), function(writeInfo) {});
     });
     
     $('#content').delegate('.pid_tuning a.update', 'click', function() {
@@ -260,13 +267,22 @@ $(document).ready(function() {
         var eepromBuffer = view.buffer;
         composer.compose(['eepromConfigDefinition'], eepromConfig);
 
-        chrome.serial.write(connectionId, str2ab("[2:"), function(writeInfo) {});
+        var bufferOut = new ArrayBuffer(5);
+        var bufView = new Uint8Array(bufferOut);
+        
+        bufView[0] = 0xB5; // sync char 1
+        bufView[1] = 0x62; // sync char 2
+        bufView[2] = 0x02; // command
+        bufView[3] = 0x01; // payload length MSB (0x108 = 264)
+        bufView[4] = 0x08; // payload length LSB   
+        
+        chrome.serial.write(connectionId, bufferOut, function(writeInfo) {});
         
         chrome.serial.write(connectionId, eepromConfigBytes, function(writeInfo) {
             if (writeInfo.bytesWritten > 0) {
                 console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
                 
-                command_log('Sending Congihuration UNION to Flight Controller ...');
+                command_log('Sending Configuration UNION to Flight Controller ...');
             }    
         });
         
@@ -287,7 +303,17 @@ function onOpen(openInfo) {
         chrome.serial.read(connectionId, 1, onCharRead);
         
         // request configuration data (so we have something to work with)
-        chrome.serial.write(connectionId, str2ab("[1:0]"), function(writeInfo) {
+        var bufferOut = new ArrayBuffer(6);
+        var bufView = new Uint8Array(bufferOut);
+        
+        bufView[0] = 0xB5; // sync char 1
+        bufView[1] = 0x62; // sync char 2
+        bufView[2] = 0x01; // command
+        bufView[3] = 0x00; // payload length MSB
+        bufView[4] = 0x01; // payload length LSB
+        bufView[5] = 0x01; // payload
+        
+        chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
             console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
             command_log('Requesting configuration UNION from Flight Controller');
         });  
@@ -378,8 +404,9 @@ function onCharRead(readInfo) {
 };
 
 function process_data() {
+    console.log(command);
     switch (command) {
-        case 1: // configuration data // 1
+        case 1: // configuration data
             var eepromConfigBytes = new ArrayBuffer(264);
             var eepromConfigBytesView = new Uint8Array(eepromConfigBytes);
             for (var i = 0; i < message_buffer.length; i++) {
@@ -395,7 +422,7 @@ function process_data() {
             $('#tabs li a:first').click();
             command_log('Configuration UNION received -- <span style="color: green">OK</span>');
         break;
-        case 9: // ACK // 9
+        case 9: // ACK
             var message = parseInt(message_buffer);
             
             if (message == 1) {
