@@ -218,4 +218,8 @@ table.pid_tuning {
 .sensor_data #graph_accel {
     width: 900px;
     height: 180px;
-}    
+} 
+#graph_receiver {
+    width: 900px;
+    height: 360px;
+}

@@ -119,7 +119,6 @@ class Configurator {
         
         void process_output() {
             if (output_sensor_data) {
-                dataType = 3;
                 uint8_t vBuffer[12];    
                 
                 // Gyro
@@ -152,7 +151,6 @@ class Configurator {
             }
             
             if (output_RX_data) {
-                dataType = 4;
                 uint8_t vBuffer[16];
 
                 vBuffer[0] = highByte((int16_t) (RX[0] * rx_scale));
@@ -170,11 +168,22 @@ class Configurator {
                 vBuffer[12] = highByte((int16_t) (RX[6] * rx_scale));
                 vBuffer[13] = lowByte((int16_t) (RX[6] * rx_scale));
                 vBuffer[14] = highByte((int16_t) (RX[7] * rx_scale));
-                vBuffer[15] = lowByte((int16_t) (RX[7] * rx_scale));                
+                vBuffer[15] = lowByte((int16_t) (RX[7] * rx_scale));    
+
+                uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
+                
+                Serial.write(0xB5); // sync char 1
+                Serial.write(0x62); // sync char 2
+                Serial.write(0x04); // command
+                Serial.write((uint8_t) 0x00); // payload length MSB
+                Serial.write(buffer_size); // payload LSB  
+        
+                for (uint16_t i = 0; i < buffer_size; i++) {
+                    Serial.write(vBuffer[i]);
+                }                  
             }
             
             if (output_kinematics) {
-                dataType = 5;
                 uint8_t vBuffer[6];   
                 
                 vBuffer[0] = highByte((int16_t) (kinematicsAngleX * kinematics_scale));
@@ -182,11 +191,22 @@ class Configurator {
                 vBuffer[2] = highByte((int16_t) (kinematicsAngleY * kinematics_scale));
                 vBuffer[3] = lowByte((int16_t) (kinematicsAngleY * kinematics_scale));
                 vBuffer[4] = highByte((int16_t) (kinematicsAngleZ * kinematics_scale));
-                vBuffer[5] = lowByte((int16_t) (kinematicsAngleZ * kinematics_scale));              
+                vBuffer[5] = lowByte((int16_t) (kinematicsAngleZ * kinematics_scale));
+
+                uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
+                
+                Serial.write(0xB5); // sync char 1
+                Serial.write(0x62); // sync char 2
+                Serial.write(0x05); // command
+                Serial.write((uint8_t) 0x00); // payload length MSB
+                Serial.write(buffer_size); // payload LSB  
+        
+                for (uint16_t i = 0; i < buffer_size; i++) {
+                    Serial.write(vBuffer[i]);
+                }                  
             }
             
             if (output_motor_out) {
-                dataType = 6;
                 #if MOTORS == 3
                     uint8_t vBuffer[6];
                     
@@ -196,6 +216,18 @@ class Configurator {
                     vBuffer[3] = lowByte((int16_t) (MotorOut[1] * motor_scale));
                     vBuffer[4] = highByte((int16_t) (MotorOut[2] * motor_scale));
                     vBuffer[5] = lowByte((int16_t) (MotorOut[2] * motor_scale));
+                    
+                    uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
+                    
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x06); // command
+                    Serial.write((uint8_t) 0x00); // payload length MSB
+                    Serial.write(buffer_size); // payload LSB  
+            
+                    for (uint16_t i = 0; i < buffer_size; i++) {
+                        Serial.write(vBuffer[i]);
+                    }                      
                 #elif MOTORS == 4
                     uint8_t vBuffer[8];
                     
@@ -207,6 +239,18 @@ class Configurator {
                     vBuffer[5] = lowByte((int16_t) (MotorOut[2] * motor_scale));
                     vBuffer[6] = highByte((int16_t) (MotorOut[3] * motor_scale));
                     vBuffer[7] = lowByte((int16_t) (MotorOut[3] * motor_scale));
+                    
+                    uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
+                    
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x06); // command
+                    Serial.write((uint8_t) 0x00); // payload length MSB
+                    Serial.write(buffer_size); // payload LSB  
+            
+                    for (uint16_t i = 0; i < buffer_size; i++) {
+                        Serial.write(vBuffer[i]);
+                    }                     
                 #elif MOTORS == 6
                     uint8_t vBuffer[12];
                     
@@ -221,7 +265,19 @@ class Configurator {
                     vBuffer[8] = highByte((int16_t) (MotorOut[4] * motor_scale));
                     vBuffer[9] = lowByte((int16_t) (MotorOut[4] * motor_scale));
                     vBuffer[10] = highByte((int16_t) (MotorOut[5] * motor_scale));
-                    vBuffer[11] = lowByte((int16_t) (MotorOut[5] * motor_scale));                    
+                    vBuffer[11] = lowByte((int16_t) (MotorOut[5] * motor_scale));   
+
+                    uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
+                    
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x06); // command
+                    Serial.write((uint8_t) 0x00); // payload length MSB
+                    Serial.write(buffer_size); // payload LSB  
+            
+                    for (uint16_t i = 0; i < buffer_size; i++) {
+                        Serial.write(vBuffer[i]);
+                    }                     
                 #elif MOTORS == 8
                     uint8_t vBuffer[16];
                     
@@ -240,7 +296,19 @@ class Configurator {
                     vBuffer[12] = highByte((int16_t) (MotorOut[6] * motor_scale));
                     vBuffer[13] = lowByte((int16_t) (MotorOut[6] * motor_scale));  
                     vBuffer[14] = highByte((int16_t) (MotorOut[7] * motor_scale));
-                    vBuffer[15] = lowByte((int16_t) (MotorOut[7] * motor_scale));  
+                    vBuffer[15] = lowByte((int16_t) (MotorOut[7] * motor_scale)); 
+
+                    uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
+                    
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x06); // command
+                    Serial.write((uint8_t) 0x00); // payload length MSB
+                    Serial.write(buffer_size); // payload LSB  
+            
+                    for (uint16_t i = 0; i < buffer_size; i++) {
+                        Serial.write(vBuffer[i]);
+                    }                     
                 #endif
             }
         };
@@ -280,9 +348,6 @@ class Configurator {
         bool output_RX_data = 0;
         bool output_kinematics = 0;
         bool output_motor_out = 0;
-        
-        // Variables used in the data output section
-        uint8_t dataType;
         
         // Scale factors used to transmit double/float data over serial with just 2 bytes
         int16_t gyro_scale = 65535.0 / 20.0;
