@@ -1,7 +1,7 @@
 var connectionId = -1;
 var connection_delay = 0;
 var port_list;
-var serial_poll;
+var serial_poll = 0;
 
 var eepromConfig;
 
@@ -64,7 +64,9 @@ $(document).ready(function() {
         if (clicks) { // odd number of clicks
             chrome.serial.close(connectionId, onClosed);
             
+            clearTimeout(connection_delay);
             clearInterval(serial_poll);
+            serial_poll = 0; // this also indicates that we are not reading anything
             
             $(this).text('Connect');
             $(this).removeClass('active');            
@@ -87,7 +89,7 @@ $(document).ready(function() {
     // Tabs
     var tabs = $('#tabs > ul');
     $('a', tabs).click(function() {
-        if (connectionId < 1) { // if there is no active connection, return
+        if (connectionId < 1 || serial_poll < 1) { // if there is no active connection, return
             return;
         }
         // disable previous active button
@@ -184,6 +186,7 @@ $(document).ready(function() {
         var bufferOut = new ArrayBuffer(5);
         var bufView = new Uint8Array(bufferOut);
         
+        // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
         bufView[0] = 0xB5; // sync char 1
         bufView[1] = 0x62; // sync char 2
         bufView[2] = 0x02; // command
@@ -192,6 +195,7 @@ $(document).ready(function() {
         
         chrome.serial.write(connectionId, bufferOut, function(writeInfo) {});
         
+        // payload
         chrome.serial.write(connectionId, eepromConfigBytes, function(writeInfo) {
             if (writeInfo.bytesWritten > 0) {
                 console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
@@ -266,6 +270,7 @@ $(document).ready(function() {
         var bufferOut = new ArrayBuffer(5);
         var bufView = new Uint8Array(bufferOut);
         
+        // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
         bufView[0] = 0xB5; // sync char 1
         bufView[1] = 0x62; // sync char 2
         bufView[2] = 0x02; // command
@@ -274,6 +279,7 @@ $(document).ready(function() {
         
         chrome.serial.write(connectionId, bufferOut, function(writeInfo) {});
         
+        // payload
         chrome.serial.write(connectionId, eepromConfigBytes, function(writeInfo) {
             if (writeInfo.bytesWritten > 0) {
                 console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
@@ -295,7 +301,7 @@ function onOpen(openInfo) {
         console.log('Connection was opened with ID: ' + connectionId);
         command_log('Connection to the serial BUS was opened with ID: ' + connectionId);
         
-        setTimeout(function() {
+        connection_delay = setTimeout(function() {
             // start polling
             serial_poll = setInterval(readPoll, 10);
             
@@ -303,6 +309,7 @@ function onOpen(openInfo) {
             var bufferOut = new ArrayBuffer(6);
             var bufView = new Uint8Array(bufferOut);
             
+            // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
             bufView[0] = 0xB5; // sync char 1
             bufView[1] = 0x62; // sync char 2
             bufView[2] = 0x01; // command
