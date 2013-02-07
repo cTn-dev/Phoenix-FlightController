@@ -73,6 +73,7 @@ $(document).ready(function() {
         var clicks = $(this).data('clicks');
         
         if (clicks) { // odd number of clicks
+            stop_data_stream();
             chrome.serial.close(connectionId, onClosed);
             
             clearTimeout(connection_delay);
@@ -103,8 +104,10 @@ $(document).ready(function() {
         if (connectionId < 1 || serial_poll < 1) { // if there is no active connection, return
             return;
         }
+        
         // disable previous active button
         $('li', tabs).removeClass('active');
+        stop_data_stream();
         
         // Highlight selected button
         $(this).parent().addClass('active');
@@ -387,8 +390,6 @@ $(document).ready(function() {
                 command_log('Sending Configuration UNION to Flight Controller ...');
             }    
         });
-        
-        chrome.serial.write(connectionId, str2ab("]"), function(writeInfo) {});
     });
     
 });
@@ -444,6 +445,23 @@ function onClosed(result) {
 
 function readPoll() {
     chrome.serial.read(connectionId, 24, onCharRead);
+};
+
+function stop_data_stream() {
+    var bufferOut = new ArrayBuffer(6);
+    var bufView = new Uint8Array(bufferOut);
+
+    // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
+    bufView[0] = 0xB5; // sync char 1
+    bufView[1] = 0x62; // sync char 2
+    bufView[2] = 0x07; // command
+    bufView[3] = 0x00; // payload length MSB
+    bufView[4] = 0x01; // payload length LSB
+    bufView[5] = 0x01; // payload   
+
+    chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
+        console.log("STOP DATA STREAM command - Wrote: " + writeInfo.bytesWritten + " bytes");
+    });     
 };
 
 
@@ -527,7 +545,7 @@ function process_data() {
             command_log('Configuration UNION received -- <span style="color: green">OK</span>');
         break;
         case 3: // sensor data
-            if ($('#tabs > ul .active').index() == 2) {
+            if ($('#tabs > ul .active').index() == 2) { // used to protect against flotr object loss while switching to another tab
                 var data = new Array();
                 
                 var data_counter = 0;

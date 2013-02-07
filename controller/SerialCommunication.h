@@ -60,13 +60,7 @@ class Configurator {
         
         void process_data() {            
             switch (command) {
-                case 1: // Requesting configuration union
-                    // Disable all of the requested data outputs
-                    output_sensor_data = 0;
-                    output_RX_data = 0;
-                    output_kinematics = 0;
-                    output_motor_out = 0;
-                    
+                case 1: // Requesting configuration union                    
                     ACK();
                     
                     Serial.write(0xB5); // sync char 1
@@ -111,6 +105,13 @@ class Configurator {
                     ACK();
                     output_motor_out = 1;
                 break;
+                case 7: // Disable all periodic data outputs
+                    // there is no ACK in this case (this command is executed silently)
+                    output_sensor_data = 0;
+                    output_RX_data = 0;
+                    output_kinematics = 0;
+                    output_motor_out = 0;
+                break;
                 default: // Unrecognized command
                     REFUSED();
             }
@@ -152,7 +153,7 @@ class Configurator {
             
             if (output_RX_data) {
                 dataType = 4;
-                vBuffer[16];
+                uint8_t vBuffer[16];
 
                 vBuffer[0] = highByte((int16_t) (RX[0] * rx_scale));
                 vBuffer[1] = lowByte((int16_t) (RX[0] * rx_scale));
@@ -174,7 +175,7 @@ class Configurator {
             
             if (output_kinematics) {
                 dataType = 5;
-                vBuffer[6];   
+                uint8_t vBuffer[6];   
                 
                 vBuffer[0] = highByte((int16_t) (kinematicsAngleX * kinematics_scale));
                 vBuffer[1] = lowByte((int16_t) (kinematicsAngleX * kinematics_scale));
@@ -187,7 +188,7 @@ class Configurator {
             if (output_motor_out) {
                 dataType = 6;
                 #if MOTORS == 3
-                    vBuffer[6];
+                    uint8_t vBuffer[6];
                     
                     vBuffer[0] = highByte((int16_t) (MotorOut[0] * motor_scale));
                     vBuffer[1] = lowByte((int16_t) (MotorOut[0] * motor_scale));
@@ -196,7 +197,7 @@ class Configurator {
                     vBuffer[4] = highByte((int16_t) (MotorOut[2] * motor_scale));
                     vBuffer[5] = lowByte((int16_t) (MotorOut[2] * motor_scale));
                 #elif MOTORS == 4
-                    vBuffer[8];
+                    uint8_t vBuffer[8];
                     
                     vBuffer[0] = highByte((int16_t) (MotorOut[0] * motor_scale));
                     vBuffer[1] = lowByte((int16_t) (MotorOut[0] * motor_scale));
@@ -207,7 +208,7 @@ class Configurator {
                     vBuffer[6] = highByte((int16_t) (MotorOut[3] * motor_scale));
                     vBuffer[7] = lowByte((int16_t) (MotorOut[3] * motor_scale));
                 #elif MOTORS == 6
-                    vBuffer[12];
+                    uint8_t vBuffer[12];
                     
                     vBuffer[0] = highByte((int16_t) (MotorOut[0] * motor_scale));
                     vBuffer[1] = lowByte((int16_t) (MotorOut[0] * motor_scale));
@@ -222,7 +223,7 @@ class Configurator {
                     vBuffer[10] = highByte((int16_t) (MotorOut[5] * motor_scale));
                     vBuffer[11] = lowByte((int16_t) (MotorOut[5] * motor_scale));                    
                 #elif MOTORS == 8
-                    vBuffer[16];
+                    uint8_t vBuffer[16];
                     
                     vBuffer[0] = highByte((int16_t) (MotorOut[0] * motor_scale));
                     vBuffer[1] = lowByte((int16_t) (MotorOut[0] * motor_scale));
@@ -282,7 +283,6 @@ class Configurator {
         
         // Variables used in the data output section
         uint8_t dataType;
-        uint8_t vBuffer[];
         
         // Scale factors used to transmit double/float data over serial with just 2 bytes
         int16_t gyro_scale = 65535.0 / 20.0;
