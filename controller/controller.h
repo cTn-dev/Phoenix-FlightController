@@ -47,5 +47,4 @@ double YawMotorSpeed, PitchMotorSpeed, RollMotorSpeed, AltitudeHoldMotorSpeed;
 int16_t throttle = 1000;
 
 // Custom definitions
-//#define DATA_VISUALIZATION
 //#define DISPLAY_ITTERATIONS

@@ -283,65 +283,6 @@ void process50HzTask() {
     
     #ifdef AltitudeHoldBaro
         sensors.evaluateBaroAltitude();
-    #endif   
-
-    #ifdef DATA_VISUALIZATION
-        // Gyro data
-        Serial.print(gyro[XAXIS]);
-        Serial.write(',');
-        Serial.print(gyro[YAXIS]);
-        Serial.write(',');
-        Serial.print(gyro[ZAXIS]);
-        Serial.write(',');        
-        
-        // Accel data
-        Serial.print(accel[XAXIS]);
-        Serial.write(',');
-        Serial.print(accel[YAXIS]);
-        Serial.write(','); 
-        Serial.print(accel[ZAXIS]);
-        Serial.write(',');         
-        
-        // Kinematics data
-        Serial.print(kinematicsAngleX * RAD_TO_DEG);
-        Serial.write(',');      
-        Serial.print(kinematicsAngleY * RAD_TO_DEG);
-        Serial.write(',');      
-        Serial.print(kinematicsAngleZ * RAD_TO_DEG);  
-        Serial.write(','); 
-        
-        // TX/RX data
-        Serial.print(TX_roll);
-        Serial.write(',');   
-        Serial.print(TX_pitch);
-        Serial.write(','); 
-        Serial.print(TX_throttle);
-        Serial.write(','); 
-        Serial.print(TX_yaw);    
-        Serial.write(','); 
-        Serial.print(TX_mode);    
-        Serial.write(',');         
-        Serial.print(TX_altitude);
-        Serial.write(','); 
-        Serial.print(TX_cam);
-        Serial.write(','); 
-        Serial.print(TX_last);
-        Serial.write(',');
-        
-        // PPM error
-        Serial.print(PPM_error);
-        Serial.write(',');
-        
-        // Motor out
-        Serial.print(MotorOut[0]);
-        Serial.write(',');
-        Serial.print(MotorOut[1]);
-        Serial.write(',');
-        Serial.print(MotorOut[2]);
-        Serial.write(',');
-        Serial.print(MotorOut[3]);
-        
-        Serial.println();     
     #endif       
 }
 
