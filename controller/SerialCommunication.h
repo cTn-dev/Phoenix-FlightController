@@ -61,6 +61,12 @@ class Configurator {
         void process_data() {            
             switch (command) {
                 case 1: // Requesting configuration union
+                    // Disable all of the requested data outputs
+                    output_sensor_data = 0;
+                    output_RX_data = 0;
+                    output_kinematics = 0;
+                    output_motor_out = 0;
+                    
                     ACK();
                     
                     Serial.write(0xB5); // sync char 1
@@ -113,7 +119,7 @@ class Configurator {
         void process_output() {
             if (output_sensor_data) {
                 dataType = 3;
-                byte vBuffer[12];    
+                uint8_t vBuffer[12];    
                 
                 // Gyro
                 vBuffer[0] = highByte((int16_t) (gyro[XAXIS] * gyro_scale));
@@ -130,6 +136,18 @@ class Configurator {
                 vBuffer[9] = lowByte((int16_t) (accel[YAXIS] * accel_scale));
                 vBuffer[10] = highByte((int16_t) (accel[ZAXIS] * accel_scale));
                 vBuffer[11] = lowByte((int16_t) (accel[ZAXIS] * accel_scale));   
+                
+                uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
+                
+                Serial.write(0xB5); // sync char 1
+                Serial.write(0x62); // sync char 2
+                Serial.write(0x03); // command
+                Serial.write((uint8_t) 0x00); // payload length MSB
+                Serial.write(buffer_size); // payload LSB  
+        
+                for (uint16_t i = 0; i < buffer_size; i++) {
+                    Serial.write(vBuffer[i]);
+                }  
             }
             
             if (output_RX_data) {
@@ -223,14 +241,6 @@ class Configurator {
                     vBuffer[14] = highByte((int16_t) (MotorOut[7] * motor_scale));
                     vBuffer[15] = lowByte((int16_t) (MotorOut[7] * motor_scale));  
                 #endif
-            }
-            
-            if (output_sensor_data || output_RX_data || output_kinematics || output_motor_out) {
-                Serial.write(0x5B); // [
-                Serial.write(dataType); // DataType
-                Serial.write(0x3A); // :
-                Serial.write(vBuffer, sizeof(vBuffer));
-                Serial.write(0x5D); // ] 
             }
         };
         

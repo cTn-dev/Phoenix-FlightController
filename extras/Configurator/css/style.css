@@ -199,3 +199,23 @@ table.pid_tuning {
         text-decoration: none;
         background-color: #13b723;
     }
+  
+/* Flotr related styles */
+.flotr-legend {
+    padding: 2px;
+    left: 31px;
+    top: 20px;
+    border: 0;
+    
+    background-color: white;
+}
+  
+/* tab section */
+.sensor_data #graph_gyro {
+    width: 900px;
+    height: 180px;
+} 
+.sensor_data #graph_accel {
+    width: 900px;
+    height: 180px;
+}    
