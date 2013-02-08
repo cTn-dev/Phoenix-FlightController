@@ -130,7 +130,7 @@ $(document).ready(function() {
                 $('#content').load("./tabs/rx.html", tab_initialize_rx);
             break;
             case 4: // 3D vehicle view
-                $('#content').load("./tabs/vehicle_view.html");
+                $('#content').load("./tabs/vehicle_view.html", tab_initialize_vehicle_view);
             break;
             case 5: // Motor output
                 $('#content').load("./tabs/motor_output.html");
@@ -306,6 +306,9 @@ function process_data() {
         break;
         case 4: // receiver data
             process_data_receiver();
+        break;
+        case 5: // vehicle view
+            process_vehicle_view();
         break;
         case 9: // ACK
             var message = parseInt(message_buffer);
