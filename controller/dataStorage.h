@@ -41,9 +41,9 @@ void initializeEEPROM() {
     CONFIG.data.calibrateESC = 0;
 
     // Accelerometer
-    CONFIG.data.ACCEL_BIAS[0] = -425;
-    CONFIG.data.ACCEL_BIAS[1] = 260;
-    CONFIG.data.ACCEL_BIAS[2] = 400;
+    CONFIG.data.ACCEL_BIAS[XAXIS] = -425;
+    CONFIG.data.ACCEL_BIAS[YAXIS] = 260;
+    CONFIG.data.ACCEL_BIAS[ZAXIS] = 400;
     
     // Altitude
     CONFIG.data.PID_YAW_c[P]  = 4.0;

@@ -5,6 +5,7 @@ class SensorArray {
         void readGyroSum();
         void evaluateGyro();
         void initializeAccel();
+        void calibrateAccel();
         void readAccelSum();
         void evaluateAccel();
         void initializeMag();

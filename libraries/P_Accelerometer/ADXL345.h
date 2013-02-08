@@ -45,22 +45,10 @@ class ADXL345 {
             accel_bias[YAXIS] = ySum / count;
             accel_bias[ZAXIS] = zSum / count;
     
-            // Code will stop here, printing out the calibration data in serial console.
-            // Re-Calibrating each loop.
-            // Offsets to the values returned on a flat surface are meant to be either hardcoded during initialization
-            // or stored inside eeprom.
-            while (1) {
-                Serial.print(accel_bias[XAXIS]);
-                Serial.write('\t');
-                Serial.print(accel_bias[YAXIS]);
-                Serial.write('\t');
-                Serial.print(accel_bias[ZAXIS]);
-                Serial.write('\t');
-                Serial.println();
-
-                delay(5000);
-                calibrate_accel();
-            }
+            // Write calibration data to config
+            CONFIG.data.ACCEL_BIAS[XAXIS] = accel_bias[XAXIS];
+            CONFIG.data.ACCEL_BIAS[YAXIS] = accel_bias[YAXIS];
+            CONFIG.data.ACCEL_BIAS[ZAXIS] = accel_bias[ZAXIS];
         };
 
         void readAccelRaw() {
@@ -121,10 +109,11 @@ class ADXL345 {
 ADXL345 adxl;
 
 void SensorArray::initializeAccel() {
-    adxl.initialize(CONFIG.data.ACCEL_BIAS[0], CONFIG.data.ACCEL_BIAS[1], CONFIG.data.ACCEL_BIAS[2]);
-    
-    // Only runs when requested
-    // adxl.calibrate_accel();
+    adxl.initialize(CONFIG.data.ACCEL_BIAS[XAXIS], CONFIG.data.ACCEL_BIAS[YAXIS], CONFIG.data.ACCEL_BIAS[ZAXIS]);
+}
+
+void SensorArray::calibrateAccel() {
+    adxl.calibrate_accel();
 }
 
 void SensorArray::readAccelSum() {

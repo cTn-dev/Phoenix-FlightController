@@ -112,6 +112,14 @@ class Configurator {
                     output_kinematics = 0;
                     output_motor_out = 0;
                 break;
+                case 8: // Requesting Accel calibration
+                    sensors.calibrateAccel();
+                    
+                    // Write config to EEPROM
+                    writeEEPROM();
+                    
+                    ACK(); // Ackowledge when calibration is done                    
+                break;
                 default: // Unrecognized command
                     REFUSED();
             }
