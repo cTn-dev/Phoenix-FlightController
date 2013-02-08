@@ -80,13 +80,13 @@ void initializeEEPROM() {
     // Baro
     CONFIG.data.PID_BARO[P]  = 25.0;
     CONFIG.data.PID_BARO[I]  = 0.6;
-    CONFIG.data.PID_BARO[D]  = -10.0;
+    CONFIG.data.PID_BARO[D]  = -1.0;
     CONFIG.data.PID_BARO[WG] = 25.0;       
     
     // Sonar
-    CONFIG.data.PID_SONAR[P]  = 60.0;
+    CONFIG.data.PID_SONAR[P]  = 50.0;
     CONFIG.data.PID_SONAR[I]  = 0.6;
-    CONFIG.data.PID_SONAR[D]  = -10.0;
+    CONFIG.data.PID_SONAR[D]  = -1.0;
     CONFIG.data.PID_SONAR[WG] = 25.0;    
     
     // This function will only initialize data "locally"
