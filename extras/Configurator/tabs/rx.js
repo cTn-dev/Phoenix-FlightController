@@ -1,3 +1,9 @@
+var samples_i;
+
+var e_graph_receiver;
+var receiver_options;
+var receiver_data = new Array(8);
+
 function tab_initialize_rx() {
     // Setup variables
     samples_i = 300;
@@ -36,18 +42,21 @@ function tab_initialize_rx() {
         },
         grid : {
             backgroundColor: "#FFFFFF"
-        }
+        },
+        legend : {
+            backgroundOpacity: 0
+        }        
     }
 
     graph_receiver = Flotr.draw(e_graph_receiver, [ 
-        {data: receiver_data[0]}, 
-        {data: receiver_data[1]},
-        {data: receiver_data[2]},
-        {data: receiver_data[3]},
-        {data: receiver_data[4]},
-        {data: receiver_data[5]},
-        {data: receiver_data[6]},
-        {data: receiver_data[7]} ], receiver_options);                      
+        {data: receiver_data[0], label: "Channel - 1"}, 
+        {data: receiver_data[1], label: "Channel - 2"},
+        {data: receiver_data[2], label: "Channel - 3"},
+        {data: receiver_data[3], label: "Channel - 4"},
+        {data: receiver_data[4], label: "Channel - 5"},
+        {data: receiver_data[5], label: "Channel - 6"},
+        {data: receiver_data[6], label: "Channel - 7"},
+        {data: receiver_data[7], label: "Channel - 8"} ], receiver_options);                      
     
     // request receiver data from flight controller
     var bufferOut = new ArrayBuffer(6);
@@ -111,15 +120,15 @@ function process_data_receiver() {
             receiver_data[7].shift();                     
         }; 
 
-        graph_receiver = Flotr.draw(e_graph_receiver, [ 
-            {data: receiver_data[0]}, 
-            {data: receiver_data[1]},
-            {data: receiver_data[2]},
-            {data: receiver_data[3]},
-            {data: receiver_data[4]},
-            {data: receiver_data[5]},
-            {data: receiver_data[6]},
-            {data: receiver_data[7]} ], receiver_options);  
+    graph_receiver = Flotr.draw(e_graph_receiver, [ 
+        {data: receiver_data[0], label: "Channel - 1"}, 
+        {data: receiver_data[1], label: "Channel - 2"},
+        {data: receiver_data[2], label: "Channel - 3"},
+        {data: receiver_data[3], label: "Channel - 4"},
+        {data: receiver_data[4], label: "Channel - 5"},
+        {data: receiver_data[5], label: "Channel - 6"},
+        {data: receiver_data[6], label: "Channel - 7"},
+        {data: receiver_data[7], label: "Channel - 8"} ], receiver_options); 
 
         samples_i++;
     }    

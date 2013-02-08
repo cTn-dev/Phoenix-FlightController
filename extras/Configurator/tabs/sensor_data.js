@@ -1,3 +1,13 @@
+var samples_i;
+
+var e_graph_gyro;
+var gyro_options;
+var gyro_data = new Array(3);
+
+var e_graph_accel;
+var accel_options;
+var accel_data = new Array(3);
+
 function tab_initialize_sensor_data() {
     // Setup variables
     samples_i = 300;

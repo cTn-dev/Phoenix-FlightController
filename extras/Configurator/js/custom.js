@@ -1,10 +1,9 @@
 var connectionId = -1;
-var connection_delay = 0;
+var connection_delay = 0; // delay which defines "when" will the configurator request configurator data after connection was established
 var port_list;
-var serial_poll = 0;
+var serial_poll = 0; // iterval timer refference
 
-var eepromConfig;
-
+var eepromConfig; // config object
 var eepromConfigDefinition = {
     eepromConfigDefinition: {
         version:      'uint8',
@@ -23,22 +22,7 @@ var eepromConfigDefinition = {
         PID_BARO:    ['array', 'float64', 4],
         PID_SONAR:   ['array', 'float64', 4]
     }
-}; 
-
-// Graph global variables
-var samples_i;
-
-var e_graph_gyro;
-var gyro_options;
-var gyro_data = new Array(3);
-
-var e_graph_accel;
-var accel_options;
-var accel_data = new Array(3);
-
-var e_graph_receiver;
-var receiver_options;
-var receiver_data = new Array(8);
+};
 
 
 $(document).ready(function() { 
