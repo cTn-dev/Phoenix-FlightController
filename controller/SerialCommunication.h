@@ -121,22 +121,15 @@ class Configurator {
                     ACK(); // Ackowledge when calibration is done  
 
                     // Send over the accel calibration data
-                    uint8_t vBuffer[6];
-                    uint8_t vBuffer_i = 0;
-
-                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        vBuffer[vBuffer_i++] = highByte(CONFIG.data.ACCEL_BIAS[axis]);
-                        vBuffer[vBuffer_i++] = lowByte(CONFIG.data.ACCEL_BIAS[axis]);
-                    }
-                    
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x08); // command
                     Serial.write(0x00); // payload length MSB
                     Serial.write(6); // payload LSB  
-            
-                    for (uint16_t i = 0; i < 6; i++) {
-                        Serial.write(vBuffer[i]);
+                    
+                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                        Serial.write(highByte(CONFIG.data.ACCEL_BIAS[axis]));
+                        Serial.write(lowByte(CONFIG.data.ACCEL_BIAS[axis]));
                     }
                 }
                 break;
@@ -147,159 +140,96 @@ class Configurator {
         
         void process_output() {
             if (output_sensor_data) {
-                uint8_t vBuffer[12];    
-                uint8_t vBuffer_i = 0;
-                
-                // gyro
-                for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                    vBuffer[vBuffer_i++] = highByte((int16_t) (gyro[axis] * gyro_scale));
-                    vBuffer[vBuffer_i++] = lowByte((int16_t) (gyro[axis] * gyro_scale));
-                }
-
-                // accel
-                for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                    vBuffer[vBuffer_i++] = highByte((int16_t) (accel[axis] * accel_scale));
-                    vBuffer[vBuffer_i++] = lowByte((int16_t) (accel[axis] * accel_scale));
-                }
-                
-                uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
-                
                 Serial.write(0xB5); // sync char 1
                 Serial.write(0x62); // sync char 2
                 Serial.write(0x03); // command
                 Serial.write(0x00); // payload length MSB
-                Serial.write(buffer_size); // payload LSB  
-        
-                for (uint16_t i = 0; i < buffer_size; i++) {
-                    Serial.write(vBuffer[i]);
-                }  
+                Serial.write(12); // payload LSB
+                
+                // gyro
+                for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                    Serial.write(highByte((int16_t) (gyro[axis] * gyro_scale)));
+                    Serial.write(lowByte((int16_t) (gyro[axis] * gyro_scale)));
+                }
+
+                // accel
+                for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                    Serial.write(highByte((int16_t) (accel[axis] * accel_scale)));
+                    Serial.write(lowByte((int16_t) (accel[axis] * accel_scale)));
+                } 
             }
             
             if (output_RX_data) {
-                uint8_t vBuffer[16];
-                uint8_t vBuffer_i = 0;
-                
-                for (uint8_t channel = 0; channel <= PPM_CHANNELS; channel++) {
-                    vBuffer[vBuffer_i++] = highByte((int16_t) (RX[channel] * rx_scale));
-                    vBuffer[vBuffer_i++] = lowByte((int16_t) (RX[channel] * rx_scale));
-                }
-
-                uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
-                
                 Serial.write(0xB5); // sync char 1
                 Serial.write(0x62); // sync char 2
                 Serial.write(0x04); // command
                 Serial.write(0x00); // payload length MSB
-                Serial.write(buffer_size); // payload LSB  
-        
-                for (uint16_t i = 0; i < buffer_size; i++) {
-                    Serial.write(vBuffer[i]);
-                }                  
+                Serial.write(16); // payload LSB  
+                
+                for (uint8_t channel = 0; channel <= PPM_CHANNELS; channel++) {
+                    Serial.write(highByte((int16_t) (RX[channel] * rx_scale)));
+                    Serial.write(lowByte((int16_t) (RX[channel] * rx_scale)));
+                }                 
             }
             
             if (output_kinematics) {
-                uint8_t vBuffer[6];   
-                uint8_t vBuffer_i = 0;
-
-                for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                    vBuffer[vBuffer_i++] = highByte((int16_t) (kinematicsAngle[axis] * kinematics_scale));
-                    vBuffer[vBuffer_i++] = lowByte((int16_t) (kinematicsAngle[axis] * kinematics_scale));
-                }
-
-                uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
-                
                 Serial.write(0xB5); // sync char 1
                 Serial.write(0x62); // sync char 2
                 Serial.write(0x05); // command
                 Serial.write(0x00); // payload length MSB
-                Serial.write(buffer_size); // payload LSB  
-        
-                for (uint16_t i = 0; i < buffer_size; i++) {
-                    Serial.write(vBuffer[i]);
-                }                  
+                Serial.write(6); // payload LSB  
+
+                for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                    Serial.write(highByte((int16_t) (kinematicsAngle[axis] * kinematics_scale)));
+                    Serial.write(lowByte((int16_t) (kinematicsAngle[axis] * kinematics_scale)));
+                }                
             }
             
             if (output_motor_out) {
                 #if MOTORS == 3
-                    uint8_t vBuffer[6];
-                    uint8_t vBuffer_i = 0;
-                    
-                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
-                        vBuffer[vBuffer_i++] = highByte((int16_t) (MotorOut[motor] * motor_scale));
-                        vBuffer[vBuffer_i++] = lowByte((int16_t) (MotorOut[motor] * motor_scale));
-                    }
-                    
-                    uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
-                    
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x06); // command
                     Serial.write(0x00); // payload length MSB
-                    Serial.write(buffer_size); // payload LSB  
-            
-                    for (uint16_t i = 0; i < buffer_size; i++) {
-                        Serial.write(vBuffer[i]);
-                    }                      
+                    Serial.write(6); // payload LSB  
+                    
+                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+                        Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
+                        Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
+                    }                     
                 #elif MOTORS == 4
-                    uint8_t vBuffer[8];
-                    uint8_t vBuffer_i = 0;
-                    
-                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
-                        vBuffer[vBuffer_i++] = highByte((int16_t) (MotorOut[motor] * motor_scale));
-                        vBuffer[vBuffer_i++] = lowByte((int16_t) (MotorOut[motor] * motor_scale));
-                    }
-                    
-                    uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
-                    
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x06); // command
                     Serial.write(0x00); // payload length MSB
-                    Serial.write(buffer_size); // payload LSB  
-            
-                    for (uint16_t i = 0; i < buffer_size; i++) {
-                        Serial.write(vBuffer[i]);
-                    }                     
+                    Serial.write(8); // payload LSB  
+                    
+                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+                        Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
+                        Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
+                    }                    
                 #elif MOTORS == 6
-                    uint8_t vBuffer[12];
-                    uint8_t vBuffer_i = 0;
-                    
-                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
-                        vBuffer[vBuffer_i++] = highByte((int16_t) (MotorOut[motor] * motor_scale));
-                        vBuffer[vBuffer_i++] = lowByte((int16_t) (MotorOut[motor] * motor_scale));
-                    }  
-
-                    uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
-                    
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x06); // command
                     Serial.write(0x00); // payload length MSB
-                    Serial.write(buffer_size); // payload LSB  
-            
-                    for (uint16_t i = 0; i < buffer_size; i++) {
-                        Serial.write(vBuffer[i]);
-                    }                     
+                    Serial.write(12); // payload LSB  
+                    
+                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+                        Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
+                        Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
+                    }                      
                 #elif MOTORS == 8
-                    uint8_t vBuffer[16];
-                    uint8_t vBuffer_i = 0;
-                    
-                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
-                        vBuffer[vBuffer_i++] = highByte((int16_t) (MotorOut[motor] * motor_scale));
-                        vBuffer[vBuffer_i++] = lowByte((int16_t) (MotorOut[motor] * motor_scale));
-                    }
-
-                    uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
-                    
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x06); // command
                     Serial.write(0x00); // payload length MSB
-                    Serial.write(buffer_size); // payload LSB  
-            
-                    for (uint16_t i = 0; i < buffer_size; i++) {
-                        Serial.write(vBuffer[i]);
-                    }                     
+                    Serial.write(16); // payload LSB  
+                    
+                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+                        Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
+                        Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
+                    }                    
                 #endif
             }
         };
