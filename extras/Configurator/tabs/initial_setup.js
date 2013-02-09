@@ -66,4 +66,6 @@ function process_accel_calibration() {
     eepromConfig.ACCEL_BIAS[0] = data[0];
     eepromConfig.ACCEL_BIAS[1] = data[1];
     eepromConfig.ACCEL_BIAS[2] = data[2];
+    
+    console.log('Calibration received, data: ' + data);
 }
