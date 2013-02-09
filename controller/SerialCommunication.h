@@ -112,7 +112,7 @@ class Configurator {
                     output_kinematics = 0;
                     output_motor_out = 0;
                 break;
-                case 8: // Requesting Accel calibration
+                case 8: { // Requesting Accel calibration
                     sensors.calibrateAccel();
                     
                     // Write config to EEPROM
@@ -122,13 +122,12 @@ class Configurator {
 
                     // Send over the accel calibration data
                     uint8_t vBuffer[6];
-                    
-                    vBuffer[0] = highByte(CONFIG.data.ACCEL_BIAS[XAXIS]);
-                    vBuffer[1] = lowByte(CONFIG.data.ACCEL_BIAS[XAXIS]);
-                    vBuffer[2] = highByte(CONFIG.data.ACCEL_BIAS[YAXIS]);
-                    vBuffer[3] = lowByte(CONFIG.data.ACCEL_BIAS[YAXIS]);
-                    vBuffer[4] = highByte(CONFIG.data.ACCEL_BIAS[ZAXIS]);
-                    vBuffer[5] = lowByte(CONFIG.data.ACCEL_BIAS[ZAXIS]);  
+                    uint8_t vBuffer_i = 0;
+
+                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                        vBuffer[vBuffer_i++] = highByte(CONFIG.data.ACCEL_BIAS[axis]);
+                        vBuffer[vBuffer_i++] = lowByte(CONFIG.data.ACCEL_BIAS[axis]);
+                    }
                     
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
@@ -138,7 +137,8 @@ class Configurator {
             
                     for (uint16_t i = 0; i < 6; i++) {
                         Serial.write(vBuffer[i]);
-                    }                    
+                    }
+                }
                 break;
                 default: // Unrecognized command
                     REFUSED();
@@ -148,22 +148,19 @@ class Configurator {
         void process_output() {
             if (output_sensor_data) {
                 uint8_t vBuffer[12];    
+                uint8_t vBuffer_i = 0;
                 
-                // Gyro
-                vBuffer[0] = highByte((int16_t) (gyro[XAXIS] * gyro_scale));
-                vBuffer[1] = lowByte((int16_t) (gyro[XAXIS] * gyro_scale));
-                vBuffer[2] = highByte((int16_t) (gyro[YAXIS] * gyro_scale));
-                vBuffer[3] = lowByte((int16_t) (gyro[YAXIS] * gyro_scale));
-                vBuffer[4] = highByte((int16_t) (gyro[ZAXIS] * gyro_scale));
-                vBuffer[5] = lowByte((int16_t) (gyro[ZAXIS] * gyro_scale)); 
-                
-                // Accel
-                vBuffer[6] = highByte((int16_t) (accel[XAXIS] * accel_scale));
-                vBuffer[7] = lowByte((int16_t) (accel[XAXIS] * accel_scale));
-                vBuffer[8] = highByte((int16_t) (accel[YAXIS] * accel_scale));
-                vBuffer[9] = lowByte((int16_t) (accel[YAXIS] * accel_scale));
-                vBuffer[10] = highByte((int16_t) (accel[ZAXIS] * accel_scale));
-                vBuffer[11] = lowByte((int16_t) (accel[ZAXIS] * accel_scale));   
+                // gyro
+                for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                    vBuffer[vBuffer_i++] = highByte((int16_t) (gyro[axis] * gyro_scale));
+                    vBuffer[vBuffer_i++] = lowByte((int16_t) (gyro[axis] * gyro_scale));
+                }
+
+                // accel
+                for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                    vBuffer[vBuffer_i++] = highByte((int16_t) (accel[axis] * accel_scale));
+                    vBuffer[vBuffer_i++] = lowByte((int16_t) (accel[axis] * accel_scale));
+                }
                 
                 uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
                 
@@ -180,23 +177,12 @@ class Configurator {
             
             if (output_RX_data) {
                 uint8_t vBuffer[16];
-
-                vBuffer[0] = highByte((int16_t) (RX[0] * rx_scale));
-                vBuffer[1] = lowByte((int16_t) (RX[0] * rx_scale));
-                vBuffer[2] = highByte((int16_t) (RX[1] * rx_scale));
-                vBuffer[3] = lowByte((int16_t) (RX[1] * rx_scale));
-                vBuffer[4] = highByte((int16_t) (RX[2] * rx_scale));
-                vBuffer[5] = lowByte((int16_t) (RX[2] * rx_scale));
-                vBuffer[6] = highByte((int16_t) (RX[3] * rx_scale));
-                vBuffer[7] = lowByte((int16_t) (RX[3] * rx_scale));
-                vBuffer[8] = highByte((int16_t) (RX[4] * rx_scale));
-                vBuffer[9] = lowByte((int16_t) (RX[4] * rx_scale));
-                vBuffer[10] = highByte((int16_t) (RX[5] * rx_scale));
-                vBuffer[11] = lowByte((int16_t) (RX[5] * rx_scale));
-                vBuffer[12] = highByte((int16_t) (RX[6] * rx_scale));
-                vBuffer[13] = lowByte((int16_t) (RX[6] * rx_scale));
-                vBuffer[14] = highByte((int16_t) (RX[7] * rx_scale));
-                vBuffer[15] = lowByte((int16_t) (RX[7] * rx_scale));    
+                uint8_t vBuffer_i = 0;
+                
+                for (uint8_t channel = 0; channel <= PPM_CHANNELS; channel++) {
+                    vBuffer[vBuffer_i++] = highByte((int16_t) (RX[channel] * rx_scale));
+                    vBuffer[vBuffer_i++] = lowByte((int16_t) (RX[channel] * rx_scale));
+                }
 
                 uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
                 
@@ -213,13 +199,12 @@ class Configurator {
             
             if (output_kinematics) {
                 uint8_t vBuffer[6];   
-                
-                vBuffer[0] = highByte((int16_t) (kinematicsAngle[XAXIS] * kinematics_scale));
-                vBuffer[1] = lowByte((int16_t) (kinematicsAngle[XAXIS] * kinematics_scale));
-                vBuffer[2] = highByte((int16_t) (kinematicsAngle[YAXIS] * kinematics_scale));
-                vBuffer[3] = lowByte((int16_t) (kinematicsAngle[YAXIS] * kinematics_scale));
-                vBuffer[4] = highByte((int16_t) (kinematicsAngle[ZAXIS] * kinematics_scale));
-                vBuffer[5] = lowByte((int16_t) (kinematicsAngle[ZAXIS] * kinematics_scale));
+                uint8_t vBuffer_i = 0;
+
+                for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                    vBuffer[vBuffer_i++] = highByte((int16_t) (kinematicsAngle[axis] * kinematics_scale));
+                    vBuffer[vBuffer_i++] = lowByte((int16_t) (kinematicsAngle[axis] * kinematics_scale));
+                }
 
                 uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
                 
@@ -237,13 +222,12 @@ class Configurator {
             if (output_motor_out) {
                 #if MOTORS == 3
                     uint8_t vBuffer[6];
+                    uint8_t vBuffer_i = 0;
                     
-                    vBuffer[0] = highByte((int16_t) (MotorOut[0] * motor_scale));
-                    vBuffer[1] = lowByte((int16_t) (MotorOut[0] * motor_scale));
-                    vBuffer[2] = highByte((int16_t) (MotorOut[1] * motor_scale));
-                    vBuffer[3] = lowByte((int16_t) (MotorOut[1] * motor_scale));
-                    vBuffer[4] = highByte((int16_t) (MotorOut[2] * motor_scale));
-                    vBuffer[5] = lowByte((int16_t) (MotorOut[2] * motor_scale));
+                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+                        vBuffer[vBuffer_i++] = highByte((int16_t) (MotorOut[motor] * motor_scale));
+                        vBuffer[vBuffer_i++] = lowByte((int16_t) (MotorOut[motor] * motor_scale));
+                    }
                     
                     uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
                     
@@ -258,15 +242,12 @@ class Configurator {
                     }                      
                 #elif MOTORS == 4
                     uint8_t vBuffer[8];
+                    uint8_t vBuffer_i = 0;
                     
-                    vBuffer[0] = highByte((int16_t) (MotorOut[0] * motor_scale));
-                    vBuffer[1] = lowByte((int16_t) (MotorOut[0] * motor_scale));
-                    vBuffer[2] = highByte((int16_t) (MotorOut[1] * motor_scale));
-                    vBuffer[3] = lowByte((int16_t) (MotorOut[1] * motor_scale));
-                    vBuffer[4] = highByte((int16_t) (MotorOut[2] * motor_scale));
-                    vBuffer[5] = lowByte((int16_t) (MotorOut[2] * motor_scale));
-                    vBuffer[6] = highByte((int16_t) (MotorOut[3] * motor_scale));
-                    vBuffer[7] = lowByte((int16_t) (MotorOut[3] * motor_scale));
+                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+                        vBuffer[vBuffer_i++] = highByte((int16_t) (MotorOut[motor] * motor_scale));
+                        vBuffer[vBuffer_i++] = lowByte((int16_t) (MotorOut[motor] * motor_scale));
+                    }
                     
                     uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
                     
@@ -281,19 +262,12 @@ class Configurator {
                     }                     
                 #elif MOTORS == 6
                     uint8_t vBuffer[12];
+                    uint8_t vBuffer_i = 0;
                     
-                    vBuffer[0] = highByte((int16_t) (MotorOut[0] * motor_scale));
-                    vBuffer[1] = lowByte((int16_t) (MotorOut[0] * motor_scale));
-                    vBuffer[2] = highByte((int16_t) (MotorOut[1] * motor_scale));
-                    vBuffer[3] = lowByte((int16_t) (MotorOut[1] * motor_scale));
-                    vBuffer[4] = highByte((int16_t) (MotorOut[2] * motor_scale));
-                    vBuffer[5] = lowByte((int16_t) (MotorOut[2] * motor_scale));
-                    vBuffer[6] = highByte((int16_t) (MotorOut[3] * motor_scale));
-                    vBuffer[7] = lowByte((int16_t) (MotorOut[3] * motor_scale));
-                    vBuffer[8] = highByte((int16_t) (MotorOut[4] * motor_scale));
-                    vBuffer[9] = lowByte((int16_t) (MotorOut[4] * motor_scale));
-                    vBuffer[10] = highByte((int16_t) (MotorOut[5] * motor_scale));
-                    vBuffer[11] = lowByte((int16_t) (MotorOut[5] * motor_scale));   
+                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+                        vBuffer[vBuffer_i++] = highByte((int16_t) (MotorOut[motor] * motor_scale));
+                        vBuffer[vBuffer_i++] = lowByte((int16_t) (MotorOut[motor] * motor_scale));
+                    }  
 
                     uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
                     
@@ -308,23 +282,12 @@ class Configurator {
                     }                     
                 #elif MOTORS == 8
                     uint8_t vBuffer[16];
+                    uint8_t vBuffer_i = 0;
                     
-                    vBuffer[0] = highByte((int16_t) (MotorOut[0] * motor_scale));
-                    vBuffer[1] = lowByte((int16_t) (MotorOut[0] * motor_scale));
-                    vBuffer[2] = highByte((int16_t) (MotorOut[1] * motor_scale));
-                    vBuffer[3] = lowByte((int16_t) (MotorOut[1] * motor_scale));
-                    vBuffer[4] = highByte((int16_t) (MotorOut[2] * motor_scale));
-                    vBuffer[5] = lowByte((int16_t) (MotorOut[2] * motor_scale));
-                    vBuffer[6] = highByte((int16_t) (MotorOut[3] * motor_scale));
-                    vBuffer[7] = lowByte((int16_t) (MotorOut[3] * motor_scale));
-                    vBuffer[8] = highByte((int16_t) (MotorOut[4] * motor_scale));
-                    vBuffer[9] = lowByte((int16_t) (MotorOut[4] * motor_scale));
-                    vBuffer[10] = highByte((int16_t) (MotorOut[5] * motor_scale));
-                    vBuffer[11] = lowByte((int16_t) (MotorOut[5] * motor_scale));  
-                    vBuffer[12] = highByte((int16_t) (MotorOut[6] * motor_scale));
-                    vBuffer[13] = lowByte((int16_t) (MotorOut[6] * motor_scale));  
-                    vBuffer[14] = highByte((int16_t) (MotorOut[7] * motor_scale));
-                    vBuffer[15] = lowByte((int16_t) (MotorOut[7] * motor_scale)); 
+                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+                        vBuffer[vBuffer_i++] = highByte((int16_t) (MotorOut[motor] * motor_scale));
+                        vBuffer[vBuffer_i++] = lowByte((int16_t) (MotorOut[motor] * motor_scale));
+                    }
 
                     uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
                     
