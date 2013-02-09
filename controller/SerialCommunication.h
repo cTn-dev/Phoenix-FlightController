@@ -118,7 +118,27 @@ class Configurator {
                     // Write config to EEPROM
                     writeEEPROM();
                     
-                    ACK(); // Ackowledge when calibration is done                    
+                    ACK(); // Ackowledge when calibration is done  
+
+                    // Send over the accel calibration data
+                    uint8_t vBuffer[6];
+                    
+                    vBuffer[0] = highByte(CONFIG.data.ACCEL_BIAS[XAXIS]);
+                    vBuffer[1] = lowByte(CONFIG.data.ACCEL_BIAS[XAXIS]);
+                    vBuffer[2] = highByte(CONFIG.data.ACCEL_BIAS[YAXIS]);
+                    vBuffer[3] = lowByte(CONFIG.data.ACCEL_BIAS[YAXIS]);
+                    vBuffer[4] = highByte(CONFIG.data.ACCEL_BIAS[ZAXIS]);
+                    vBuffer[5] = lowByte(CONFIG.data.ACCEL_BIAS[ZAXIS]);  
+                    
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x08); // command
+                    Serial.write((uint8_t) 0x00); // payload length MSB
+                    Serial.write(6); // payload LSB  
+            
+                    for (uint16_t i = 0; i < 6; i++) {
+                        Serial.write(vBuffer[i]);
+                    }                    
                 break;
                 default: // Unrecognized command
                     REFUSED();

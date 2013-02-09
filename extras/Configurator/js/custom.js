@@ -294,6 +294,9 @@ function process_data() {
         case 5: // vehicle view
             process_vehicle_view();
         break;
+        case 8: // accel calibration data
+            process_accel_calibration();
+        break;
         case 9: // ACK
             var message = parseInt(message_buffer);
             
