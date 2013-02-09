@@ -44,6 +44,11 @@ class ADXL345 {
             accel_bias[XAXIS] = xSum / count;
             accel_bias[YAXIS] = ySum / count;
             accel_bias[ZAXIS] = (zSum / count) - 256; // - 1G
+            
+            // Reverse calibration forces
+            accel_bias[XAXIS] *= -1;
+            accel_bias[YAXIS] *= -1;
+            accel_bias[ZAXIS] *= -1;            
     
             // Write calibration data to config
             CONFIG.data.ACCEL_BIAS[XAXIS] = accel_bias[XAXIS];
