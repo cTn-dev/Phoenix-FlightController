@@ -25,7 +25,7 @@ void processPilotCommands() {
         }
         
         if (flightMode = ATTITUDE_MODE) {
-            commandYawAttitude = kinematicsAngleZ;
+            commandYawAttitude = kinematicsAngle[ZAXIS];
             commandYaw = commandYawAttitude;
         } else if (flightMode == RATE_MODE)  {
             commandYaw = 0.0;
@@ -50,7 +50,7 @@ void processPilotCommands() {
         if (flightMode == RATE_MODE) {
             // We just switched from rate to attitude mode
             // That means YAW correction should be applied to avoid YAW angle "jump"
-            commandYawAttitude = kinematicsAngleZ;
+            commandYawAttitude = kinematicsAngle[ZAXIS];
             commandYaw = commandYawAttitude;
         }
         

@@ -45,10 +45,10 @@ class HMC5883L {
         };
         
         void evaluateMag() {            
-            const double cosRoll =  cos(kinematicsAngleX);
-            const double sinRoll =  sin(kinematicsAngleX);
-            const double cosPitch = cos(kinematicsAngleY);
-            const double sinPitch = sin(kinematicsAngleY);  
+            const double cosRoll =  cos(kinematicsAngle[XAXIS]);
+            const double sinRoll =  sin(kinematicsAngle[XAXIS]);
+            const double cosPitch = cos(kinematicsAngle[YAXIS]);
+            const double sinPitch = sin(kinematicsAngle[YAXIS]);  
 
             magX = magRaw[XAXIS] * cosPitch + magRaw[YAXIS] * sinRoll * sinPitch + magRaw[ZAXIS] * cosRoll * sinPitch;
             magY = magRaw[YAXIS] * cosRoll - magRaw[ZAXIS] * sinRoll;

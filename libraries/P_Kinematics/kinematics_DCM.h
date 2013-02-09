@@ -120,17 +120,16 @@ void kinematics_update(double* gyroX, double* gyroY, double* gyroZ, double* acce
     float acY = *accelY;
     float acZ = *accelZ;
     
-    
     AHRSupdate(gyX, gyY, gyZ, acX, acY, acZ);
     
     float gx = 2 * (q1*q3 - q0*q2);
     float gy = 2 * (q0*q1 + q2*q3);
     float gz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
     
-    kinematicsAngleX = atan(gy / sqrt(gx*gx + gz*gz));
-    kinematicsAngleY = atan(gx / sqrt(gy*gy + gz*gz));
-    kinematicsAngleZ = atan2(2 * q1 * q2 - 2 * q0 * q3, 2 * q0*q0 + 2 * q1 * q1 - 1);
+    kinematicsAngle[XAXIS] = atan(gy / sqrt(gx*gx + gz*gz));
+    kinematicsAngle[YAXIS] = atan(gx / sqrt(gy*gy + gz*gz));
+    kinematicsAngle[ZAXIS] = atan2(2 * q1 * q2 - 2 * q0 * q3, 2 * q0*q0 + 2 * q1 * q1 - 1);
     
     // invert
-    kinematicsAngleZ = -kinematicsAngleZ;
+    kinematicsAngle[ZAXIS] = -kinematicsAngle[ZAXIS];
 }

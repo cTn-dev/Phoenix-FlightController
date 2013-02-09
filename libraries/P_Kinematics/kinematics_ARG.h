@@ -117,7 +117,7 @@ void kinematics_update(double* gyroX, double* gyroY, double* gyroZ, double* acce
     // Save kinematics time for next comparison
     kinematics_timer = now;
     
-    kinematicsAngleX = atan2(2 * (q0 * q1 + q2 * q3), 1 - 2 * (q1 * q1 + q2 * q2));
-    kinematicsAngleY = asin(2 * (q0 * q2 - q1 * q3));
-    kinematicsAngleZ = atan2(2 * (q0 * q3 + q1 * q2), 1 - 2 * (q2 * q2 + q3 * q3));    
+    kinematicsAngle[XAXIS] = atan2(2 * (q0 * q1 + q2 * q3), 1 - 2 * (q1 * q1 + q2 * q2));
+    kinematicsAngle[YAXIS] = asin(2 * (q0 * q2 - q1 * q3));
+    kinematicsAngle[ZAXIS] = atan2(2 * (q0 * q3 + q1 * q2), 1 - 2 * (q2 * q2 + q3 * q3));    
 }

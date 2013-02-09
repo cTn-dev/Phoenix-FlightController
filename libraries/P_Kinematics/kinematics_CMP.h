@@ -36,25 +36,25 @@ void kinematics_update(double* gyroX, double* gyroY, double* gyroZ, double* acce
     unsigned long now = micros();    
     
     // Fuse in gyroscope
-    kinematicsAngleX = kinematicsAngleX + (*gyroX * (double)(now - kinematics_timer) / 1000000);
-    kinematicsAngleY = kinematicsAngleY + (*gyroY * (double)(now - kinematics_timer) / 1000000);
-    kinematicsAngleZ = kinematicsAngleZ + (*gyroZ * (double)(now - kinematics_timer) / 1000000);  
+    kinematicsAngle[XAXIS] = kinematicsAngle[XAXIS] + (*gyroX * (double)(now - kinematics_timer) / 1000000);
+    kinematicsAngle[YAXIS] = kinematicsAngle[YAXIS] + (*gyroY * (double)(now - kinematics_timer) / 1000000);
+    kinematicsAngle[ZAXIS] = kinematicsAngle[ZAXIS] + (*gyroZ * (double)(now - kinematics_timer) / 1000000);  
     
     // Normalize gyro kinematics (+ - PI)
-    if (kinematicsAngleX > PI) kinematicsAngleX -= TWO_PI;
-    else if (kinematicsAngleX < -PI) kinematicsAngleX += TWO_PI;    
+    if (kinematicsAngle[XAXIS] > PI) kinematicsAngle[XAXIS] -= TWO_PI;
+    else if (kinematicsAngle[XAXIS] < -PI) kinematicsAngle[XAXIS] += TWO_PI;    
     
-    if (kinematicsAngleY > PI) kinematicsAngleY -= TWO_PI;
-    else if (kinematicsAngleY < -PI) kinematicsAngleY += TWO_PI;
+    if (kinematicsAngle[YAXIS] > PI) kinematicsAngle[YAXIS] -= TWO_PI;
+    else if (kinematicsAngle[YAXIS] < -PI) kinematicsAngle[YAXIS] += TWO_PI;
     
     // While normalizing Z angle, attitudeYaw (angle desired by user) is also normalized
     // attitudeYaw variable was added to handle clean normalization of angles while still
     // allowing for a smooth rate/attitude mode switching.
-    if (kinematicsAngleZ > PI) {
-        kinematicsAngleZ -= TWO_PI;
+    if (kinematicsAngle[ZAXIS] > PI) {
+        kinematicsAngle[ZAXIS] -= TWO_PI;
         commandYawAttitude -= TWO_PI;
-    } else if (kinematicsAngleZ < -PI) {
-        kinematicsAngleZ += TWO_PI; 
+    } else if (kinematicsAngle[ZAXIS] < -PI) {
+        kinematicsAngle[ZAXIS] += TWO_PI; 
         commandYawAttitude += TWO_PI;
     }
     
@@ -63,22 +63,22 @@ void kinematics_update(double* gyroX, double* gyroY, double* gyroZ, double* acce
     // "up-side UP" angle estimation and restricts it further to avoid incorrect accelerometer
     // data correction.
     if (*accelZ > 0.75) {
-        if ((kinematicsAngleX - accelXangle) > PI) {
-            kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * (accelXangle + TWO_PI);
-        } else if ((kinematicsAngleX - accelXangle) < -PI) {
-            kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * (accelXangle - TWO_PI);
+        if ((kinematicsAngle[XAXIS] - accelXangle) > PI) {
+            kinematicsAngle[XAXIS] = (1.00 - accelWeight) * kinematicsAngle[XAXIS] + accelWeight * (accelXangle + TWO_PI);
+        } else if ((kinematicsAngle[XAXIS] - accelXangle) < -PI) {
+            kinematicsAngle[XAXIS] = (1.00 - accelWeight) * kinematicsAngle[XAXIS] + accelWeight * (accelXangle - TWO_PI);
         } else {
-            kinematicsAngleX = (1.00 - accelWeight) * kinematicsAngleX + accelWeight * accelXangle;
+            kinematicsAngle[XAXIS] = (1.00 - accelWeight) * kinematicsAngle[XAXIS] + accelWeight * accelXangle;
         }
     }
     
     if (*accelZ > 0.60) {
-        if ((kinematicsAngleY - accelYangle) > PI) {
-            kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * (accelYangle + TWO_PI);
-        } else if ((kinematicsAngleY - accelYangle) < -PI) {
-            kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * (accelYangle - TWO_PI);
+        if ((kinematicsAngle[YAXIS] - accelYangle) > PI) {
+            kinematicsAngle[YAXIS] = (1.00 - accelWeight) * kinematicsAngle[YAXIS] + accelWeight * (accelYangle + TWO_PI);
+        } else if ((kinematicsAngle[YAXIS] - accelYangle) < -PI) {
+            kinematicsAngle[YAXIS] = (1.00 - accelWeight) * kinematicsAngle[YAXIS] + accelWeight * (accelYangle - TWO_PI);
         } else {
-            kinematicsAngleY = (1.00 - accelWeight) * kinematicsAngleY + accelWeight * accelYangle;
+            kinematicsAngle[YAXIS] = (1.00 - accelWeight) * kinematicsAngle[YAXIS] + accelWeight * accelYangle;
         } 
     }
     // Saves time for next comparison

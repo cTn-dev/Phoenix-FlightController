@@ -133,7 +133,7 @@ class Configurator {
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x08); // command
-                    Serial.write((uint8_t) 0x00); // payload length MSB
+                    Serial.write(0x00); // payload length MSB
                     Serial.write(6); // payload LSB  
             
                     for (uint16_t i = 0; i < 6; i++) {
@@ -170,7 +170,7 @@ class Configurator {
                 Serial.write(0xB5); // sync char 1
                 Serial.write(0x62); // sync char 2
                 Serial.write(0x03); // command
-                Serial.write((uint8_t) 0x00); // payload length MSB
+                Serial.write(0x00); // payload length MSB
                 Serial.write(buffer_size); // payload LSB  
         
                 for (uint16_t i = 0; i < buffer_size; i++) {
@@ -203,7 +203,7 @@ class Configurator {
                 Serial.write(0xB5); // sync char 1
                 Serial.write(0x62); // sync char 2
                 Serial.write(0x04); // command
-                Serial.write((uint8_t) 0x00); // payload length MSB
+                Serial.write(0x00); // payload length MSB
                 Serial.write(buffer_size); // payload LSB  
         
                 for (uint16_t i = 0; i < buffer_size; i++) {
@@ -214,19 +214,19 @@ class Configurator {
             if (output_kinematics) {
                 uint8_t vBuffer[6];   
                 
-                vBuffer[0] = highByte((int16_t) (kinematicsAngleX * kinematics_scale));
-                vBuffer[1] = lowByte((int16_t) (kinematicsAngleX * kinematics_scale));
-                vBuffer[2] = highByte((int16_t) (kinematicsAngleY * kinematics_scale));
-                vBuffer[3] = lowByte((int16_t) (kinematicsAngleY * kinematics_scale));
-                vBuffer[4] = highByte((int16_t) (kinematicsAngleZ * kinematics_scale));
-                vBuffer[5] = lowByte((int16_t) (kinematicsAngleZ * kinematics_scale));
+                vBuffer[0] = highByte((int16_t) (kinematicsAngle[XAXIS] * kinematics_scale));
+                vBuffer[1] = lowByte((int16_t) (kinematicsAngle[XAXIS] * kinematics_scale));
+                vBuffer[2] = highByte((int16_t) (kinematicsAngle[YAXIS] * kinematics_scale));
+                vBuffer[3] = lowByte((int16_t) (kinematicsAngle[YAXIS] * kinematics_scale));
+                vBuffer[4] = highByte((int16_t) (kinematicsAngle[ZAXIS] * kinematics_scale));
+                vBuffer[5] = lowByte((int16_t) (kinematicsAngle[ZAXIS] * kinematics_scale));
 
                 uint8_t buffer_size = (sizeof(vBuffer) / sizeof(uint8_t));
                 
                 Serial.write(0xB5); // sync char 1
                 Serial.write(0x62); // sync char 2
                 Serial.write(0x05); // command
-                Serial.write((uint8_t) 0x00); // payload length MSB
+                Serial.write(0x00); // payload length MSB
                 Serial.write(buffer_size); // payload LSB  
         
                 for (uint16_t i = 0; i < buffer_size; i++) {
@@ -250,7 +250,7 @@ class Configurator {
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x06); // command
-                    Serial.write((uint8_t) 0x00); // payload length MSB
+                    Serial.write(0x00); // payload length MSB
                     Serial.write(buffer_size); // payload LSB  
             
                     for (uint16_t i = 0; i < buffer_size; i++) {
@@ -273,7 +273,7 @@ class Configurator {
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x06); // command
-                    Serial.write((uint8_t) 0x00); // payload length MSB
+                    Serial.write(0x00); // payload length MSB
                     Serial.write(buffer_size); // payload LSB  
             
                     for (uint16_t i = 0; i < buffer_size; i++) {
@@ -300,7 +300,7 @@ class Configurator {
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x06); // command
-                    Serial.write((uint8_t) 0x00); // payload length MSB
+                    Serial.write(0x00); // payload length MSB
                     Serial.write(buffer_size); // payload LSB  
             
                     for (uint16_t i = 0; i < buffer_size; i++) {
@@ -331,7 +331,7 @@ class Configurator {
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x06); // command
-                    Serial.write((uint8_t) 0x00); // payload length MSB
+                    Serial.write(0x00); // payload length MSB
                     Serial.write(buffer_size); // payload LSB  
             
                     for (uint16_t i = 0; i < buffer_size; i++) {
@@ -345,7 +345,7 @@ class Configurator {
             Serial.write(0xB5); // sync char 1
             Serial.write(0x62); // sync char 2
             Serial.write(0x09); // command
-            Serial.write((uint8_t) 0x00); // payload length MSB
+            Serial.write(0x00); // payload length MSB
             Serial.write(0x01); // payload LSB  
             Serial.write(0x01); // payload
         };
@@ -354,9 +354,9 @@ class Configurator {
             Serial.write(0xB5); // sync char 1
             Serial.write(0x62); // sync char 2
             Serial.write(0x09); // command
-            Serial.write((uint8_t) 0x00); // payload length MSB
+            Serial.write(0x00); // payload length MSB
             Serial.write(0x01); // payload LSB  
-            Serial.write((uint8_t) 0x00); // payload      
+            Serial.write(0x00); // payload      
         };
     
     private:
