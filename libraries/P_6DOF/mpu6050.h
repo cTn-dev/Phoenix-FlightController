@@ -169,7 +169,7 @@ class MPU6050 {
             
             accel_bias[XAXIS] = xSum / count;
             accel_bias[YAXIS] = ySum / count;
-            accel_bias[ZAXIS] = zSum / count;
+            accel_bias[ZAXIS] = (zSum / count) - 8192; // - 1G;
 
             // Write calibration data to config
             CONFIG.data.ACCEL_BIAS[XAXIS] = accel_bias[XAXIS];
