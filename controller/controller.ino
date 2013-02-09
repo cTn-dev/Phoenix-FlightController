@@ -21,7 +21,8 @@
 #include "dataStorage.h"
 
 // == Hardware setup/s == 
-#define Maggie
+//#define Maggie
+#define Development
 
 #ifdef Maggie
     // Features requested
@@ -33,7 +34,7 @@
     #define GPS
 
     // Critical sensors on board (gyro/accel)
-    #include <mpu6050.h>
+    #include <mpu6050_10DOF_stick.h>
     
     // Magnetometer
     #include <Magnetometer_HMC5883L.h>
@@ -61,6 +62,34 @@
 
     // Motor / ESC setup
     #include <ESC_teensy3_HW.h>        
+#endif
+
+#ifdef Development
+    // Features requested
+    #define Accelerometer
+    #define Magnetometer
+    #define GPS
+
+    // Critical sensors on board (gyro/accel)
+    #include <mpu6050_6DOF_stick.h>
+    
+    // Magnetometer
+    #include <Magnetometer_HMC5883L.h>
+    
+    // GPS (ublox neo 6m)
+    #include <GPS_ublox.h>
+    
+    // Kinematics used
+    #include <kinematics_CMP.h>
+    
+    // Receiver
+    #include <Receiver_teensy3_HW_PPM.h>
+    
+    // Frame type definition
+    #include <FrameType_QuadX.h> 
+
+    // Motor / ESC setup
+    #include <ESC_teensy3_HW.h>    
 #endif
 // == END of Hardware setup ==
 
