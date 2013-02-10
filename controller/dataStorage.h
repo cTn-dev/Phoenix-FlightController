@@ -30,7 +30,7 @@ struct __attribute__((packed)) CONFIG_struct {
 
 union CONFIG_union {
     struct CONFIG_struct data;
-    uint8_t raw[sizeof(data)];
+    uint8_t raw[sizeof(CONFIG_struct)];
 };
 
 CONFIG_union CONFIG;

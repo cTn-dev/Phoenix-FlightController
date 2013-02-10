@@ -3,6 +3,20 @@ class Configurator {
         // Constructor
         Configurator() {
             state = 0;
+            
+            payload_length_expected = 0;
+            payload_length_received = 0;
+            
+            output_sensor_data = 0;
+            output_RX_data = 0;
+            output_kinematics = 0;
+            output_motor_out = 0;
+            
+            gyro_scale = 65535.0 / 20.0;
+            accel_scale = 65535.0 / 3.0;   
+            kinematics_scale = 65535.0 / TWO_PI;
+            rx_scale = 65535.0 / 4000.0;
+            motor_scale = 65535.0 / 4000.0;
         };
     
         void read_packet() {
@@ -260,22 +274,22 @@ class Configurator {
         char command_buffer[4];
         uint8_t command;
         
-        uint16_t payload_length_expected = 0;
-        uint16_t payload_length_received = 0;
+        uint16_t payload_length_expected;
+        uint16_t payload_length_received;
         
         char data_buffer[300]; // Current UNION size = 264 bytes = 2112 bits
 
-        bool output_sensor_data = 0;
-        bool output_RX_data = 0;
-        bool output_kinematics = 0;
-        bool output_motor_out = 0;
+        bool output_sensor_data;
+        bool output_RX_data;
+        bool output_kinematics;
+        bool output_motor_out;
         
         // Scale factors used to transmit double/float data over serial with just 2 bytes
-        int16_t gyro_scale = 65535.0 / 20.0;
-        int16_t accel_scale = 65535.0 / 3.0;   
-        int16_t kinematics_scale = 65535.0 / TWO_PI;
-        int16_t rx_scale = 65535.0 / 4000.0;
-        int16_t motor_scale = 65535.0 / 4000.0;
+        int16_t gyro_scale;
+        int16_t accel_scale;   
+        int16_t kinematics_scale;
+        int16_t rx_scale;
+        int16_t motor_scale;
 } configurator;
 
 void readSerial() {
