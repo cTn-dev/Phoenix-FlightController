@@ -325,3 +325,40 @@ table.pid_tuning {
                 -webkit-transform: rotateX(90deg) translateZ(100px);
                 background-color: silver;
             }
+.tab-motor_output {
+}
+    .tab-motor_output .bar_wrapper {
+    
+    }
+    .tab-motor_output .titles {
+        width: 100%;
+        height: 20px;
+    }
+        .tab-motor_output .titles li {
+            float: left;
+            width: 62px;
+            margin-right: 10px;
+            
+            text-align: center;
+        }
+        .tab-motor_output .titles .active {
+            color: green;
+        }
+    .tab-motor_output .m-block {
+        float: left;
+        
+        width: 60px;
+        height: 330px;
+        
+        margin-right: 10px;
+        
+        border: 1px solid silver;
+        background-color: #e9e9e9;
+    }
+    .tab-motor_output .indicator {
+        position: absolute;
+        margin-top: 330px;
+        
+        width: 60px;
+        height: 0px;
+    }

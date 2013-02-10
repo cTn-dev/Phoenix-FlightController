@@ -21,8 +21,8 @@
 #include "dataStorage.h"
 
 // == Hardware setup/s == 
-//#define Maggie
-#define Development
+#define Maggie
+//#define Development
 
 #ifdef Maggie
     // Features requested
