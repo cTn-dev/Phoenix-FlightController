@@ -37,11 +37,10 @@ function process_vehicle_view() {
             }
         }
 
-        // Apply scale factors
-        // (rad_to_deg = 57.29)
-        data[0] = (data[0] / 10435.0) * 57.29; // Roll
-        data[1] = (data[1] / 10435.0) * 57.29; // Pitch
-        data[2] = (data[2] / 10435.0) * 57.29; // Yaw  
+        // Apply scale factors (rad_to_deg = 57.29)
+        for (var i = 0; i < data.length; i++) {
+            data[i] = (data[i] / 10435.0) * 57.29;
+        }
         
         data[1] = -data[1]; // Reverse Pitch
         

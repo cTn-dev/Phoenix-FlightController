@@ -113,7 +113,7 @@ function process_data_sensors() {
         }
         
         // Apply scale factors
-        // Gyro
+        // Gyro        
         data[0] = data[0] / 3276.0; // X
         data[1] = data[1] / 3276.0; // Y
         data[2] = data[2] / 3276.0; // Z

@@ -89,14 +89,9 @@ function process_data_receiver() {
         } 
 
         // Apply scale factors
-        data[0] = data[0] / 16.0;
-        data[1] = data[1] / 16.0;
-        data[2] = data[2] / 16.0;
-        data[3] = data[3] / 16.0;
-        data[4] = data[4] / 16.0;
-        data[5] = data[5] / 16.0;
-        data[6] = data[6] / 16.0;
-        data[7] = data[7] / 16.0;
+        for (var i = 0; i < data.length; i++) {
+            data[i] /= 16.0;
+        }
         
         // push latest data to the main array
         receiver_data[0].push([samples_i, data[0]]);
