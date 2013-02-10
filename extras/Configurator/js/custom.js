@@ -4,6 +4,7 @@ var port_list;
 var serial_poll = 0; // iterval timer refference
 
 var eepromConfig; // config object
+var eepromConfigSize;
 var eepromConfigDefinition = {
     eepromConfigDefinition: {
         version:      'uint8',
@@ -271,7 +272,10 @@ function onCharRead(readInfo) {
 function process_data() {
     switch (command) {
         case 1: // configuration data
-            var eepromConfigBytes = new ArrayBuffer(264);
+            // Store UNION size for later usage
+            eepromConfigSize = message_length_expected;
+            
+            var eepromConfigBytes = new ArrayBuffer(eepromConfigSize);
             var eepromConfigBytesView = new Uint8Array(eepromConfigBytes);
             for (var i = 0; i < message_buffer.length; i++) {
                 eepromConfigBytesView[i] = message_buffer[i];
@@ -313,3 +317,11 @@ function process_data() {
         break;
     }
 };
+
+function highByte(num) {
+    return num >> 8;
+}
+
+function lowByte(num) {
+    return 0x00FF & num;
+}

@@ -66,15 +66,15 @@ class Configurator {
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x01); // command
-                    Serial.write(highByte(sizeof(CONFIG_struct))); // payload length MSB
-                    Serial.write(highByte(sizeof(CONFIG_struct))); // payload length LSB  
+                    Serial.write(highByte(sizeof(CONFIG))); // payload length MSB
+                    Serial.write(lowByte(sizeof(CONFIG))); // payload length LSB  
             
-                    for (uint16_t i = 0; i < sizeof(CONFIG_struct); i++) {
+                    for (uint16_t i = 0; i < sizeof(CONFIG); i++) {
                         Serial.write(CONFIG.raw[i]);
                     }              
                 break;
                 case 2: // Received configuration union
-                    if (payload_length_received == sizeof(CONFIG_struct)) {
+                    if (payload_length_received == sizeof(CONFIG)) {
                         // process data from buffer (throw it inside union)
                         for (uint16_t i = 0; i < sizeof(data_buffer); i++) {
                             CONFIG.raw[i] = data_buffer[i];
