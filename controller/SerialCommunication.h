@@ -34,7 +34,7 @@ class Configurator {
                             state++;
                         } else {
                             state = 0; // Restart and try again
-                        }                        
+                        }
                     break;
                     case 2: // command
                         command = data;
@@ -267,7 +267,7 @@ class Configurator {
         };
     
     private:
-        char data; // variable used to store a single byte from serial
+        uint8_t data; // variable used to store a single byte from serial
         
         uint8_t state;
         
