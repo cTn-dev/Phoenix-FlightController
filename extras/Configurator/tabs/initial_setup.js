@@ -49,6 +49,25 @@ function tab_initialize_initial_setup() {
             command_log('Starting Accel calibration, when FC responds with ACK, calibration is done.');
         });   
     });
+    
+    $('#content .initializeEEPROM').click(function() {
+        // initialize EEPROM
+        var bufferOut = new ArrayBuffer(6);
+        var bufView = new Uint8Array(bufferOut);
+        
+        // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
+        bufView[0] = 0xB5; // sync char 1
+        bufView[1] = 0x62; // sync char 2
+        bufView[2] = 0x09; // command
+        bufView[3] = 0x00; // payload length MSB
+        bufView[4] = 0x01; // payload length LSB
+        bufView[5] = 0x01; // payload
+        
+        chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
+            console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+            command_log('Requesting EEPROM re-initialization.');
+        });  
+    });
 }
 
 function process_accel_calibration() {

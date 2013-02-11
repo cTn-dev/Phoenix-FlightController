@@ -147,6 +147,23 @@ class Configurator {
                     }
                 }
                 break;
+                case 9: // Requesting eeprom re-initialization
+                    ACK();
+                    
+                    initializeEEPROM(); // initializes default values
+                    writeEEPROM(); // writes default values to eeprom
+
+                    // Send back configuration union
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x01); // command
+                    Serial.write(highByte(sizeof(CONFIG))); // payload length MSB
+                    Serial.write(lowByte(sizeof(CONFIG))); // payload length LSB  
+            
+                    for (uint16_t i = 0; i < sizeof(CONFIG); i++) {
+                        Serial.write(CONFIG.raw[i]);
+                    }                      
+                break;
                 default: // Unrecognized command
                     REFUSED();
             }
