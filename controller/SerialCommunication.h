@@ -277,7 +277,7 @@ class Configurator {
         uint16_t payload_length_expected;
         uint16_t payload_length_received;
         
-        uint8_t data_buffer[300]; // Current UNION size = 264 bytes = 2112 bits
+        uint8_t data_buffer[200];
 
         bool output_sensor_data;
         bool output_RX_data;
