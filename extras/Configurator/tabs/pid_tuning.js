@@ -3,45 +3,77 @@ function tab_initialize_pid_tuning() {
     
     // Command
     $('#content .command-yaw input').each(function() {
-        $(this).val(eepromConfig.PID_YAW_c[i++]);
+        if (i != 3) {
+            $(this).val(eepromConfig.PID_YAW_c[i++].toFixed(2));
+        } else {
+            $(this).val(eepromConfig.PID_YAW_c[i++].toFixed(0));
+        }        
     });
     
     i = 0;
     $('#content .command-pitch input').each(function() {
-        $(this).val(eepromConfig.PID_PITCH_c[i++]);
+        if (i != 3) {
+            $(this).val(eepromConfig.PID_PITCH_c[i++].toFixed(2));
+        } else {
+            $(this).val(eepromConfig.PID_PITCH_c[i++].toFixed(0));
+        }
     });
     
     i = 0;
     $('#content .command-roll input').each(function() {
-        $(this).val(eepromConfig.PID_ROLL_c[i++]);
+        if (i != 3) {
+            $(this).val(eepromConfig.PID_ROLL_c[i++].toFixed(2));
+        } else {
+            $(this).val(eepromConfig.PID_ROLL_c[i++].toFixed(0));
+        }
     });
 
     // Motor
     i = 0;
     $('#content .motor-yaw input').each(function() {
-        $(this).val(eepromConfig.PID_YAW_m[i++]);
+        if (i != 3) {
+            $(this).val(eepromConfig.PID_YAW_m[i++].toFixed(2));
+        } else {
+            $(this).val(eepromConfig.PID_YAW_m[i++].toFixed(0));
+        }
     });
     
     i = 0;
     $('#content .motor-pitch input').each(function() {
-        $(this).val(eepromConfig.PID_PITCH_m[i++]);
+        if (i != 3) {
+            $(this).val(eepromConfig.PID_PITCH_m[i++].toFixed(2));
+        } else {
+            $(this).val(eepromConfig.PID_PITCH_m[i++].toFixed(0));
+        }
     });
     
     i = 0;
     $('#content .motor-roll input').each(function() {
-        $(this).val(eepromConfig.PID_ROLL_m[i++]);
+        if (i != 3) {
+            $(this).val(eepromConfig.PID_ROLL_m[i++].toFixed(2));
+        } else {
+            $(this).val(eepromConfig.PID_ROLL_m[i++].toFixed(0));
+        }        
     });
 
     // Baro
     i = 0;
     $('#content .baro input').each(function() {
-        $(this).val(eepromConfig.PID_BARO[i++]);
+        if (i != 3) {
+            $(this).val(eepromConfig.PID_BARO[i++].toFixed(2));
+        } else {
+            $(this).val(eepromConfig.PID_BARO[i++].toFixed(0));
+        }
     });
     
     // Sonar
     i = 0;
     $('#content .sonar input').each(function() {
-        $(this).val(eepromConfig.PID_SONAR[i++]);
+        if (i != 3) {
+            $(this).val(eepromConfig.PID_SONAR[i++].toFixed(2));
+        } else {
+            $(this).val(eepromConfig.PID_SONAR[i++].toFixed(0));
+        }
     }); 
 
     // UI hooks
