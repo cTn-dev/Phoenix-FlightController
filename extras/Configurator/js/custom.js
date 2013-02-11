@@ -272,6 +272,7 @@ function onCharRead(readInfo) {
 function process_data() {
     switch (command) {
         case 1: // configuration data
+            console.log('Expected UNION size: ' + message_length_expected + ', Received UNION size: ' + message_buffer.length);
             // Store UNION size for later usage
             eepromConfigSize = message_length_expected;
             

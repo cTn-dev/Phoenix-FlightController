@@ -23,6 +23,7 @@
 // == Hardware setup/s == 
 //#define Maggie
 #define Development
+//#define Development_AVR
 
 #ifdef Maggie
     // Features requested
@@ -90,6 +91,30 @@
 
     // Motor / ESC setup
     #include <ESC_teensy3_HW.h>    
+#endif
+
+#ifdef Development_AVR
+    // Features requested
+    #define Accelerometer
+    #define Magnetometer
+
+    // Critical sensors on board (gyro/accel)
+    #include <mpu6050_6DOF_stick.h>
+    
+    // Magnetometer
+    #include <Magnetometer_HMC5883L.h>
+    
+    // Kinematics used
+    #include <kinematics_CMP.h>
+    
+    // Receiver
+    #include <Receiver_328p_HW_PPM.h>
+    
+    // Frame type definition
+    #include <FrameType_QuadX.h> 
+
+    // Motor / ESC setup
+    #include <ESC_328p_HW.h>    
 #endif
 // == END of Hardware setup ==
 
