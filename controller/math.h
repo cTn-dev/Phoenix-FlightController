@@ -1,12 +1,3 @@
-// Signed square root implementation
-double s_sqrt(double val) {
-    if (val < 0.00) {
-        // negative input = negative sqrt
-        return -sqrt(abs(val));
-    }
-    return sqrt(val);
-}
-
 // Fast inverse square root implementation
 // @see: http://en.wikipedia.org/wiki/Fast_inverse_square_root
 float invSqrt(float number) {
@@ -17,10 +8,20 @@ float invSqrt(float number) {
     x = number * 0.5F;
     y = number;
     i = * ( long * ) &y;
-    i = 0x5f375a86 - ( i >> 1 );
+    i = 0x5f375a86 - ( i >> 1 ); // older version with less accuracy = 0x5f3759df
     y = * ( float * ) &i;
     y = y * ( f - ( x * y * y ) );
+    
     return y;
+}
+
+// Signed square root implementation
+double s_invSqrt(double val) {
+    if (val < 0.00) {
+        // negative input = negative sqrt
+        return -invSqrt(abs(val));
+    }
+    return invSqrt(val);
 }
 
 // Smooth Filter

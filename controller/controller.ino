@@ -21,9 +21,9 @@
 #include "dataStorage.h"
 
 // == Hardware setup/s == 
-//#define Maggie
+#define Maggie
 //#define Development
-#define Development_AVR
+//#define Development_AVR
 
 #ifdef Maggie
     // Features requested
@@ -302,7 +302,7 @@ void process100HzTask() {
     readSerial();
     
     // Update kinematics with latest data
-    kinematics_update(&gyro[XAXIS], &gyro[YAXIS], &gyro[ZAXIS], &accel[XAXIS], &accel[YAXIS], &accel[ZAXIS]);
+    kinematics_update(gyro[XAXIS], gyro[YAXIS], gyro[ZAXIS], accel[XAXIS], accel[YAXIS], accel[ZAXIS]);
     
     if (flightMode == ATTITUDE_MODE) {
         // Compute command PIDs (with kinematics correction)

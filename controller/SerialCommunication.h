@@ -187,9 +187,11 @@ class Configurator {
                     }
 
                     // accel
+                    double norm = invSqrt(accel[XAXIS] * accel[XAXIS] + accel[YAXIS] * accel[YAXIS] + accel[ZAXIS] * accel[ZAXIS]);
+                    
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        Serial.write(highByte((int16_t) (accel[axis] * accel_scale)));
-                        Serial.write(lowByte((int16_t) (accel[axis] * accel_scale)));
+                        Serial.write(highByte((int16_t) ((accel[axis] / norm) * accel_scale)));
+                        Serial.write(lowByte((int16_t) ((accel[axis] / norm) * accel_scale)));
                     } 
                 }
                 
