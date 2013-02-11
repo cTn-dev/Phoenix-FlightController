@@ -28,6 +28,7 @@ class UBLOX {
     public:
         // Constructor
         UBLOX() {
+            UBX_step = 0;
         };
         
         // reads "RAW" packet from serial buffer
@@ -211,14 +212,14 @@ class UBLOX {
             struct ublox_NAV_POSLLH nav_posllh;
             struct ublox_NAV_VELNED nav_velned;
             struct ublox_NAV_SOL nav_sol;
-            unsigned char raw[52];
+            uint8_t raw[52];
         } ubloxMessage;  
         
         
         // Private variables used inside the class/loop
-        char data; // variable used to store a single byte from serial
+        uint8_t data; // variable used to store a single byte from serial
         
-        uint8_t UBX_step = 0; // used to select a correct step (data packet is read by state machine)
+        uint8_t UBX_step; // used to select a correct step (data packet is read by state machine)
 
         int8_t UBX_class;
         int8_t UBX_id;

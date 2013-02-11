@@ -22,8 +22,8 @@
 
 // == Hardware setup/s == 
 //#define Maggie
-//#define Development
-#define Development_AVR
+#define Development
+//#define Development_AVR
 
 #ifdef Maggie
     // Features requested
