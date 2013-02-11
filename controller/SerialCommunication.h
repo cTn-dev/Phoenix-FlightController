@@ -7,6 +7,7 @@ class Configurator {
             payload_length_expected = 0;
             payload_length_received = 0;
             
+            output_counter = 0;
             output_sensor_data = 0;
             output_RX_data = 0;
             output_kinematics = 0;
@@ -72,7 +73,7 @@ class Configurator {
             }        
         };
         
-        void process_data() {            
+        void process_data() {
             switch (command) {
                 case 1: // Requesting configuration union                    
                     ACK();
@@ -170,98 +171,103 @@ class Configurator {
         };
         
         void process_output() {
-            if (output_sensor_data) {
-                Serial.write(0xB5); // sync char 1
-                Serial.write(0x62); // sync char 2
-                Serial.write(0x03); // command
-                Serial.write(0x00); // payload length MSB
-                Serial.write(12); // payload length LSB
-                
-                // gyro
-                for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                    Serial.write(highByte((int16_t) (gyro[axis] * gyro_scale)));
-                    Serial.write(lowByte((int16_t) (gyro[axis] * gyro_scale)));
+            output_counter++;
+            if (output_counter >= 4) { // 25 Hz
+                if (output_sensor_data) {
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x03); // command
+                    Serial.write(0x00); // payload length MSB
+                    Serial.write(12); // payload length LSB
+                    
+                    // gyro
+                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                        Serial.write(highByte((int16_t) (gyro[axis] * gyro_scale)));
+                        Serial.write(lowByte((int16_t) (gyro[axis] * gyro_scale)));
+                    }
+
+                    // accel
+                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                        Serial.write(highByte((int16_t) (accel[axis] * accel_scale)));
+                        Serial.write(lowByte((int16_t) (accel[axis] * accel_scale)));
+                    } 
                 }
-
-                // accel
-                for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                    Serial.write(highByte((int16_t) (accel[axis] * accel_scale)));
-                    Serial.write(lowByte((int16_t) (accel[axis] * accel_scale)));
-                } 
-            }
-            
-            if (output_RX_data) {
-                Serial.write(0xB5); // sync char 1
-                Serial.write(0x62); // sync char 2
-                Serial.write(0x04); // command
-                Serial.write(0x00); // payload length MSB
-                Serial.write(16); // payload length LSB  
                 
-                for (uint8_t channel = 0; channel <= PPM_CHANNELS; channel++) {
-                    Serial.write(highByte((int16_t) (RX[channel] * rx_scale)));
-                    Serial.write(lowByte((int16_t) (RX[channel] * rx_scale)));
-                }                 
-            }
-            
-            if (output_kinematics) {
-                Serial.write(0xB5); // sync char 1
-                Serial.write(0x62); // sync char 2
-                Serial.write(0x05); // command
-                Serial.write(0x00); // payload length MSB
-                Serial.write(6); // payload length LSB  
-
-                for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                    Serial.write(highByte((int16_t) (kinematicsAngle[axis] * kinematics_scale)));
-                    Serial.write(lowByte((int16_t) (kinematicsAngle[axis] * kinematics_scale)));
-                }                
-            }
-            
-            if (output_motor_out) {
-                #if MOTORS == 3
+                if (output_RX_data) {
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
-                    Serial.write(0x06); // command
-                    Serial.write(0x00); // payload length MSB
-                    Serial.write(6); // payload length LSB  
-                    
-                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
-                        Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
-                        Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
-                    }                     
-                #elif MOTORS == 4
-                    Serial.write(0xB5); // sync char 1
-                    Serial.write(0x62); // sync char 2
-                    Serial.write(0x06); // command
-                    Serial.write(0x00); // payload length MSB
-                    Serial.write(8); // payload length LSB  
-                    
-                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
-                        Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
-                        Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
-                    }                    
-                #elif MOTORS == 6
-                    Serial.write(0xB5); // sync char 1
-                    Serial.write(0x62); // sync char 2
-                    Serial.write(0x06); // command
-                    Serial.write(0x00); // payload length MSB
-                    Serial.write(12); // payload length LSB  
-                    
-                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
-                        Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
-                        Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
-                    }                      
-                #elif MOTORS == 8
-                    Serial.write(0xB5); // sync char 1
-                    Serial.write(0x62); // sync char 2
-                    Serial.write(0x06); // command
+                    Serial.write(0x04); // command
                     Serial.write(0x00); // payload length MSB
                     Serial.write(16); // payload length LSB  
                     
-                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
-                        Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
-                        Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
-                    }                    
-                #endif
+                    for (uint8_t channel = 0; channel <= PPM_CHANNELS; channel++) {
+                        Serial.write(highByte((int16_t) (RX[channel] * rx_scale)));
+                        Serial.write(lowByte((int16_t) (RX[channel] * rx_scale)));
+                    }                 
+                }
+                
+                if (output_kinematics) {
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x05); // command
+                    Serial.write(0x00); // payload length MSB
+                    Serial.write(6); // payload length LSB  
+
+                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                        Serial.write(highByte((int16_t) (kinematicsAngle[axis] * kinematics_scale)));
+                        Serial.write(lowByte((int16_t) (kinematicsAngle[axis] * kinematics_scale)));
+                    }                
+                }
+                
+                if (output_motor_out) {
+                    #if MOTORS == 3
+                        Serial.write(0xB5); // sync char 1
+                        Serial.write(0x62); // sync char 2
+                        Serial.write(0x06); // command
+                        Serial.write(0x00); // payload length MSB
+                        Serial.write(6); // payload length LSB  
+                        
+                        for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+                            Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
+                            Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
+                        }                     
+                    #elif MOTORS == 4
+                        Serial.write(0xB5); // sync char 1
+                        Serial.write(0x62); // sync char 2
+                        Serial.write(0x06); // command
+                        Serial.write(0x00); // payload length MSB
+                        Serial.write(8); // payload length LSB  
+                        
+                        for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+                            Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
+                            Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
+                        }                    
+                    #elif MOTORS == 6
+                        Serial.write(0xB5); // sync char 1
+                        Serial.write(0x62); // sync char 2
+                        Serial.write(0x06); // command
+                        Serial.write(0x00); // payload length MSB
+                        Serial.write(12); // payload length LSB  
+                        
+                        for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+                            Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
+                            Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
+                        }                      
+                    #elif MOTORS == 8
+                        Serial.write(0xB5); // sync char 1
+                        Serial.write(0x62); // sync char 2
+                        Serial.write(0x06); // command
+                        Serial.write(0x00); // payload length MSB
+                        Serial.write(16); // payload length LSB  
+                        
+                        for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+                            Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
+                            Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
+                        }                    
+                    #endif
+                }
+                
+                output_counter = 0; // reset
             }
         };
         
@@ -296,6 +302,7 @@ class Configurator {
         
         uint8_t data_buffer[200];
 
+        uint8_t output_counter;
         bool output_sensor_data;
         bool output_RX_data;
         bool output_kinematics;

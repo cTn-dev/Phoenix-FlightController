@@ -22,8 +22,8 @@
 
 // == Hardware setup/s == 
 //#define Maggie
-#define Development
-//#define Development_AVR
+//#define Development
+#define Development_AVR
 
 #ifdef Maggie
     // Features requested
@@ -164,7 +164,7 @@ void setup() {
     pinMode(LED_ORIENTATION, OUTPUT); // orientation lights
 
     // Initialize serial communication
-    Serial.begin(115200); // Virtual USB Serial on teensy 3.0 is always 12 Mbit/sec (can be initialized with baud rate 0)
+    Serial.begin(38400); // Virtual USB Serial on teensy 3.0 is always 12 Mbit/sec (can be initialized with baud rate 0)
 
     #ifdef GPS
         Serial3.begin(38400);
@@ -297,6 +297,9 @@ void process100HzTask() {
     #ifdef GPS
         sensors.readGPS();
     #endif
+
+    // Listens/read Serial commands on Serial1 interface (used to pass data from configurator)
+    readSerial();
     
     // Update kinematics with latest data
     kinematics_update(&gyro[XAXIS], &gyro[YAXIS], &gyro[ZAXIS], &accel[XAXIS], &accel[YAXIS], &accel[ZAXIS]);
@@ -356,10 +359,7 @@ void process10HzTask() {
     
     #ifdef BatteryMonitorCurrent
         readBatteryMonitorCurrent();
-    #endif
-
-    // Listens/read Serial commands on Serial1 interface (used to pass configuration data from configurator)
-    readSerial();   
+    #endif   
     
     // Blink LED to indicated activity
     Alive_LED_state = !Alive_LED_state;
