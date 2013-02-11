@@ -72,9 +72,11 @@ $(document).ready(function() {
             $(this).text('Connect');
             $(this).removeClass('active');            
         } else { // even number of clicks         
-            var selected_port = $('select#port', port_picker).val();
+            var selected_port = String($('select#port', port_picker).val());
             var selected_baud = parseInt(baud_picker.val());
             connection_delay = parseInt(delay_picker.val());
+            
+            console.log('Connecting to: ' + selected_port);
             
             chrome.serial.open(selected_port, {
                 bitrate: selected_baud
