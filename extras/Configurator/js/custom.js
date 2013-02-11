@@ -12,16 +12,16 @@ var eepromConfigDefinition = {
 
         ACCEL_BIAS:  ['array', 'int16', 3],
 
-        PID_YAW_c:   ['array', 'float64', 4],
-        PID_PITCH_c: ['array', 'float64', 4],
-        PID_ROLL_c:  ['array', 'float64', 4],
+        PID_YAW_c:   ['array', 'float32', 4],
+        PID_PITCH_c: ['array', 'float32', 4],
+        PID_ROLL_c:  ['array', 'float32', 4],
 
-        PID_YAW_m:   ['array', 'float64', 4],
-        PID_PITCH_m: ['array', 'float64', 4],
-        PID_ROLL_m:  ['array', 'float64', 4],
+        PID_YAW_m:   ['array', 'float32', 4],
+        PID_PITCH_m: ['array', 'float32', 4],
+        PID_ROLL_m:  ['array', 'float32', 4],
 
-        PID_BARO:    ['array', 'float64', 4],
-        PID_SONAR:   ['array', 'float64', 4]
+        PID_BARO:    ['array', 'float32', 4],
+        PID_SONAR:   ['array', 'float32', 4]
     }
 };
 

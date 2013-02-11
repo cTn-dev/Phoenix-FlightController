@@ -90,7 +90,7 @@ class Configurator {
                 case 2: // Received configuration union
                     if (payload_length_received == sizeof(CONFIG)) {
                         // process data from buffer (throw it inside union)
-                        for (uint16_t i = 0; i < sizeof(data_buffer); i++) {
+                        for (uint16_t i = 0; i < sizeof(CONFIG); i++) {
                             CONFIG.raw[i] = data_buffer[i];
                         }
 

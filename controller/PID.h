@@ -18,7 +18,7 @@ class PID {
         PID() {
         };
         
-        PID(double* Input, double* Output, double* Setpoint, double* kp, double* ki, double* kd, double* wg) {
+        PID(double* Input, double* Output, double* Setpoint, float* kp, float* ki, float* kd, float* wg) {
             previous_error = 0.0;
             integral = 0.0;
             
@@ -55,8 +55,8 @@ class PID {
         double *PID_output;
         double *PID_setpoint;
         
-        double *Kp, *Ki, *Kd;
-        double *windupGuard;
+        float *Kp, *Ki, *Kd;
+        float *windupGuard;
         
         double previous_error;
         double integral;

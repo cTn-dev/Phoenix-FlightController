@@ -15,17 +15,17 @@ struct __attribute__((packed)) CONFIG_struct {
     int16_t ACCEL_BIAS[3];    
     
     // Attitude
-    double PID_YAW_c[4];
-    double PID_PITCH_c[4];
-    double PID_ROLL_c[4];
+    float PID_YAW_c[4];
+    float PID_PITCH_c[4];
+    float PID_ROLL_c[4];
     
     // Rate
-    double PID_YAW_m[4];
-    double PID_PITCH_m[4];
-    double PID_ROLL_m[4];    
+    float PID_YAW_m[4];
+    float PID_PITCH_m[4];
+    float PID_ROLL_m[4];    
     
-    double PID_BARO[4];
-    double PID_SONAR[4]; 
+    float PID_BARO[4];
+    float PID_SONAR[4]; 
 };
 
 union CONFIG_union {
