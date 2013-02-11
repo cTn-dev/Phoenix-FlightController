@@ -16,8 +16,8 @@ function tab_initialize_initial_setup() {
         bufView[0] = 0xB5; // sync char 1
         bufView[1] = 0x62; // sync char 2
         bufView[2] = 0x02; // command
-        bufView[3] = 0x01; // payload length MSB (0x108)
-        bufView[4] = 0x08; // payload length LSB   
+        bufView[3] = highByte(eepromConfigSize); // payload length MSB
+        bufView[4] = lowByte(eepromConfigSize); // payload length LSB    
         
         chrome.serial.write(connectionId, bufferOut, function(writeInfo) {});
         
