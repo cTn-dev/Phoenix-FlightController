@@ -106,29 +106,29 @@ void AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az) {
 }
 
 
-void kinematics_update(double* gyroX, double* gyroY, double* gyroZ, double* accelX, double* accelY, double* accelZ) {
+void kinematics_update(float gyroX, float gyroY, float gyroZ, float accelX, float accelY, float accelZ) {
     unsigned long now = micros();
     sampleFreq = 1.0 / ((now - kinematics_timer) / 1000000.0);
     kinematics_timer = now;
     
     // Some sensors require different orientation, do the inverse here.
     // Also store sensor data in different variables as they are also used elsewhere
-    float gyX = *gyroX;
-    float gyY = -*gyroY;
-    float gyZ = *gyroZ;
-    float acX = *accelX;
-    float acY = *accelY;
-    float acZ = *accelZ;
+    float gyX = gyroX;
+    float gyY = -gyroY;
+    float gyZ = gyroZ;
+    float acX = accelX;
+    float acY = accelY;
+    float acZ = accelZ;
     
     AHRSupdate(gyX, gyY, gyZ, acX, acY, acZ);
     
-    float gx = 2 * (q1*q3 - q0*q2);
-    float gy = 2 * (q0*q1 + q2*q3);
-    float gz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
+    float gx = 2 * (q1 * q3 - q0 * q2);
+    float gy = 2 * (q0 * q1 + q2 * q3);
+    float gz = q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3;
     
-    kinematicsAngle[XAXIS] = atan(gy / sqrt(gx*gx + gz*gz));
-    kinematicsAngle[YAXIS] = atan(gx / sqrt(gy*gy + gz*gz));
-    kinematicsAngle[ZAXIS] = atan2(2 * q1 * q2 - 2 * q0 * q3, 2 * q0*q0 + 2 * q1 * q1 - 1);
+    kinematicsAngle[XAXIS] = atan(gy / sqrt(gx * gx + gz * gz));
+    kinematicsAngle[YAXIS] = atan(gx / sqrt(gy * gy + gz * gz));
+    kinematicsAngle[ZAXIS] = atan2(2 * q1 * q2 - 2 * q0 * q3, 2 * q0 * q0 + 2 * q1 * q1 - 1);
     
     // invert
     kinematicsAngle[ZAXIS] = -kinematicsAngle[ZAXIS];

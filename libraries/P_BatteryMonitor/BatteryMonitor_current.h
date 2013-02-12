@@ -9,14 +9,14 @@
 #define CURRENT_SENSOR_SENSITIVITY_3V3 0.0132
 
 int16_t current;
-double currentAmps;
-double batteryMonitorCapacityUsed = 0.0;
+float currentAmps;
+float batteryMonitorCapacityUsed = 0.0;
 unsigned long batteryMonitorCurrent_timer;
   
 void readBatteryMonitorCurrent() {
     // Current time
     unsigned long now = millis();
-    double dT = 1000.0 / (now - batteryMonitorCurrent_timer); // Delta Time = 1 second / time passed = Hz
+    float dT = 1000.0 / (now - batteryMonitorCurrent_timer); // Delta Time = 1 second / time passed = Hz
     
     current = analogRead(CURRENT_SENSOR_PIN);
     
@@ -34,13 +34,13 @@ void readBatteryMonitorCurrent() {
     }
 }
 
-double getBatteryMonitorCapacityUsed() {
+float getBatteryMonitorCapacityUsed() {
     // batteryMonitorCapacityUsed is saved in A / hour, in here we will multiply the saved value by 1000 to convert from A to mA
     // divide that by 60 = mAps / minute
     // and another division by 60 will get the output to mAps / hour.
     return batteryMonitorCapacityUsed * 1000.0 / 60.0 / 60.0;
 }
 
-double getBatteryMonitorLiveCurrent() {
+float getBatteryMonitorLiveCurrent() {
     return currentAmps;
 }

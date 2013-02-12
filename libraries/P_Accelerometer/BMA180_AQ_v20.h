@@ -24,7 +24,7 @@
 #define BMA180_READ_YAW_ADDRESS                 0x06
 #define BMA180_BUFFER_SIZE                      6
 
-double accel[3];
+float accel[3];
 
 class BMA180 {
     public:
@@ -147,10 +147,10 @@ class BMA180 {
     
     private:
         int16_t accel_bias[3];
-        double accelScaleFactor; 
+        float accelScaleFactor; 
         
         int16_t accelRaw[3];
-        double accelSum[3]; 
+        float accelSum[3]; 
         
         uint8_t accelSamples;
 };

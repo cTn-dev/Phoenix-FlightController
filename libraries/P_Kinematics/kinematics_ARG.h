@@ -103,16 +103,16 @@ void argUpdate(float gx, float gy, float gz, float ax, float ay, float az, float
     q3 = q3 / norm;
 }
 
-void kinematics_update(double* gyroX, double* gyroY, double* gyroZ, double* accelX, double* accelY, double* accelZ) {    
+void kinematics_update(float gyroX, float gyroY, float gyroZ, float accelX, float accelY, float accelZ) {    
     // Change signs on some of the variables
-    float accelXfloat = *accelX;
-    float accelYfloat = -*accelY;
-    float accelZfloat = -*accelZ;
+    float accelXfloat = accelX;
+    float accelYfloat = -accelY;
+    float accelZfloat = -accelZ;
     
     // Store current time
     float now = micros();
     
-    argUpdate(*gyroX, *gyroY, *gyroZ, accelXfloat, accelYfloat, accelZfloat, (now - kinematics_timer) / 1000000.0);
+    argUpdate(gyroX, gyroY, gyroZ, accelXfloat, accelYfloat, accelZfloat, (now - kinematics_timer) / 1000000.0);
     
     // Save kinematics time for next comparison
     kinematics_timer = now;

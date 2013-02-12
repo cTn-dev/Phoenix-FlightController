@@ -7,7 +7,7 @@
 
 #define ADXL345_ADDRESS 0x53
 
-double accel[3];
+float accel[3];
 
 class ADXL345 {
     public:
@@ -103,10 +103,10 @@ class ADXL345 {
     
     private:
         int16_t accel_bias[3];
-        double accelScaleFactor; 
+        float accelScaleFactor; 
         
         int16_t accelRaw[3];
-        double accelSum[3]; 
+        float accelSum[3]; 
         
         uint8_t accelSamples;
 };

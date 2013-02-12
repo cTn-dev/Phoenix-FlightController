@@ -6,9 +6,9 @@ unsigned long sonar_start = 0;
 unsigned long sonar_end = 0;
 bool sonar_ready = true;
 
-double sonar_raw = 0.0;
-double sonarAltitude = 0.0;
-double sonarAltitudeToHoldTarget = 0.0;
+float sonar_raw = 0.0;
+float sonarAltitude = 0.0;
+float sonarAltitudeToHoldTarget = 0.0;
 int16_t sonarAltitudeHoldThrottle = 1000;
 
 void readSonar() {

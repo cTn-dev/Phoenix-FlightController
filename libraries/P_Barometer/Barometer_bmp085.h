@@ -32,12 +32,12 @@
 #define BMP085_READTEMPCMD       0x2E
 #define BMP085_READPRESSURECMD   0x34
 
-double baroRawAltitude = 0.0;
-double baroGroundAltitude = 0.0; 
-double baroAltitude = 0.0;
-double baroAltitudeRunning = 0.0;
+float baroRawAltitude = 0.0;
+float baroGroundAltitude = 0.0; 
+float baroAltitude = 0.0;
+float baroAltitudeRunning = 0.0;
 
-double baroAltitudeToHoldTarget = 0.0;
+float baroAltitudeToHoldTarget = 0.0;
 int16_t baroAltitudeHoldThrottle = 1000;
 
 class BMP085 {

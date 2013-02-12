@@ -24,12 +24,12 @@
 #define MS561101BA_OSR_4096        0x08
 
 
-double baroRawAltitude = 0.0;
-double baroGroundAltitude = 0.0; 
-double baroAltitude = 0.0;
-double baroAltitudeRunning = 0.0;
+float baroRawAltitude = 0.0;
+float baroGroundAltitude = 0.0; 
+float baroAltitude = 0.0;
+float baroAltitudeRunning = 0.0;
 
-double baroAltitudeToHoldTarget = 0.0;
+float baroAltitudeToHoldTarget = 0.0;
 int16_t baroAltitudeHoldThrottle = 1000;
 
 class MS5611 {
@@ -82,7 +82,7 @@ class MS5611 {
             Wire.endTransmission();
         }
         
-        double readRawPressure() {
+        float readRawPressure() {
             Wire.beginTransmission(MS5611_I2C_ADDRESS);
             Wire.write(0);
             Wire.endTransmission();
@@ -180,10 +180,10 @@ class MS5611 {
         int64_t offset, sens;
         
         bool isReadPressure;
-        double pressureFactor;
-        double baroSmoothFactor;
+        float pressureFactor;
+        float baroSmoothFactor;
         
-        double rawPressureSum;
+        float rawPressureSum;
         uint8_t rawPressureSumCount;
         
         long pressure, rawPressure, rawTemperature;

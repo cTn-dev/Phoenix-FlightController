@@ -19,7 +19,7 @@
 #define ITG3200_SCALE_TO_RADIANS        823.626831 // 14.375 LSBs per °/sec, / Pi / 180
 #define ITG3200_TEMPERATURE_ADDRESS     0x1B
 
-double gyro[3];
+float gyro[3];
 
 class ITG3200 {
     public:
@@ -116,8 +116,8 @@ class ITG3200 {
     private:  
         int16_t gyro_offset[3];
         int16_t gyroRaw[3];
-        double gyroSum[3];
-        double gyroScaleFactor;
+        float gyroSum[3];
+        float gyroScaleFactor;
 
         uint8_t gyroSamples;
 };

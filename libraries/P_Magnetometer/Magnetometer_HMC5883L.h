@@ -13,7 +13,7 @@
 #define HMC5883L_MODE_SINGLE        0x01
 #define HMC5883L_MODE_IDLE          0x02
 
-double magHeadingX, magHeadingY;
+float magHeadingX, magHeadingY;
 
 class HMC5883L {
     public:
@@ -45,15 +45,15 @@ class HMC5883L {
         };
         
         void evaluateMag() {            
-            const double cosRoll =  cos(kinematicsAngle[XAXIS]);
-            const double sinRoll =  sin(kinematicsAngle[XAXIS]);
-            const double cosPitch = cos(kinematicsAngle[YAXIS]);
-            const double sinPitch = sin(kinematicsAngle[YAXIS]);  
+            const float cosRoll =  cos(kinematicsAngle[XAXIS]);
+            const float sinRoll =  sin(kinematicsAngle[XAXIS]);
+            const float cosPitch = cos(kinematicsAngle[YAXIS]);
+            const float sinPitch = sin(kinematicsAngle[YAXIS]);  
 
             magX = magRaw[XAXIS] * cosPitch + magRaw[YAXIS] * sinRoll * sinPitch + magRaw[ZAXIS] * cosRoll * sinPitch;
             magY = magRaw[YAXIS] * cosRoll - magRaw[ZAXIS] * sinRoll;
 
-            const double norm = invSqrt(magX * magX + magY * magY);
+            const float norm = invSqrt(magX * magX + magY * magY);
             
             magHeadingX = magX / norm;
             magHeadingY = -magY / norm;           
@@ -61,7 +61,7 @@ class HMC5883L {
         
     private:
         int16_t magRaw[3];
-        double magX, magY;
+        float magX, magY;
 };
 
 HMC5883L hmc5883l;

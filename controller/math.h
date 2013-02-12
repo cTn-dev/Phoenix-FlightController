@@ -1,6 +1,7 @@
 // Fast inverse square root implementation
 // @see: http://en.wikipedia.org/wiki/Fast_inverse_square_root
 float invSqrt(float number) {
+    /* temporary disabled
     long i;
     float x, y;
     const float f = 1.5F;
@@ -13,10 +14,13 @@ float invSqrt(float number) {
     y = y * ( f - ( x * y * y ) );
     
     return y;
+    */
+    
+    return sqrt(number);
 }
 
 // Signed square root implementation
-double s_invSqrt(double val) {
+float s_invSqrt(float val) {
     if (val < 0.00) {
         // negative input = negative sqrt
         return -invSqrt(abs(val));

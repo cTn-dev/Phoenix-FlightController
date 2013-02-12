@@ -187,11 +187,11 @@ class Configurator {
                     }
 
                     // accel
-                    double norm = invSqrt(accel[XAXIS] * accel[XAXIS] + accel[YAXIS] * accel[YAXIS] + accel[ZAXIS] * accel[ZAXIS]);
+                    float norm = invSqrt(accel[XAXIS] * accel[XAXIS] + accel[YAXIS] * accel[YAXIS] + accel[ZAXIS] * accel[ZAXIS]);
                     
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        Serial.write(highByte((int16_t) ((accel[axis] / norm) * accel_scale)));
-                        Serial.write(lowByte((int16_t) ((accel[axis] / norm) * accel_scale)));
+                        Serial.write(highByte((int16_t) ((float)(accel[axis] / norm) * accel_scale)));
+                        Serial.write(lowByte((int16_t) ((float)(accel[axis] / norm) * accel_scale)));
                     } 
                 }
                 
@@ -310,7 +310,7 @@ class Configurator {
         bool output_kinematics;
         bool output_motor_out;
         
-        // Scale factors used to transmit double/float data over serial with just 2 bytes
+        // Scale factors used to transmit float data over serial with just 2 bytes
         int16_t gyro_scale;
         int16_t accel_scale;   
         int16_t kinematics_scale;

@@ -64,8 +64,8 @@
 #define BIT_I2C_IF_DIS          0x10
 #define BIT_INT_STATUS_DATA     0x01
 
-double gyro[3];
-double accel[3];
+float gyro[3];
+float accel[3];
 int16_t gyro_temperature;
 
 class MPU6050 {
@@ -285,14 +285,14 @@ class MPU6050 {
         int16_t gyro_offset[3];
         int16_t accel_bias[3];
         
-        double gyroScaleFactor;
-        double accelScaleFactor; 
+        float gyroScaleFactor;
+        float accelScaleFactor; 
 
         int16_t gyroRaw[3];
-        double gyroSum[3];
+        float gyroSum[3];
 
         int16_t accelRaw[3];
-        double accelSum[3];
+        float accelSum[3];
         
         uint8_t gyroSamples;
         uint8_t accelSamples;        
