@@ -26,6 +26,9 @@ struct __attribute__((packed)) CONFIG_struct {
     
     float PID_BARO[4];
     float PID_SONAR[4]; 
+    
+    // GPS
+    float PID_GPS[4];
 };
 
 union CONFIG_union {
@@ -87,7 +90,13 @@ void initializeEEPROM() {
     CONFIG.data.PID_SONAR[P]  = 50.0;
     CONFIG.data.PID_SONAR[I]  = 0.6;
     CONFIG.data.PID_SONAR[D]  = -1.0;
-    CONFIG.data.PID_SONAR[WG] = 25.0;    
+    CONFIG.data.PID_SONAR[WG] = 25.0;  
+
+    // GPS
+    CONFIG.data.PID_GPS[P] = 0.0;
+    CONFIG.data.PID_GPS[I] = 0.0;
+    CONFIG.data.PID_GPS[D] = 0.0;
+    CONFIG.data.PID_GPS[WG] = 0.0;
     
     // This function will only initialize data "locally"
     // writeEEPROM() have to be called manually to store this data in EEPROM

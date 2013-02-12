@@ -21,7 +21,8 @@ var eepromConfigDefinition = {
         PID_ROLL_m:  ['array', 'float32', 4],
 
         PID_BARO:    ['array', 'float32', 4],
-        PID_SONAR:   ['array', 'float32', 4]
+        PID_SONAR:   ['array', 'float32', 4],
+        PID_GPS:     ['array', 'float32', 4]
     }
 };
 

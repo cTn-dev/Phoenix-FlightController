@@ -76,6 +76,16 @@ function tab_initialize_pid_tuning() {
         }
     }); 
 
+    // GPS
+    i = 0;
+    $('#content .GPS input').each(function() {
+        if (i != 3) {
+            $(this).val(eepromConfig.PID_GPS[i++].toFixed(2));
+        } else {
+            $(this).val(eepromConfig.PID_GPS[i++].toFixed(0));
+        }
+    });     
+    
     // UI hooks
     $('#content .pid_tuning a.update').click(function() {
         var parent = $(this).parent().parent();
@@ -127,6 +137,12 @@ function tab_initialize_pid_tuning() {
             case 10: // sonar
                 $('input', parent).each(function() {
                     eepromConfig.PID_SONAR[i] = parseFloat($(this).val());
+                    i++;
+                });              
+            break;
+            case 11: // GPS
+                $('input', parent).each(function() {
+                    eepromConfig.PID_GPS[i] = parseFloat($(this).val());
                     i++;
                 });              
             break;
