@@ -53,7 +53,7 @@ class HMC5883L {
             magX = magRaw[XAXIS] * cosPitch + magRaw[YAXIS] * sinRoll * sinPitch + magRaw[ZAXIS] * cosRoll * sinPitch;
             magY = magRaw[YAXIS] * cosRoll - magRaw[ZAXIS] * sinRoll;
 
-            const float norm = invSqrt(magX * magX + magY * magY);
+            const float norm = sqrt(magX * magX + magY * magY);
             
             magHeadingX = magX / norm;
             magHeadingY = -magY / norm;           

@@ -15,7 +15,7 @@ unsigned long kinematics_timer;
 void kinematics_update(float gyroX, float gyroY, float gyroZ, float accelX, float accelY, float accelZ) {
 
     // Normalize accel values
-    float norm = invSqrt(accelX * accelX + accelY * accelY + accelZ * accelZ);
+    float norm = sqrt(accelX * accelX + accelY * accelY + accelZ * accelZ);
     accelX /= norm;
     accelY /= norm;
     accelZ /= norm;
