@@ -1,5 +1,29 @@
 <div class="tab-initial_setup">
-    <a class="calibrateESC" href="#" title="">Calibrate ESCs</a><br />
-    <a class="calibrateAccel" href="#" title="">Calibrate Accelerometer</a><br />
-    <a class="initializeEEPROM" href="#" title="">Initialize EEPROM</a><br />
+    <div>
+        <a class="calibrateESC" href="#" title="">Calibrate ESCs</a>
+        <p>
+            Requesting ESC calibration will result in ESC throttle range calibration on next flight controller startup.<br />
+            Its <strong style="color: red;">recommended</strong> to remove propellers before calibrating (for safety).<br />
+        </p>
+    </div>
+    <div class="clear-both"></div>
+    <div>
+        <a class="calibrateAccel" href="#" title="">Calibrate Accelerometer</a>
+        <p>
+            Place your UAV on a flat surface (properly leveled desk works great) and click on the calibration button.<br />
+            <strong style="color: red;">Try</strong> not to bump into the desk while calibration is <strong style="color: red;">running.</strong><br />
+            Calibration will take approximately <strong style="color: green;">2 seconds</strong>, you can view the raw output from calibration in console.<br />
+            You can view the calibration "effectivity" in <strong style="color: green;">3D Vehicle tab</strong>.<br />
+        </p>
+    </div>
+    <div class="clear-both"></div>
+    <div>
+        <a class="initializeEEPROM" href="#" title="">Initialize EEPROM</a>
+        <p>
+            This step is mostly "optional" as Flight Controller automatically re-initializes the EEPROM after firmware upload.<br />
+            In case you encounter "<strong style="color: red;">weird</strong>" values/behaviour in the PID Tuning section, <strong style="color: green;">this is</strong> the button to press.<br />
+            Re-powering the Flight Controller afterwards is <strong style="color: green;">recommended<strong>.<br />
+        </p>
+    </div>
+    <div class="clear-both"></div>    
 </div>

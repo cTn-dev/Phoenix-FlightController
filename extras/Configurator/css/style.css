@@ -211,6 +211,76 @@ table.pid_tuning {
 }
   
 /* tab section */
+.tab-initial_setup {
+}
+    .tab-initial_setup .calibrateESC {
+        float: left;
+        display: block;
+        
+        margin-top: 8px;
+        
+        width: 160px;
+        height: 23px;
+        line-height: 23px;
+        
+        text-align: center;
+        color: white;
+        
+        background-color: #5569d0;
+        border: 1px solid silver;
+    }
+    .tab-initial_setup .calibrateESC:hover {
+        text-decoration: none;
+        background-color: #424d84;
+    }
+    .tab-initial_setup .calibrateAccel {
+        float: left;
+        display: block;
+        
+        margin-top: 25px;
+        
+        width: 160px;
+        height: 23px;
+        line-height: 23px;
+        
+        text-align: center;
+        color: white;
+        
+        background-color: #5569d0;
+        border: 1px solid silver;
+    }
+    .tab-initial_setup .calibrateAccel:hover {
+        text-decoration: none;
+        background-color: #424d84;
+    }
+    .tab-initial_setup .initializeEEPROM {
+        float: left;
+        display: block;
+        
+        margin-top: 15px;
+        
+        width: 160px;
+        height: 23px;
+        line-height: 23px;
+        
+        text-align: center;
+        color: white;
+        
+        background-color: #be2222;
+        border: 1px solid silver;
+    }
+    .tab-initial_setup .initializeEEPROM:hover {
+        text-decoration: none;
+        background-color: #ea3131;
+    }
+    .tab-initial_setup p {
+        margin-left: 170px;
+        margin-bottom: 10px;
+        
+        padding: 5px;
+        
+        border: 1px dotted silver;
+    }
 .sensor_data #graph_gyro {
     width: 900px;
     height: 180px;
