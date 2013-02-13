@@ -62,6 +62,7 @@
     #include <FrameType_QuadX.h> 
 
     // Motor / ESC setup
+    #define ESC_400HZ
     #include <ESC_teensy3_HW.h>        
 #endif
 
@@ -90,6 +91,7 @@
     #include <FrameType_QuadX.h> 
 
     // Motor / ESC setup
+    #define ESC_400HZ
     #include <ESC_teensy3_HW.h>    
 #endif
 

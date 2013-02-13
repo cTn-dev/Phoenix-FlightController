@@ -1,4 +1,4 @@
-int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_mode, TX_altitude, TX_cam, TX_last;
+int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_mode, TX_altitude, TX_pos_hold, TX_last;
 bool throttlePanic = false;
 
 void processPilotCommands() {
@@ -10,8 +10,8 @@ void processPilotCommands() {
     TX_throttle = RX[2]; // CH-3 THR
     TX_yaw = RX[3];      // CH-4 RUD
     TX_mode = RX[4];     // CH-5 FULL ELE switch (off = rate, on = attitude)
-    TX_altitude = RX[5]; // CH-6 FULL AIL switch (off = standard altitude control by stick, on = altitude controled via barometer)
-    TX_cam = RX[6];      // CH-7
+    TX_altitude = RX[5]; // CH-6
+    TX_pos_hold = RX[6]; // CH-7
     TX_last = RX[7];     // CH-8
     
     sei(); // enable interrupts
@@ -109,6 +109,15 @@ void processPilotCommands() {
                 throttlePanic = true;
                 altitudeHoldSonar = false;
             }        
+        }
+    #endif
+    
+    // GPS Position Hold
+    #ifdef GPS
+        if (TX_pos_hold < 1100) {
+            // Position hold disabled
+        } else if (TX_pos_hold > 1900) {
+            // Position hold enabled
         }
     #endif
     

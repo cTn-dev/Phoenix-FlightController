@@ -27,7 +27,15 @@
 void setupFTM0() {
     // Flex timer0 configuration
     FTM0_SC = 0x0c;   // TOF=0 TOIE=0 CPWMS=0 CLKS=01 PS=100 (divide by 16)
-    FTM0_MOD = 7500;  // 12000 = 4ms = 250 Hz, 7500 = 400 Hz
+    
+    #ifdef ESC_400HZ
+        // 400Hz PWM signal
+        FTM0_MOD = 7500;
+    #else
+        // 250Hz PWM signal
+        FTM0_MOD = 12000;
+    #endif
+    
     FTM0_C0SC = 0x28;
     
     // Initial values (3000 = 1ms)
