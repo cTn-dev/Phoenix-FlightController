@@ -135,6 +135,12 @@ PID roll_motor_pid;
 
 #ifdef AltitudeHoldSonar    
     PID altitude_hold_sonar_pid;
+#endif
+
+#ifdef GPS
+    PID yaw_position_hold_pid;
+    PID pitch_position_hold_pid;
+    PID roll_position_hold_pid;
 #endif  
 
 // Function to reset I terms inside PID objects
@@ -204,6 +210,12 @@ void setup() {
     #ifdef AltitudeHoldSonar
         altitude_hold_sonar_pid = PID(&sonarAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &sonarAltitude, &CONFIG.data.PID_SONAR[P], &CONFIG.data.PID_SONAR[I], &CONFIG.data.PID_SONAR[D], &CONFIG.data.PID_SONAR[WG]);
     #endif    
+    
+    #ifdef GPS
+        // yaw_position_hold_pid = PID();
+        // pitch_position_hold = PID();
+        // roll_position_hold = PID();
+    #endif
     
     // Initialize motors/receivers/sensors
     initializeESC();    
