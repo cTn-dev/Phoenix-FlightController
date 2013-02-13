@@ -195,20 +195,32 @@ void setup() {
     readEEPROM();
     
     // Initialize PID objects with data from EEPROM
-    yaw_command_pid = PID(&kinematicsAngle[ZAXIS], &YawCommandPIDSpeed, &commandYaw, &CONFIG.data.PID_YAW_c[P], &CONFIG.data.PID_YAW_c[I], &CONFIG.data.PID_YAW_c[D], &CONFIG.data.PID_YAW_c[WG]);
-    pitch_command_pid = PID(&kinematicsAngle[YAXIS], &PitchCommandPIDSpeed, &commandPitch, &CONFIG.data.PID_PITCH_c[P], &CONFIG.data.PID_PITCH_c[I], &CONFIG.data.PID_PITCH_c[D], &CONFIG.data.PID_PITCH_c[WG]);
-    roll_command_pid = PID(&kinematicsAngle[XAXIS], &RollCommandPIDSpeed, &commandRoll, &CONFIG.data.PID_ROLL_c[P], &CONFIG.data.PID_ROLL_c[I], &CONFIG.data.PID_ROLL_c[D], &CONFIG.data.PID_ROLL_c[WG]);
+    yaw_command_pid = PID(&kinematicsAngle[ZAXIS], &YawCommandPIDSpeed, &commandYaw, 
+        &CONFIG.data.PID_YAW_c[P], &CONFIG.data.PID_YAW_c[I], &CONFIG.data.PID_YAW_c[D], &CONFIG.data.PID_YAW_c[WG]);
+        
+    pitch_command_pid = PID(&kinematicsAngle[YAXIS], &PitchCommandPIDSpeed, &commandPitch, 
+        &CONFIG.data.PID_PITCH_c[P], &CONFIG.data.PID_PITCH_c[I], &CONFIG.data.PID_PITCH_c[D], &CONFIG.data.PID_PITCH_c[WG]);
+        
+    roll_command_pid = PID(&kinematicsAngle[XAXIS], &RollCommandPIDSpeed, &commandRoll, 
+        &CONFIG.data.PID_ROLL_c[P], &CONFIG.data.PID_ROLL_c[I], &CONFIG.data.PID_ROLL_c[D], &CONFIG.data.PID_ROLL_c[WG]);
   
-    yaw_motor_pid = PID(&gyro[ZAXIS], &YawMotorSpeed, &YawCommandPIDSpeed, &CONFIG.data.PID_YAW_m[P], &CONFIG.data.PID_YAW_m[I], &CONFIG.data.PID_YAW_m[D], &CONFIG.data.PID_YAW_m[WG]);
-    pitch_motor_pid = PID(&gyro[YAXIS], &PitchMotorSpeed, &PitchCommandPIDSpeed, &CONFIG.data.PID_PITCH_m[P], &CONFIG.data.PID_PITCH_m[I], &CONFIG.data.PID_PITCH_m[D], &CONFIG.data.PID_PITCH_m[WG]);
-    roll_motor_pid = PID(&gyro[XAXIS], &RollMotorSpeed, &RollCommandPIDSpeed, &CONFIG.data.PID_ROLL_m[P], &CONFIG.data.PID_ROLL_m[I], &CONFIG.data.PID_ROLL_m[D], &CONFIG.data.PID_ROLL_m[WG]);  
+    yaw_motor_pid = PID(&gyro[ZAXIS], &YawMotorSpeed, &YawCommandPIDSpeed,
+        &CONFIG.data.PID_YAW_m[P], &CONFIG.data.PID_YAW_m[I], &CONFIG.data.PID_YAW_m[D], &CONFIG.data.PID_YAW_m[WG]);
+        
+    pitch_motor_pid = PID(&gyro[YAXIS], &PitchMotorSpeed, &PitchCommandPIDSpeed, 
+        &CONFIG.data.PID_PITCH_m[P], &CONFIG.data.PID_PITCH_m[I], &CONFIG.data.PID_PITCH_m[D], &CONFIG.data.PID_PITCH_m[WG]);
+        
+    roll_motor_pid = PID(&gyro[XAXIS], &RollMotorSpeed, &RollCommandPIDSpeed, 
+        &CONFIG.data.PID_ROLL_m[P], &CONFIG.data.PID_ROLL_m[I], &CONFIG.data.PID_ROLL_m[D], &CONFIG.data.PID_ROLL_m[WG]);  
     
     #ifdef AltitudeHoldBaro
-        altitude_hold_baro_pid = PID(&baroAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &baroAltitudeRunning, &CONFIG.data.PID_BARO[P], &CONFIG.data.PID_BARO[I], &CONFIG.data.PID_BARO[D], &CONFIG.data.PID_BARO[WG]);
+        altitude_hold_baro_pid = PID(&baroAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &baroAltitudeRunning, 
+            &CONFIG.data.PID_BARO[P], &CONFIG.data.PID_BARO[I], &CONFIG.data.PID_BARO[D], &CONFIG.data.PID_BARO[WG]);
     #endif
     
     #ifdef AltitudeHoldSonar
-        altitude_hold_sonar_pid = PID(&sonarAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &sonarAltitude, &CONFIG.data.PID_SONAR[P], &CONFIG.data.PID_SONAR[I], &CONFIG.data.PID_SONAR[D], &CONFIG.data.PID_SONAR[WG]);
+        altitude_hold_sonar_pid = PID(&sonarAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &sonarAltitude, 
+            &CONFIG.data.PID_SONAR[P], &CONFIG.data.PID_SONAR[I], &CONFIG.data.PID_SONAR[D], &CONFIG.data.PID_SONAR[WG]);
     #endif    
     
     #ifdef GPS
