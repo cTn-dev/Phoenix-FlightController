@@ -116,8 +116,18 @@ void processPilotCommands() {
     #ifdef GPS
         if (TX_pos_hold < 1100) {
             // Position hold disabled
+            if (positionHoldGPS == true) { // We just switched off the position hold
+            }
+            
+            positionHoldGPS = false;
         } else if (TX_pos_hold > 1900) {
             // Position hold enabled
+            if (positionHoldGPS == false) { // We just switched on the position hold
+                // current heading (from magnetometer should be saved here)
+                // current GPS pos should be saved here
+            }
+            
+            positionHoldGPS = true;
         }
     #endif
     
@@ -174,6 +184,12 @@ void processPilotCommands() {
         else if (altitudeHoldSonar == true) {
             altitude_hold_sonar_pid.Compute();
             throttle = sonarAltitudeHoldThrottle - constrain(AltitudeHoldMotorSpeed, -200.0, 200.0);
+        }
+    #endif
+    
+    #ifdef GPS
+        if (positionHoldGPS == true) {
+            // compute gps pids
         }
     #endif
 }    

@@ -10,6 +10,7 @@ bool armed = false;
 bool flightMode = false;
 bool altitudeHoldBaro = false;
 bool altitudeHoldSonar = false;
+bool positionHoldGPS = false;
 
 // Flight modes
 #define RATE_MODE 0

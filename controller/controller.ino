@@ -163,6 +163,7 @@ void reset_PID_integrals() {
 }
   
 // Include this last as it contains objects from previous declarations
+#include "GPS.h"
 #include "PilotCommandProcessor.h"
 #include "SerialCommunication.h"  
   
@@ -250,6 +251,10 @@ void setup() {
     #ifdef AltitudeHoldSonar
         initializeSonar();
     #endif    
+    
+    #ifdef GPS
+        gps.initializeBaseStation();
+    #endif
     
     // All is ready, start the loop
     all_ready = true;
