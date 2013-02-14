@@ -24,6 +24,8 @@
 #define Maggie
 //#define Development
 //#define Development_AVR
+//#define AQ_SHIELD_V_20
+//#define AQ_SHIELD_V_21
 
 #ifdef Maggie
     // Features requested
@@ -98,10 +100,31 @@
 #ifdef Development_AVR
     // Features requested
     #define Accelerometer
-    #define Magnetometer
 
     // Critical sensors on board (gyro/accel)
     #include <mpu6050_6DOF_stick.h>
+    
+    // Kinematics used
+    #include <kinematics_CMP.h>
+    
+    // Receiver
+    #include <Receiver_328p_HW_PPM.h>
+    
+    // Frame type definition
+    #include <FrameType_QuadX.h> 
+
+    // Motor / ESC setup
+    #include <ESC_328p_HW.h>    
+#endif
+
+#ifdef AQ_SHIELD_V_20
+    // Features requested
+    #define Accelerometer
+    #define Magnetometer
+    
+    // Critical sensors on board (gyro/accel)
+    #include <ITG3200_AQ_v20.h>
+    #include <BMA180_AQ_v20.h>
     
     // Magnetometer
     #include <Magnetometer_HMC5883L.h>
@@ -116,7 +139,32 @@
     #include <FrameType_QuadX.h> 
 
     // Motor / ESC setup
-    #include <ESC_328p_HW.h>    
+    #include <ESC_328p_HW.h>      
+#endif
+
+#ifdef AQ_SHIELD_V_21
+    // Features requested
+    #define Accelerometer
+    #define Magnetometer
+    
+    // Critical sensors on board (gyro/accel)
+    #include <ITG3200_AQ_v21.h>
+    #include <ADXL345_AQ_v21.h>
+    
+    // Magnetometer
+    #include <Magnetometer_HMC5883L.h>
+    
+    // Kinematics used
+    #include <kinematics_CMP.h>
+    
+    // Receiver
+    #include <Receiver_328p_HW_PPM.h>
+    
+    // Frame type definition
+    #include <FrameType_QuadX.h> 
+
+    // Motor / ESC setup
+    #include <ESC_328p_HW.h>      
 #endif
 // == END of Hardware setup ==
 
