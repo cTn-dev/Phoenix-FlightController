@@ -3,6 +3,8 @@
     
     However on Teensy 3.0 i am able to reach 2.4MHz (High-speed mode) without any problems.
     (which cuts down the reading time of accel + gyro to about 180us)
+    
+    NOTE: This stick should be mounted upside down (mpu chip on the bottom side)
 */
 
 // MPU 6050 Registers
@@ -170,7 +172,7 @@ class MPU6050 {
             accel_bias[XAXIS] = xSum / count;
             accel_bias[YAXIS] = ySum / count;
             accel_bias[ZAXIS] = (zSum / count) - 8192; // - 1G;
-
+            
             // Reverse calibration forces
             accel_bias[XAXIS] *= -1;
             accel_bias[YAXIS] *= -1;
@@ -191,7 +193,7 @@ class MPU6050 {
             
             gyroRaw[XAXIS] = (Wire.read() << 8) | Wire.read();
             gyroRaw[YAXIS] = (Wire.read() << 8) | Wire.read();
-            gyroRaw[ZAXIS] = (Wire.read() << 8) | Wire.read();
+            gyroRaw[ZAXIS] = -((Wire.read() << 8) | Wire.read());
         };
         
         void readAccelRaw() {
@@ -202,8 +204,8 @@ class MPU6050 {
             Wire.requestFrom(MPU6050_ADDRESS, 6);
             
             accelRaw[XAXIS] = (Wire.read() << 8) | Wire.read();
-            accelRaw[YAXIS] = (Wire.read() << 8) | Wire.read(); 
-            accelRaw[ZAXIS] = (Wire.read() << 8) | Wire.read();
+            accelRaw[YAXIS] = -(Wire.read() << 8) | Wire.read(); 
+            accelRaw[ZAXIS] = -(Wire.read() << 8) | Wire.read();
         };        
         
         void readGyroSum() {
@@ -229,7 +231,7 @@ class MPU6050 {
         void evaluateGyro() {
             // Calculate average
             gyro[XAXIS] = gyroSum[XAXIS] / gyroSamples;
-            gyro[YAXIS] = -(gyroSum[YAXIS] / gyroSamples);
+            gyro[YAXIS] = gyroSum[YAXIS] / gyroSamples;
             gyro[ZAXIS] = gyroSum[ZAXIS] / gyroSamples;    
             
             // Apply offsets

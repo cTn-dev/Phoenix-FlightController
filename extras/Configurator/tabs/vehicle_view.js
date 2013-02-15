@@ -43,7 +43,6 @@ function process_vehicle_view() {
         }
         
         data[1] = -data[1]; // Reverse Pitch
-        data[2] = -data[2]; // Reverse Yaw
         
         var cube = $('div#cube');
         

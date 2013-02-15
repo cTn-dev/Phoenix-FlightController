@@ -78,7 +78,7 @@ class ITG3200 {
 
             gyroRaw[YAXIS] = (Wire.read() << 8) | Wire.read();
             gyroRaw[XAXIS] = (Wire.read() << 8) | Wire.read();
-            gyroRaw[ZAXIS] = -((Wire.read() << 8) | Wire.read());
+            gyroRaw[ZAXIS] = (Wire.read() << 8) | Wire.read();
         };
         
         void readGyroSum() {

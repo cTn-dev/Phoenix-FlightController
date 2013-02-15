@@ -21,22 +21,20 @@
 #include "dataStorage.h"
 
 // == Hardware setup/s == 
-//#define Maggie
-#define Development
-//#define Development_AVR
+#define PHOENIX_SHIELD_V_01
 //#define AQ_SHIELD_V_20
 //#define AQ_SHIELD_V_21
 
-#ifdef Maggie
+#ifdef PHOENIX_SHIELD_V_01
     // Features requested
     #define Magnetometer
     #define AltitudeHoldBaro
     #define AltitudeHoldSonar
     #define BatteryMonitorCurrent
     #define GPS
-
+    
     // Critical sensors on board (gyro/accel)
-    #include <mpu6050_10DOF_stick.h>
+    #include <mpu6050_6DOF_stick_px01.h>
     
     // Magnetometer
     #include <Magnetometer_HMC5883L.h>
@@ -51,8 +49,7 @@
     #include <GPS_ublox.h>
     
     // Current sensor
-    #include <BatteryMonitor_current.h>
-    
+    #include <BatteryMonitor_current.h>    
     // Kinematics used
     #include <kinematics_CMP.h>
     
@@ -64,52 +61,7 @@
 
     // Motor / ESC setup
     #define ESC_400HZ
-    #include <ESC_teensy3_HW.h>        
-#endif
-
-#ifdef Development
-    // Features requested
-    #define Magnetometer
-    #define GPS
-
-    // Critical sensors on board (gyro/accel)
-    #include <mpu6050_6DOF_stick.h>
-    
-    // Magnetometer
-    #include <Magnetometer_HMC5883L.h>
-    
-    // GPS (ublox neo 6m)
-    #include <GPS_ublox.h>
-    
-    // Kinematics used
-    #include <kinematics_CMP.h>
-    
-    // Receiver
-    #include <Receiver_teensy3_HW_PPM.h>
-    
-    // Frame type definition
-    #include <FrameType_QuadX.h> 
-
-    // Motor / ESC setup
-    #define ESC_400HZ
-    #include <ESC_teensy3_HW.h>    
-#endif
-
-#ifdef Development_AVR
-    // Critical sensors on board (gyro/accel)
-    #include <mpu6050_6DOF_stick.h>
-    
-    // Kinematics used
-    #include <kinematics_CMP.h>
-    
-    // Receiver
-    #include <Receiver_328p_HW_PPM.h>
-    
-    // Frame type definition
-    #include <FrameType_QuadX.h> 
-
-    // Motor / ESC setup
-    #include <ESC_328p_HW.h>    
+    #include <ESC_teensy3_HW.h>     
 #endif
 
 #ifdef AQ_SHIELD_V_20
