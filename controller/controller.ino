@@ -21,8 +21,8 @@
 #include "dataStorage.h"
 
 // == Hardware setup/s == 
-#define Maggie
-//#define Development
+//#define Maggie
+#define Development
 //#define Development_AVR
 //#define AQ_SHIELD_V_20
 //#define AQ_SHIELD_V_21

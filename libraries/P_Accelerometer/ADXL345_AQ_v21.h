@@ -81,7 +81,7 @@ class ADXL345 {
         void evaluateAccel() {
             // Calculate average
             accel[XAXIS] = accelSum[XAXIS] / accelSamples;
-            accel[YAXIS] = accelSum[YAXIS] / accelSamples;
+            accel[YAXIS] = -(accelSum[YAXIS] / accelSamples);
             accel[ZAXIS] = accelSum[ZAXIS] / accelSamples;
 
             // Apply offsets
