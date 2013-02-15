@@ -387,17 +387,39 @@ void process100HzTask() {
     pitch_motor_pid.Compute();
     roll_motor_pid.Compute();     
     
-    // This section is place where the actual "force" gets applied
+    // This is the place where the actual "force" gets applied
     if (armed) {
         updateMotorsMix(); // Frame specific motor mix
         updateMotors(); // Update ESCs
     } else {
-        MotorOut[0] = 1000;
-        MotorOut[1] = 1000;
-        MotorOut[2] = 1000;
-        MotorOut[3] = 1000;
-        
-        updateMotors();
+        // Reset all motors to 0 throttle/power
+        #if MOTORS == 3
+            MotorOut[0] = 1000;
+            MotorOut[1] = 1000;
+            MotorOut[2] = 1000;
+        #elif MOTORS == 4
+            MotorOut[0] = 1000;
+            MotorOut[1] = 1000;
+            MotorOut[2] = 1000;
+            MotorOut[3] = 1000;
+        #elif MOTORS == 6
+            MotorOut[0] = 1000;
+            MotorOut[1] = 1000;
+            MotorOut[2] = 1000;
+            MotorOut[3] = 1000;
+            MotorOut[4] = 1000;
+            MotorOut[5] = 1000;
+        #elif MOTORS == 8
+            MotorOut[0] = 1000;
+            MotorOut[1] = 1000;
+            MotorOut[2] = 1000;
+            MotorOut[3] = 1000;
+            MotorOut[4] = 1000;
+            MotorOut[5] = 1000; 
+            MotorOut[6] = 1000;
+            MotorOut[7] = 1000;
+        #endif
+        updateMotors(); // Update ESCs
     } 
 }
 
