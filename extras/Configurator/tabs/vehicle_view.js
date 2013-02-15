@@ -1,11 +1,11 @@
+var yaw_fix = 0.0;
+
 function tab_initialize_vehicle_view() {
-    /*
     // reset yaw button hook
     $('div#interactive_block > a.reset').click(function() {
-        yaw_fix = data[3];
+        yaw_fix = data[2];
         console.log("YAW reset to 0");
     });    
-    */
     
     // request kinematics data from flight controller
     var bufferOut = new ArrayBuffer(6);
@@ -43,10 +43,11 @@ function process_vehicle_view() {
         }
         
         data[1] = -data[1]; // Reverse Pitch
+        data[2] = -data[2]; // Reverse Yaw
         
         var cube = $('div#cube');
         
-        //cube.css('-webkit-transform', 'rotateY(' + data[2] + 'deg)');
+        cube.css('-webkit-transform', 'rotateY(' + (data[2] - yaw_fix) + 'deg)');
         $('#cubePITCH', cube).css('-webkit-transform', 'rotateX(' + data[1] + 'deg)');
         $('#cubeROLL', cube).css('-webkit-transform', 'rotateZ(' + data[0] + 'deg)');        
     }

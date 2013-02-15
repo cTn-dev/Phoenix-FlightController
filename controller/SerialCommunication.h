@@ -1,3 +1,11 @@
+#if defined(__MK20DX128__)
+    #define CONFIGURATOR_DATA_SPEED_DIVIDER 4 // 100hz / divider(4) = 25Hz
+#endif
+
+#if defined(__AVR__)
+    #define CONFIGURATOR_DATA_SPEED_DIVIDER 8 // 100hz / divider(8) = 12.5Hz
+#endif
+
 class Configurator {
     public:
         // Constructor
@@ -172,7 +180,7 @@ class Configurator {
         
         void process_output() {
             output_counter++;
-            if (output_counter >= 4) { // 25 Hz
+            if (output_counter >= CONFIGURATOR_DATA_SPEED_DIVIDER) {
                 if (output_sensor_data) {
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2

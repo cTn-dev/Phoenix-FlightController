@@ -225,11 +225,13 @@ void setup() {
 
     // I2C bus hardware specific settings
     #if defined(__MK20DX128__)
+        // I2C bus settings
         I2C0_F = 0x00; // 2.4 MHz (prescaler 20)
         I2C0_FLT = 4;
     #endif
     
     #if defined(__AVR__)
+        // I2C bus settings
         TWBR = 12; // 400 KHz (maximum supported frequency)
     #endif
     
