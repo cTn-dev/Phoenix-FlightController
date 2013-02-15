@@ -34,7 +34,7 @@
     #define GPS
     
     // Critical sensors on board (gyro/accel)
-    #include <mpu6050_6DOF_stick_px01.h>
+    #include <mpu6050_10DOF_stick_px01.h>
     
     // Magnetometer
     #include <Magnetometer_HMC5883L.h>
