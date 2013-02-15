@@ -137,7 +137,9 @@ $(document).ready(function() {
 
 function command_log(message) {
     var d = new Date();
-    var time = d.getHours() + ':' + ((d.getMinutes() < 10) ? '0' + d.getMinutes(): d.getMinutes()) + ':' + ((d.getSeconds() < 10) ? '0' + d.getSeconds(): d.getSeconds());
+    var time = (d.getHours() < 10) ? '0' + d.getHours(): d.getHours() 
+        + ':' + ((d.getMinutes() < 10) ? '0' + d.getMinutes(): d.getMinutes()) 
+        + ':' + ((d.getSeconds() < 10) ? '0' + d.getSeconds(): d.getSeconds());
     
     $('div#command-log > div.wrapper').append('<p>' + time + ' -- ' + message + '</p>');
     $('div#command-log').scrollTop($('div#command-log div.wrapper').height());    
@@ -173,7 +175,9 @@ function onOpen(openInfo) {
         }, connection_delay * 1000);            
         
     } else {
-        console.log('There was a problem in opening the connection.');
+        $('div#port-picker a.connect').click(); // reset the connect button back to "disconnected" state
+        console.log('There was a problem while opening the connection.');
+        command_log('Could not join the serial bus -- <span style="color: red;">ERROR</span>');
     }    
 };
 
@@ -186,8 +190,10 @@ function onClosed(result) {
         $('#content').empty(); // empty content
         $('#tabs > ul li').removeClass('active'); // de-select any selected tabs
     } else { // Something went wrong
-        console.log('There was an error that happened during "connection-close" procedure.');
-        command_log('Connection closed -- <span style="color: red;">ERROR</span>');
+        if (connectionId > 0) {
+            console.log('There was an error that happened during "connection-close" procedure.');
+            command_log('Connection closed -- <span style="color: red;">ERROR</span>');
+        }
     }    
 };
 
