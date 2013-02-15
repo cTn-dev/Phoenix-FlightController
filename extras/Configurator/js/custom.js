@@ -93,39 +93,41 @@ $(document).ready(function() {
     // Tabs
     var tabs = $('#tabs > ul');
     $('a', tabs).click(function() {
-        if (connectionId < 1 || serial_poll < 1) { // if there is no active connection, return
-            return;
-        }
-        
-        // disable previous active button
-        $('li', tabs).removeClass('active');
-        stop_data_stream();
-        
-        // Highlight selected button
-        $(this).parent().addClass('active');
-        
-        switch ($(this).parent().index()) {
-            case 0: // initial setup
-                $('#content').load("./tabs/initial_setup.html", tab_initialize_initial_setup);
-            break;
-            case 1: // pid tuning
-                $('#content').load("./tabs/pid_tuning.html", tab_initialize_pid_tuning);
-            break;            
-            case 2: // Sensor data
-                $('#content').load("./tabs/sensor_data.html", tab_initialize_sensor_data);
-            break;
-            case 3: // TX/RX data
-                $('#content').load("./tabs/rx.html", tab_initialize_rx);
-            break;
-            case 4: // 3D vehicle view
-                $('#content').load("./tabs/vehicle_view.html", tab_initialize_vehicle_view);
-            break;
-            case 5: // Motor output
-                $('#content').load("./tabs/motor_output.html", tab_initialize_motor_output);
-            break;
-            case 6: // About
-                $('#content').load("./tabs/about.html");
-            break;
+        if ($(this).parent().hasClass('active') == false) { // only initialize when the tab isn't already active
+            if (connectionId < 1 || serial_poll < 1) { // if there is no active connection, return
+                return;
+            }
+            
+            // disable previous active button
+            $('li', tabs).removeClass('active');
+            stop_data_stream();
+            
+            // Highlight selected button
+            $(this).parent().addClass('active');
+            
+            switch ($(this).parent().index()) {
+                case 0: // initial setup
+                    $('#content').load("./tabs/initial_setup.html", tab_initialize_initial_setup);
+                break;
+                case 1: // pid tuning
+                    $('#content').load("./tabs/pid_tuning.html", tab_initialize_pid_tuning);
+                break;            
+                case 2: // Sensor data
+                    $('#content').load("./tabs/sensor_data.html", tab_initialize_sensor_data);
+                break;
+                case 3: // TX/RX data
+                    $('#content').load("./tabs/rx.html", tab_initialize_rx);
+                break;
+                case 4: // 3D vehicle view
+                    $('#content').load("./tabs/vehicle_view.html", tab_initialize_vehicle_view);
+                break;
+                case 5: // Motor output
+                    $('#content').load("./tabs/motor_output.html", tab_initialize_motor_output);
+                break;
+                case 6: // About
+                    $('#content').load("./tabs/about.html");
+                break;
+            }
         }
     });
  

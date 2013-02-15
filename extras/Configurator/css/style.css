@@ -144,11 +144,14 @@ a:hover {
                 cursor: default;
             }
         #tabs li a {
-            padding: 5px;
-            padding-left: 10px;
-            padding-right: 10px;
-            
             display: block;
+            
+            height: 15px;
+            
+            padding: 5px;
+            padding-left: 15px;
+            padding-right: 15px;
+            
             background-color: #e6e6e6;
         }
         #tabs li a:hover {

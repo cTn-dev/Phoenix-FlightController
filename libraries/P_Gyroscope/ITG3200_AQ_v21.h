@@ -94,7 +94,7 @@ class ITG3200 {
         void evaluateGyro() {
             // Calculate average
             gyro[XAXIS] = gyroSum[XAXIS] / gyroSamples;
-            gyro[YAXIS] = -(gyroSum[YAXIS] / gyroSamples);
+            gyro[YAXIS] = gyroSum[YAXIS] / gyroSamples;
             gyro[ZAXIS] = gyroSum[ZAXIS] / gyroSamples;    
             
             // Apply offsets
