@@ -29,7 +29,6 @@
 
 #ifdef Maggie
     // Features requested
-    #define Accelerometer
     #define Magnetometer
     #define AltitudeHoldBaro
     #define AltitudeHoldSonar
@@ -70,7 +69,6 @@
 
 #ifdef Development
     // Features requested
-    #define Accelerometer
     #define Magnetometer
     #define GPS
 
@@ -98,9 +96,6 @@
 #endif
 
 #ifdef Development_AVR
-    // Features requested
-    #define Accelerometer
-
     // Critical sensors on board (gyro/accel)
     #include <mpu6050_6DOF_stick.h>
     
@@ -119,7 +114,6 @@
 
 #ifdef AQ_SHIELD_V_20
     // Features requested
-    #define Accelerometer
     #define Magnetometer
     
     // Critical sensors on board (gyro/accel)
@@ -144,7 +138,6 @@
 
 #ifdef AQ_SHIELD_V_21
     // Features requested
-    #define Accelerometer
     #define Magnetometer
     
     // Critical sensors on board (gyro/accel)
@@ -283,10 +276,7 @@ void setup() {
     initializeReceiver();
     
     sensors.initializeGyro();
-    
-    #ifdef Accelerometer
-        sensors.initializeAccel();
-    #endif
+    sensors.initializeAccel();
     
     #ifdef Magnetometer
         sensors.initializeMag();
@@ -321,10 +311,7 @@ void loop() {
     // Read data (not faster then every 1 ms)
     if (currentTime - sensorPreviousTime >= 1000) {
         sensors.readGyroSum();
-        
-        #ifdef Accelerometer
-            sensors.readAccelSum();        
-        #endif
+        sensors.readAccelSum();        
         
         #ifdef AltitudeHoldSonar
             // Bring sonar pin down (complete TLL trigger pulse)
