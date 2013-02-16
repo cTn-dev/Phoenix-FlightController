@@ -197,8 +197,8 @@ class MS5611 {
             unsigned short n_rem = 0;           // crc reminder
             unsigned short crc_read;            // original value of the crc
 
-            crc_read  = n_prom[7];              //save read CRC
-            n_prom[7] = (0xFF00 & (n_prom[7])); //CRC byte is replaced by 0
+            crc_read  = n_prom[7];              // save read CRC
+            n_prom[7] = (0xFF00 & (n_prom[7])); // CRC byte is replaced by 0
 
             for (int cnt = 0; cnt < 16; cnt++) {   // operation is performed on bytes
                 // choose LSB or MSB

@@ -79,13 +79,13 @@
     #include <kinematics_CMP.h>
     
     // Receiver
-    #include <Receiver_328p_HW_PPM.h>
+    #include <Receiver_328p_HW_PPM.h> // this is just temporary, this shield requires proper mega 1280 2560 support
     
     // Frame type definition
     #include <FrameType_QuadX.h> 
 
     // Motor / ESC setup
-    #include <ESC_328p_HW.h>      
+    #include <ESC_328p_HW.h> // this is just temporary, this shield requires proper mega 1280 2560 support      
 #endif
 
 #ifdef AQ_SHIELD_V_21
@@ -103,13 +103,13 @@
     #include <kinematics_CMP.h>
     
     // Receiver
-    #include <Receiver_328p_HW_PPM.h>
+    #include <Receiver_328p_HW_PPM.h> // this is just temporary, this shield requires proper mega 1280 2560 support
     
     // Frame type definition
     #include <FrameType_QuadX.h> 
 
     // Motor / ESC setup
-    #include <ESC_328p_HW.h>      
+    #include <ESC_328p_HW.h> // this is just temporary, this shield requires proper mega 1280 2560 support     
 #endif
 // == END of Hardware setup ==
 

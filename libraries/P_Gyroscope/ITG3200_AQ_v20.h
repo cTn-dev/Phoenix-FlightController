@@ -61,12 +61,12 @@ class ITG3200 {
             gyro_offset[ZAXIS] = -zSum / count; 
             
             // Calibration sanity check
-            while (abs(gyro_offset[XAXIS] + gyro_offset[YAXIS] + gyro_offset[ZAXIS]) > 300) {
-                // gyro calibration failed, run again
+            if (abs(gyro_offset[XAXIS]) > 140 || abs(gyro_offset[YAXIS]) > 140 || abs(gyro_offset[ZAXIS]) > 140) {
+                // gyro calibration failed, run again   
                 
                 delay(1000); // small delay before next gyro calibration
                 calibrate_gyro();
-            }            
+            }          
         };
 
         void readGyroRaw() {
