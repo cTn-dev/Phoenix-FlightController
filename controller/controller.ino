@@ -21,8 +21,8 @@
 #include "dataStorage.h"
 
 // == Hardware setup/s == 
-#define PHOENIX_SHIELD_V_01
-//#define AQ_SHIELD_V_20
+//#define PHOENIX_SHIELD_V_01
+#define AQ_SHIELD_V_20
 //#define AQ_SHIELD_V_21
 
 #ifdef PHOENIX_SHIELD_V_01

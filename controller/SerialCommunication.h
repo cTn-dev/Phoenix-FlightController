@@ -69,11 +69,9 @@ class Configurator {
                             process_data();
                             
                             // reset variables
-                            memset(command_buffer, 0, sizeof(command_buffer));
                             memset(data_buffer, 0, sizeof(data_buffer));
                             
                             payload_length_received = 0;
-                            
                             state = 0;
                         }
                     break;
@@ -303,8 +301,6 @@ class Configurator {
         uint8_t data; // variable used to store a single byte from serial
         
         uint8_t state;
-        
-        uint8_t command_buffer[4];
         uint8_t command;
         
         uint16_t payload_length_expected;

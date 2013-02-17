@@ -137,7 +137,7 @@ $(document).ready(function() {
 
 function command_log(message) {
     var d = new Date();
-    var time = (d.getHours() < 10) ? '0' + d.getHours(): d.getHours() 
+    var time = ((d.getHours() < 10) ? '0' + d.getHours(): d.getHours()) 
         + ':' + ((d.getMinutes() < 10) ? '0' + d.getMinutes(): d.getMinutes()) 
         + ':' + ((d.getSeconds() < 10) ? '0' + d.getSeconds(): d.getSeconds());
     
@@ -158,8 +158,8 @@ function onOpen(openInfo) {
             
             // request configuration data (so we have something to work with)
             var bufferOut = new ArrayBuffer(6);
-            var bufView = new Uint8Array(bufferOut);
-            
+            var bufView = new Uint8Array(bufferOut);        
+
             // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
             bufView[0] = 0xB5; // sync char 1
             bufView[1] = 0x62; // sync char 2
@@ -167,7 +167,7 @@ function onOpen(openInfo) {
             bufView[3] = 0x00; // payload length MSB
             bufView[4] = 0x01; // payload length LSB
             bufView[5] = 0x01; // payload
-            
+           
             chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
                 console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
                 command_log('Requesting configuration UNION from Flight Controller');
