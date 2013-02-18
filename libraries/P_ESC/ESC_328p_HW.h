@@ -12,7 +12,7 @@
 uint16_t MotorOuts[MOTORS];
 uint8_t motorCounter = 0;
 uint16_t motorTotal = 0;
-uint8_t motorPins[MOTORS] = {2, 3, 4, 5};
+uint8_t motorPins[8] = {2, 3, 4, 5, 6, 7, 9, 10}; // pin 8 is used as ppm input (thats why its skipped in this sequence)
 
 // Comparison Interrupt Vector
 ISR(TIMER1_COMPA_vect) { 
@@ -25,12 +25,12 @@ ISR(TIMER1_COMPA_vect) {
     if (motorCounter < MOTORS) {
         unsigned int now = MotorOuts[motorCounter] * 2;
         
-        if (now < 2000) now = 2000; // sanity
-        if (now > 4000) now = 4000; // sanity
+        if (now < 2000) now = 2000;      // sanity
+        else if (now > 4000) now = 4000; // sanity
         
-        motorTotal += now; // tally up time
+        motorTotal += now;    // tally up time
         OCR1A = TCNT1 + now;  // interrupt 
-        digitalWrite(motorPins[motorCounter],1); // start pulse
+        digitalWrite(motorPins[motorCounter], 1); // start pulse
     } else { // motorCounter == MOTORS
         OCR1A = TCNT1 + MOTORS * 4000 + 50 - motorTotal;
         motorTotal = 0;
@@ -41,27 +41,138 @@ ISR(TIMER1_COMPA_vect) {
 void setupTimer1Esc() {
     // Setup timer1 in normal mode, count at 2MHz
     TCCR1A = 0;
-    TCCR1B = (1<<CS11)|(1<<ICES1);
-    TIMSK1 |= (1<<ICIE1)|(1<<OCIE1A); // Enable ICP and OCRA interrupts
+    TCCR1B = (1 << CS11) | (1 << ICES1);
+    TIMSK1 |= (1 << ICIE1) | (1 << OCIE1A); // Enable ICP and OCRA interrupts
 }
 
 void updateMotors() {
     cli(); // disable interrupts
     
-    MotorOuts[0] = MotorOut[0];
-    MotorOuts[1] = MotorOut[1];
-    MotorOuts[2] = MotorOut[2];
-    MotorOuts[3] = MotorOut[3];   
+    #if MOTORS == 3
+        MotorOuts[0] = MotorOut[0];
+        MotorOuts[1] = MotorOut[1];
+        MotorOuts[2] = MotorOut[2];
+    #elif MOTORS == 4
+        MotorOuts[0] = MotorOut[0];
+        MotorOuts[1] = MotorOut[1];
+        MotorOuts[2] = MotorOut[2];
+        MotorOuts[3] = MotorOut[3];   
+    #elif MOTORS == 6
+        MotorOuts[0] = MotorOut[0];
+        MotorOuts[1] = MotorOut[1];
+        MotorOuts[2] = MotorOut[2];
+        MotorOuts[3] = MotorOut[3]; 
+        MotorOuts[4] = MotorOut[4];
+        MotorOuts[5] = MotorOut[5];        
+    #elif MOTORS == 8
+        MotorOuts[0] = MotorOut[0];
+        MotorOuts[1] = MotorOut[1];
+        MotorOuts[2] = MotorOut[2];
+        MotorOuts[3] = MotorOut[3]; 
+        MotorOuts[4] = MotorOut[4];
+        MotorOuts[5] = MotorOut[5]; 
+        MotorOuts[6] = MotorOut[6];
+        MotorOuts[7] = MotorOut[7];          
+    #endif
     
     sei(); // enable interrupts
 }
 
 void initializeESC() {
     // We will also initialize the separate MotorOuts array values here
+    // PWM pins are also set to output over here
     for (uint8_t i = 0; i < MOTORS; i++) {
         MotorOuts[i] = MotorOut[i];
+        pinMode(motorPins[i], OUTPUT);
     }    
     
     // Standard timer initialization
     setupTimer1Esc();
+    
+    if (CONFIG.data.calibrateESC) {
+        // Calibration sequence requested
+        
+        // Signal range TOP maximum
+        #if MOTORS == 3
+            MotorOut[0] = 2000;
+            MotorOut[1] = 2000;
+            MotorOut[2] = 2000;
+            
+            updateMotors();
+        #elif MOTORS == 4
+            MotorOut[0] = 2000;
+            MotorOut[1] = 2000;
+            MotorOut[2] = 2000;
+            MotorOut[3] = 2000;
+            
+            updateMotors();
+        #elif MOTORS == 6
+            MotorOut[0] = 2000;
+            MotorOut[1] = 2000;
+            MotorOut[2] = 2000;
+            MotorOut[3] = 2000;
+            MotorOut[4] = 2000;
+            MotorOut[5] = 2000;    
+
+            updateMotors();
+        #elif MOTORS == 8
+            MotorOut[0] = 2000;
+            MotorOut[1] = 2000;
+            MotorOut[2] = 2000;
+            MotorOut[3] = 2000;
+            MotorOut[4] = 2000;
+            MotorOut[5] = 2000;  
+            MotorOut[6] = 2000;
+            MotorOut[7] = 2000;
+            
+            updateMotors();
+        #endif
+        
+        // Wait for all ESCs to acknowledge (1 beep)
+        delay(5000);
+        
+        // Signal range BOTTOM minimum
+        #if MOTORS == 3
+            MotorOut[0] = 1000;
+            MotorOut[1] = 1000;
+            MotorOut[2] = 1000;
+            
+            updateMotors();
+        #elif MOTORS == 4
+            MotorOut[0] = 1000;
+            MotorOut[1] = 1000;
+            MotorOut[2] = 1000;
+            MotorOut[3] = 1000;
+            
+            updateMotors();
+        #elif MOTORS == 6
+            MotorOut[0] = 1000;
+            MotorOut[1] = 1000;
+            MotorOut[2] = 1000;
+            MotorOut[3] = 1000;
+            MotorOut[4] = 1000;
+            MotorOut[5] = 1000;    
+
+            updateMotors();
+        #elif MOTORS == 8
+            MotorOut[0] = 1000;
+            MotorOut[1] = 1000;
+            MotorOut[2] = 1000;
+            MotorOut[3] = 1000;
+            MotorOut[4] = 1000;
+            MotorOut[5] = 1000;  
+            MotorOut[6] = 1000;
+            MotorOut[7] = 1000;
+            
+            updateMotors();
+        #endif      
+
+        // Wait for all ESCs to acknowledge (2 + 1 beep)
+        delay(4000);        
+        
+        // Calibration done
+        // disabling the calibration flag and updating EEPROM
+        CONFIG.data.calibrateESC = 0;
+        writeEEPROM();
+    }
 }
