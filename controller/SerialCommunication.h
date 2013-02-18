@@ -84,15 +84,7 @@ class Configurator {
                 case 1: // Requesting configuration union                    
                     ACK();
                     
-                    Serial.write(0xB5); // sync char 1
-                    Serial.write(0x62); // sync char 2
-                    Serial.write(0x01); // command
-                    Serial.write(highByte(sizeof(CONFIG))); // payload length MSB
-                    Serial.write(lowByte(sizeof(CONFIG))); // payload length LSB  
-            
-                    for (uint16_t i = 0; i < sizeof(CONFIG); i++) {
-                        Serial.write(CONFIG.raw[i]);
-                    }              
+                    send_UNION();
                 break;
                 case 2: // Received configuration union
                     if (payload_length_received == sizeof(CONFIG)) {
@@ -161,15 +153,7 @@ class Configurator {
                     writeEEPROM(); // writes default values to eeprom
 
                     // Send back configuration union
-                    Serial.write(0xB5); // sync char 1
-                    Serial.write(0x62); // sync char 2
-                    Serial.write(0x01); // command
-                    Serial.write(highByte(sizeof(CONFIG))); // payload length MSB
-                    Serial.write(lowByte(sizeof(CONFIG))); // payload length LSB  
-            
-                    for (uint16_t i = 0; i < sizeof(CONFIG); i++) {
-                        Serial.write(CONFIG.raw[i]);
-                    }                      
+                    send_UNION();                    
                 break;
                 default: // Unrecognized command
                     REFUSED();
@@ -295,6 +279,18 @@ class Configurator {
             Serial.write(0x00); // payload length MSB
             Serial.write(0x01); // payload length LSB  
             Serial.write(0x00); // payload      
+        };
+        
+        void send_UNION() {
+            Serial.write(0xB5); // sync char 1
+            Serial.write(0x62); // sync char 2
+            Serial.write(0x01); // command
+            Serial.write(highByte(sizeof(CONFIG))); // payload length MSB
+            Serial.write(lowByte(sizeof(CONFIG))); // payload length LSB  
+    
+            for (uint16_t i = 0; i < sizeof(CONFIG); i++) {
+                Serial.write(CONFIG.raw[i]);
+            }  
         };
     
     private:
