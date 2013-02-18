@@ -54,7 +54,7 @@ function tab_initialize_sensor_data() {
     }
     
     accel_options = {
-        title: "Accelerometer (+- 1g = 9.81 m/s^2)",
+        title: "Accelerometer (g)",
         shadowSize: 0,
         yaxis : {
             max : 1.5,
