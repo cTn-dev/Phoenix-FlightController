@@ -382,7 +382,24 @@ void process50HzTask() {
     
     #ifdef AltitudeHoldBaro
         sensors.evaluateBaroAltitude();
-    #endif     
+    #endif   
+
+    // 3x blink every 4 seconds (airplane beacon style)
+    /*
+    uint8_t flashingLedState = 0; // this define should go into controller.h
+    
+    if ((flashingLedState == 151) || (flashingLedState == 159) || (flashingLedState == 167)) {
+        digitalWrite(LED_ORIENTATION, HIGH);
+    } else {
+        digitalWrite(LED_ORIENTATION, LOW);
+    }
+
+    if (flashingLedState >= 4 * 50) {
+        flashingLedState = 0;
+    } else {
+        flashingLedState++;
+    } 
+    */
 }
 
 void process10HzTask() {
