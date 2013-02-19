@@ -37761,7 +37761,7 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <part name="D2" library="diode" deviceset="DIODE-" device="DO-214AC" value="1A"/>
 <part name="D3" library="diode" deviceset="DIODE-" device="DO-214AC" value="1A"/>
 <part name="R13" library="resistor" deviceset="R-EU_" device="R0805" value="1K"/>
-<part name="R14" library="resistor" deviceset="R-EU_" device="R0805" value="2K"/>
+<part name="R14" library="resistor" deviceset="R-EU_" device="R0805" value="1k8"/>
 <part name="PAD1" library="wirepad" deviceset="WIREPAD" device="SMD1,27-254"/>
 <part name="PAD2" library="wirepad" deviceset="WIREPAD" device="SMD1,27-254"/>
 </parts>
@@ -37954,6 +37954,7 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <segment>
 <pinref part="PAD2" gate="G$1" pin="P"/>
 <wire x1="180.34" y1="-81.28" x2="180.34" y2="-83.82" width="0.1524" layer="91"/>
+<label x="180.34" y="-87.63" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="22" class="0">
