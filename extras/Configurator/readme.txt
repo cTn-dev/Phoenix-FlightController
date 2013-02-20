@@ -10,6 +10,9 @@ which causes chrome serial to fail setting a correct baud rate (by default it re
 Current issue ticket on chromium
 https://code.google.com/p/chromium/issues/detail?id=176711
 
+Chromium patch from X-warrior and me
+https://codereview.chromium.org/12294009/
+
 For now, the only "proper" way to avoid this problem is to set the serial bus baud rate manually with 3rd party
 utility, for example stty
 
