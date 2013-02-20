@@ -3,28 +3,7 @@ var connection_delay = 0; // delay which defines "when" will the configurator re
 var port_list;
 var serial_poll = 0; // iterval timer refference
 
-var eepromConfig; // config object
 var eepromConfigSize;
-var eepromConfigDefinition = {
-    eepromConfigDefinition: {
-        version:      'uint8',
-        calibrateESC: 'uint8',
-
-        ACCEL_BIAS:  ['array', 'int16', 3],
-
-        PID_YAW_c:   ['array', 'float32', 4],
-        PID_PITCH_c: ['array', 'float32', 4],
-        PID_ROLL_c:  ['array', 'float32', 4],
-
-        PID_YAW_m:   ['array', 'float32', 4],
-        PID_PITCH_m: ['array', 'float32', 4],
-        PID_ROLL_m:  ['array', 'float32', 4],
-
-        PID_BARO:    ['array', 'float32', 4],
-        PID_SONAR:   ['array', 'float32', 4],
-        PID_GPS:     ['array', 'float32', 4]
-    }
-};
 
 
 $(document).ready(function() { 
@@ -293,10 +272,8 @@ function process_data() {
                 eepromConfigBytesView[i] = message_buffer[i];
             }
             
-            var view = new jDataView(eepromConfigBytes, 0, undefined, true);
-            var parser = new jParser(view, eepromConfigDefinition);
-
-            eepromConfig = parser.parse('eepromConfigDefinition');
+            var view = new DataView(eepromConfigBytes, 0);
+            view.parseUNION(eepromConfig); 
             
             $('#tabs li a:first').click();
             command_log('Configuration UNION received -- <span style="color: green">OK</span>');

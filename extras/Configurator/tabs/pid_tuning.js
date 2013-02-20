@@ -149,11 +149,8 @@ function tab_initialize_pid_tuning() {
         }
         
         var eepromConfigBytes = new ArrayBuffer(eepromConfigSize);
-        var view = new jDataView(eepromConfigBytes, 0, undefined, true);
-        
-        var composer = new jComposer(view, eepromConfigDefinition);
-        var eepromBuffer = view.buffer;
-        composer.compose(['eepromConfigDefinition'], eepromConfig);
+        var view = new DataView(eepromConfigBytes, 0);
+        view.setUNION(eepromConfig); 
 
         var bufferOut = new ArrayBuffer(5);
         var bufView = new Uint8Array(bufferOut);
