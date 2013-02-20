@@ -2,12 +2,9 @@ function tab_initialize_initial_setup() {
     $('#content .calibrateESC').click(function() {
         eepromConfig.calibrateESC = parseInt(1);
         
-        var eepromConfigBytes = new ArrayBuffer(264);
-        var view = new jDataView(eepromConfigBytes, 0, undefined, true);
-        
-        var composer = new jComposer(view, eepromConfigDefinition);
-        var eepromBuffer = view.buffer;
-        composer.compose(['eepromConfigDefinition'], eepromConfig);
+        var eepromConfigBytes = new ArrayBuffer(eepromConfigSize);
+        var view = new DataView(eepromConfigBytes, 0);
+        view.setUNION(eepromConfig); 
 
         var bufferOut = new ArrayBuffer(5);
         var bufView = new Uint8Array(bufferOut);

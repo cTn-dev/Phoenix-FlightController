@@ -5,7 +5,6 @@ var serial_poll = 0; // iterval timer refference
 
 var eepromConfigSize;
 
-
 $(document).ready(function() { 
     var port_picker = $('div#port-picker .port');
     var baud_picker = $('div#port-picker #baud');
