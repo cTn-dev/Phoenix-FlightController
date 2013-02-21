@@ -192,7 +192,7 @@ class MPU6050 {
         };
         
         // Order and +- signs of each axis depends on the chip orientation.
-        // Default order: X, Y, Z  
+        // Default order: +X, +Y, +Z
         void readGyroRaw() {
             Wire.beginTransmission(MPU6050_ADDRESS);
             Wire.write(MPUREG_GYRO_XOUT_H);
@@ -206,7 +206,7 @@ class MPU6050 {
         };
 
         // Order and +- signs of each axis depends on the chip orientation.
-        // Default order: X, Y, Z          
+        // Default order: -X, +Y, +Z           
         void readAccelRaw() {
             Wire.beginTransmission(MPU6050_ADDRESS);
             Wire.write(MPUREG_ACCEL_XOUT_H);
