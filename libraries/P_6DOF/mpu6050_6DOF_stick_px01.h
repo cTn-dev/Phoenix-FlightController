@@ -1,8 +1,13 @@
-/*  According to MPU6050 datasheet
-    this chip should support I2C speeds up to 400kHz (Fast-mode Fm)
+/*  6 DOF stick featuring a single MPU6050 chip
+
+    According to MPU6050 datasheet, this chip should support I2C speeds up to 400kHz (Fast-mode Fm)
     
     However on Teensy 3.0 i am able to reach 2.4MHz (High-speed mode) without any problems.
     (which cuts down the reading time of accel + gyro to about 180us)
+    
+    Please note that external pullup resistors are required on Teensy 3.0,
+    while they are not "required" on other platforms, i highly recommend adding them.
+    1000 ohm pullup seems to work best in my case.    
     
     NOTE: This stick should be mounted upside down (mpu chip on the bottom side)
 */
@@ -151,7 +156,9 @@ class MPU6050 {
             if (abs(gyro_offset[XAXIS]) > 300 || abs(gyro_offset[YAXIS]) > 300 || abs(gyro_offset[ZAXIS]) > 300) {
                 // gyro calibration failed, run again   
                 
-                delay(1000); // small delay before next gyro calibration
+                // small delay before next gyro calibration
+                delay(1000);
+                
                 calibrate_gyro();
             }
         };
@@ -184,6 +191,8 @@ class MPU6050 {
             CONFIG.data.ACCEL_BIAS[ZAXIS] = accel_bias[ZAXIS];
         };
         
+        // Order and +- signs of each axis depends on the chip orientation.
+        // Default order: X, Y, Z  
         void readGyroRaw() {
             Wire.beginTransmission(MPU6050_ADDRESS);
             Wire.write(MPUREG_GYRO_XOUT_H);
@@ -195,7 +204,9 @@ class MPU6050 {
             gyroRaw[YAXIS] = (Wire.read() << 8) | Wire.read();
             gyroRaw[ZAXIS] = -((Wire.read() << 8) | Wire.read());
         };
-        
+
+        // Order and +- signs of each axis depends on the chip orientation.
+        // Default order: X, Y, Z          
         void readAccelRaw() {
             Wire.beginTransmission(MPU6050_ADDRESS);
             Wire.write(MPUREG_ACCEL_XOUT_H);
