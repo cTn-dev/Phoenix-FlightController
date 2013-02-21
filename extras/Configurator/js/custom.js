@@ -26,15 +26,15 @@ $(document).ready(function() {
                     }));        
                 });
             } else {
-                // Looks like this check is kinda useless as the serial API doesn't seem to work in windows
-                // at all, requires v25>
-                // No serial ports found (do something/offer solution)
+                port_picker.html('<select id="port"></select>');
+                $('select', port_picker).append('<option>NOT FOUND</option>');
+                
                 console.log("No serial ports detected");
             }
         });
     });
     
-    // software click to refresh port picker select during first load
+    // software click to refresh port picker select (during initial load)
     $('div#port-picker a.refresh').click();
     
     $('div#port-picker a.connect').click(function() {
