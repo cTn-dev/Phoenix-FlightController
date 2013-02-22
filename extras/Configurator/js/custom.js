@@ -6,7 +6,7 @@ var serial_poll = 0; // iterval timer refference
 var eepromConfigSize;
 
 $(document).ready(function() { 
-    var port_picker = $('div#port-picker .port');
+    var port_picker = $('div#port-picker .port select');
     var baud_picker = $('div#port-picker #baud');
     var delay_picker = $('div#port-picker #delay');
     
@@ -17,17 +17,15 @@ $(document).ready(function() {
         chrome.serial.getPorts(function(ports) {
             if (ports.length > 0) {
                 // Port list received
-                port_picker.html('<select id="port"></select>');
                 
                 ports.forEach(function(port) {
-                    $('select', port_picker).append($("<option/>", {
+                    $(port_picker).append($("<option/>", {
                         value: port,
                         text: port
                     }));        
                 });
             } else {
-                port_picker.html('<select id="port"></select>');
-                $('select', port_picker).append('<option>NOT FOUND</option>');
+                $(port_picker).append('<option>NOT FOUND</option>');
                 
                 console.log("No serial ports detected");
             }
@@ -51,7 +49,7 @@ $(document).ready(function() {
             $(this).text('Connect');
             $(this).removeClass('active');            
         } else { // even number of clicks         
-            var selected_port = String($('select#port', port_picker).val());
+            var selected_port = String($(port_picker).val());
             var selected_baud = parseInt(baud_picker.val());
             connection_delay = parseInt(delay_picker.val());
             
