@@ -5,6 +5,17 @@ function tab_initialize_channel_assigner() {
         $(this).val(eepromConfig.CHANNEL_ASSIGNMENT[i++]);
     });
     
+    $('#content table.channel_assigner input').focus(function() {
+        $(this).data('prev_val', $(this).val());
+        $(this).val('');
+    });
+    
+    $('#content table.channel_assigner input').blur(function() {
+        if ($(this).val() == '') {
+            $(this).val($(this).data('prev_val'));
+        }
+    });    
+    
     // UI hooks
     $('#content table.channel_assigner a.update').click(function() {
         var parent = $(this).parent().parent();
