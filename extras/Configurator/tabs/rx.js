@@ -82,14 +82,14 @@ function tab_initialize_rx() {
     }
 
     graph_receiver = Flotr.draw(e_graph_receiver, [ 
-        {data: receiver_data[0], label: "CH-1"}, 
-        {data: receiver_data[1], label: "CH-2"},
-        {data: receiver_data[2], label: "CH-3"},
-        {data: receiver_data[3], label: "CH-4"},
-        {data: receiver_data[4], label: "CH-5"},
-        {data: receiver_data[5], label: "CH-6"},
-        {data: receiver_data[6], label: "CH-7"},
-        {data: receiver_data[7], label: "CH-8"} ], receiver_options);                      
+        {data: receiver_data[0], label: "CH-0"}, 
+        {data: receiver_data[1], label: "CH-1"},
+        {data: receiver_data[2], label: "CH-2"},
+        {data: receiver_data[3], label: "CH-3"},
+        {data: receiver_data[4], label: "CH-4"},
+        {data: receiver_data[5], label: "CH-5"},
+        {data: receiver_data[6], label: "CH-6"},
+        {data: receiver_data[7], label: "CH-7"} ], receiver_options);                      
     
     // request receiver data from flight controller
     var bufferOut = new ArrayBuffer(6);
@@ -149,14 +149,14 @@ function process_data_receiver() {
         }; 
 
     graph_receiver = Flotr.draw(e_graph_receiver, [ 
-        {data: receiver_data[0], label: "CH-1 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[0])}, 
-        {data: receiver_data[1], label: "CH-2 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[1])},
-        {data: receiver_data[2], label: "CH-3 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[2])},
-        {data: receiver_data[3], label: "CH-4 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[3])},
-        {data: receiver_data[4], label: "CH-5 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[4])},
-        {data: receiver_data[5], label: "CH-6 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[5])},
-        {data: receiver_data[6], label: "CH-7 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[6])},
-        {data: receiver_data[7], label: "CH-8 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[7])} ], receiver_options); 
+        {data: receiver_data[0], label: "CH-0 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[0])}, 
+        {data: receiver_data[1], label: "CH-1 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[1])},
+        {data: receiver_data[2], label: "CH-2 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[2])},
+        {data: receiver_data[3], label: "CH-3 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[3])},
+        {data: receiver_data[4], label: "CH-4 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[4])},
+        {data: receiver_data[5], label: "CH-5 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[5])},
+        {data: receiver_data[6], label: "CH-6 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[6])},
+        {data: receiver_data[7], label: "CH-7 - " + RX_channel_name(eepromConfig.CHANNEL_ASSIGNMENT[7])} ], receiver_options); 
 
         samples_i++;
     }    
