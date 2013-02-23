@@ -81,29 +81,23 @@ $(document).ready(function() {
             // Highlight selected button
             $(this).parent().addClass('active');
             
-            switch ($(this).parent().index()) {
-                case 0: // initial setup
-                    $('#content').load("./tabs/initial_setup.html", tab_initialize_initial_setup);
-                break;
-                case 1: // pid tuning
-                    $('#content').load("./tabs/pid_tuning.html", tab_initialize_pid_tuning);
-                break;            
-                case 2: // Sensor data
-                    $('#content').load("./tabs/sensor_data.html", tab_initialize_sensor_data);
-                break;
-                case 3: // TX/RX data
-                    $('#content').load("./tabs/rx.html", tab_initialize_rx);
-                break;
-                case 4: // 3D vehicle view
-                    $('#content').load("./tabs/vehicle_view.html", tab_initialize_vehicle_view);
-                break;
-                case 5: // Motor output
-                    $('#content').load("./tabs/motor_output.html", tab_initialize_motor_output);
-                break;
-                case 6: // About
-                    $('#content').load("./tabs/about.html");
-                break;
-            }
+            if ($(this).parent().hasClass('tab_initial_setup')) {
+                $('#content').load("./tabs/initial_setup.html", tab_initialize_initial_setup);
+            } else if ($(this).parent().hasClass('tab_pid_tuning')) {
+                $('#content').load("./tabs/pid_tuning.html", tab_initialize_pid_tuning);
+            } else if ($(this).parent().hasClass('tab_channel_assigner')) {
+                $('#content').load("./tabs/channel_assigner.html", tab_initialize_channel_assigner);
+            } else if ($(this).parent().hasClass('tab_sensor_data')) {
+                $('#content').load("./tabs/sensor_data.html", tab_initialize_sensor_data);
+            } else if ($(this).parent().hasClass('tab_tx_rx')) {
+                $('#content').load("./tabs/rx.html", tab_initialize_rx);
+            } else if ($(this).parent().hasClass('tab_vehicle_view')) {
+                $('#content').load("./tabs/vehicle_view.html", tab_initialize_vehicle_view);
+            } else if ($(this).parent().hasClass('tab_motor_output')) {
+                $('#content').load("./tabs/motor_output.html", tab_initialize_motor_output);
+            } else if ($(this).parent().hasClass('tab_about')) {
+                $('#content').load("./tabs/about.html");
+            }            
         }
     });
  

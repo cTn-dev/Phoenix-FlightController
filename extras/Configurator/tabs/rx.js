@@ -77,7 +77,7 @@ function tab_initialize_rx() {
 };
 
 function process_data_receiver() {
-    if ($('#tabs > ul .active').index() == 3) { // used to protect against flotr object loss while switching to another tab
+    if ($('#tabs > ul .active').hasClass('tab_tx_rx')) { // used to protect against flotr object loss while switching to another tab
         var data = new Array();
 
         var data_counter = 0;

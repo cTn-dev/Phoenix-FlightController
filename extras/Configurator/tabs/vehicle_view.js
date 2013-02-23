@@ -26,7 +26,7 @@ function tab_initialize_vehicle_view() {
 };
 
 function process_vehicle_view() {
-    if ($('#tabs > ul .active').index() == 4) { // used to protect against flotr object loss while switching to another tab
+    if ($('#tabs > ul .active').hasClass('tab_vehicle_view')) { // used to protect against flotr object loss while switching to another tab
         data = new Array();
         
         var data_counter = 0;

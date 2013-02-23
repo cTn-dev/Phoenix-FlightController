@@ -101,7 +101,7 @@ function tab_initialize_sensor_data() {
 };
 
 function process_data_sensors() {
-    if ($('#tabs > ul .active').index() == 2) { // used to protect against flotr object loss while switching to another tab
+    if ($('#tabs > ul .active').hasClass('tab_sensor_data')) { // used to protect against flotr object loss while switching to another tab
         var data = new Array();
         
         var data_counter = 0;
