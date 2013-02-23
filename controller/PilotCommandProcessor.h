@@ -5,14 +5,18 @@ void processPilotCommands() {
     // read data into variables
     cli(); // disable interrupts
     
-    TX_roll = RX[0];     // CH-1 AIL
-    TX_pitch = RX[1];    // CH-2 ELE
-    TX_throttle = RX[2]; // CH-3 THR
-    TX_yaw = RX[3];      // CH-4 RUD
-    TX_mode = RX[4];     // CH-5 FULL ELE switch (off = rate, on = attitude)
-    TX_altitude = RX[5]; // CH-6
-    TX_pos_hold = RX[6]; // CH-7
-    TX_last = RX[7];     // CH-8
+    // Channel assignment variables are loaded from eeprom
+    // allowing user to "dynamically" (via configurator) change the rx channel assignment
+    // potentionally allowing to "wire" channels from RX to FC completely wrong 
+    // (and then fixing them manually in Channel Assigner)
+    TX_roll     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[0]];
+    TX_pitch    = RX[CONFIG.data.CHANNEL_ASSIGNMENT[1]];
+    TX_throttle = RX[CONFIG.data.CHANNEL_ASSIGNMENT[2]];
+    TX_yaw      = RX[CONFIG.data.CHANNEL_ASSIGNMENT[3]];
+    TX_mode     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[4]];
+    TX_altitude = RX[CONFIG.data.CHANNEL_ASSIGNMENT[5]];
+    TX_pos_hold = RX[CONFIG.data.CHANNEL_ASSIGNMENT[6]];
+    TX_last     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[7]];
     
     sei(); // enable interrupts
     

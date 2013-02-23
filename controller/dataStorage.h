@@ -14,6 +14,9 @@ struct __attribute__((packed)) CONFIG_struct {
     // Accelerometer
     int16_t ACCEL_BIAS[3];    
     
+    // RX channel assignment
+    uint8_t CHANNEL_ASSIGNMENT[8];
+    
     // Attitude
     float PID_YAW_c[4];
     float PID_PITCH_c[4];
@@ -47,6 +50,16 @@ void initializeEEPROM() {
     CONFIG.data.ACCEL_BIAS[XAXIS] = 0;
     CONFIG.data.ACCEL_BIAS[YAXIS] = 0;
     CONFIG.data.ACCEL_BIAS[ZAXIS] = 0;
+    
+    // RX channel assignment
+    CONFIG.data.CHANNEL_ASSIGNMENT[0] = 0;
+    CONFIG.data.CHANNEL_ASSIGNMENT[1] = 1;
+    CONFIG.data.CHANNEL_ASSIGNMENT[2] = 2;
+    CONFIG.data.CHANNEL_ASSIGNMENT[3] = 3;
+    CONFIG.data.CHANNEL_ASSIGNMENT[4] = 4;
+    CONFIG.data.CHANNEL_ASSIGNMENT[5] = 5;
+    CONFIG.data.CHANNEL_ASSIGNMENT[6] = 6;
+    CONFIG.data.CHANNEL_ASSIGNMENT[7] = 7;
     
     // Altitude
     CONFIG.data.PID_YAW_c[P]  = 4.0;
