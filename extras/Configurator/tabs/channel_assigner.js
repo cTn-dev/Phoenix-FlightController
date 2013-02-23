@@ -3,20 +3,20 @@ function tab_initialize_channel_assigner() {
     
     $('#content table.channel_assigner input').each(function() {
         $(this).val(eepromConfig.CHANNEL_ASSIGNMENT[i++]);
-    });
+    }); 
     
+    // UI hooks
     $('#content table.channel_assigner input').focus(function() {
         $(this).data('prev_val', $(this).val());
-        $(this).val('');
+        $(this).val(''); // empty input field
     });
     
     $('#content table.channel_assigner input').blur(function() {
-        if ($(this).val() == '') {
+        if ($(this).val() == '') { // if input field is empty restore previous value
             $(this).val($(this).data('prev_val'));
         }
     });    
     
-    // UI hooks
     $('#content table.channel_assigner a.update').click(function() {
         var parent = $(this).parent().parent();
         
