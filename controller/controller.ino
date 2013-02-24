@@ -384,22 +384,18 @@ void process50HzTask() {
         sensors.evaluateBaroAltitude();
     #endif   
 
-    // 3x blink every 4 seconds (airplane beacon style)
-    /*
-    uint8_t flashingLedState = 0; // this define should go into controller.h
-    
-    if ((flashingLedState == 151) || (flashingLedState == 159) || (flashingLedState == 167)) {
-        digitalWrite(LED_ORIENTATION, HIGH);
+    // Blink LED to indicated activity
+    if ((Alive_LED_state == 151) || (Alive_LED_state == 159) || (Alive_LED_state == 167)) {
+        digitalWrite(LED_PIN, HIGH);
     } else {
-        digitalWrite(LED_ORIENTATION, LOW);
+        digitalWrite(LED_PIN, LOW);
     }
 
-    if (flashingLedState >= 4 * 50) {
-        flashingLedState = 0;
+    if (Alive_LED_state >= 200) { // 4 * 50
+        Alive_LED_state = 0;
     } else {
-        flashingLedState++;
-    } 
-    */
+        Alive_LED_state++;
+    }
 }
 
 void process10HzTask() {
@@ -419,10 +415,6 @@ void process10HzTask() {
     #ifdef BatteryMonitorCurrent
         readBatteryMonitorCurrent();
     #endif   
-    
-    // Blink LED to indicated activity
-    Alive_LED_state = !Alive_LED_state;
-    digitalWrite(LED_PIN, Alive_LED_state);    
     
     // Print itterations per 100ms
     #ifdef DISPLAY_ITTERATIONS

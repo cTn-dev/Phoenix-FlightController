@@ -19,7 +19,7 @@ bool positionHoldGPS = false;
 // Blinking LED to indicate activity
 #define LED_PIN 13
 #define LED_ORIENTATION 14
-bool Alive_LED_state = false;
+uint8_t Alive_LED_state = 0;
 
 // Modulo definitions (integer remainder)
 #define TASK_50HZ 2
