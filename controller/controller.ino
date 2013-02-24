@@ -385,13 +385,13 @@ void process50HzTask() {
     #endif   
 
     // Blink LED to indicated activity
-    if ((Alive_LED_state == 151) || (Alive_LED_state == 159) || (Alive_LED_state == 167)) {
+    if ((Alive_LED_state == 51) || (Alive_LED_state == 59) || (Alive_LED_state == 67)) {
         digitalWrite(LED_PIN, HIGH);
     } else {
         digitalWrite(LED_PIN, LOW);
     }
 
-    if (Alive_LED_state >= 200) { // 4 * 50
+    if (Alive_LED_state >= 100) {
         Alive_LED_state = 0;
     } else {
         Alive_LED_state++;
