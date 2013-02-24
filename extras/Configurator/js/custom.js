@@ -6,9 +6,9 @@ var serial_poll = 0; // iterval timer refference
 var eepromConfigSize;
 
 $(document).ready(function() { 
-    var port_picker = $('div#port-picker .port select');
-    var baud_picker = $('div#port-picker #baud');
-    var delay_picker = $('div#port-picker #delay');
+    port_picker = $('div#port-picker .port select');
+    baud_picker = $('div#port-picker #baud');
+    delay_picker = $('div#port-picker #delay');
     
     $('div#port-picker a.refresh').click(function() {
         console.log("Available port list requested.");
@@ -119,8 +119,10 @@ function onOpen(openInfo) {
     connectionId = openInfo.connectionId;
     
     if (connectionId != -1) {
+        var selected_port = String($(port_picker).val());
+        
         console.log('Connection was opened with ID: ' + connectionId);
-        command_log('Connection to the serial BUS was opened with ID: ' + connectionId);
+        command_log('Connection to: ' + selected_port + ' was opened with ID: ' + connectionId);
         
         connection_delay = setTimeout(function() {
             // start polling
