@@ -20,12 +20,6 @@ class Configurator {
             output_RX_data = 0;
             output_kinematics = 0;
             output_motor_out = 0;
-            
-            gyro_scale = 65535.0 / 20.0;
-            accel_scale = 65535.0 / 3.0;   
-            kinematics_scale = 65535.0 / TWO_PI;
-            rx_scale = 65535.0 / 4000.0;
-            motor_scale = 65535.0 / 4000.0;
         };
     
         void read_packet() {
@@ -168,20 +162,18 @@ class Configurator {
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x03); // command
                     Serial.write(0x00); // payload length MSB
-                    Serial.write(12); // payload length LSB
+                    Serial.write(24); // payload length LSB
                     
                     // gyro
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        Serial.write(highByte((int16_t) (gyro[axis] * gyro_scale)));
-                        Serial.write(lowByte((int16_t) (gyro[axis] * gyro_scale)));
+                        send_float(gyro[axis]);
                     }
 
                     // accel
                     float norm = sqrt(accel[XAXIS] * accel[XAXIS] + accel[YAXIS] * accel[YAXIS] + accel[ZAXIS] * accel[ZAXIS]);
                     
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        Serial.write(highByte((int16_t) ((float)(accel[axis] / norm) * accel_scale)));
-                        Serial.write(lowByte((int16_t) ((float)(accel[axis] / norm) * accel_scale)));
+                        send_float((float)(accel[axis] / norm));
                     } 
                 }
                 
@@ -193,8 +185,8 @@ class Configurator {
                     Serial.write(16); // payload length LSB  
                     
                     for (uint8_t channel = 0; channel <= PPM_CHANNELS; channel++) {
-                        Serial.write(highByte((int16_t) (RX[channel] * rx_scale)));
-                        Serial.write(lowByte((int16_t) (RX[channel] * rx_scale)));
+                        Serial.write(highByte(RX[channel]));
+                        Serial.write(lowByte(RX[channel]));
                     }                 
                 }
                 
@@ -203,11 +195,10 @@ class Configurator {
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x05); // command
                     Serial.write(0x00); // payload length MSB
-                    Serial.write(6); // payload length LSB  
+                    Serial.write(12); // payload length LSB  
 
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        Serial.write(highByte((int16_t) (kinematicsAngle[axis] * kinematics_scale)));
-                        Serial.write(lowByte((int16_t) (kinematicsAngle[axis] * kinematics_scale)));
+                        send_float(kinematicsAngle[axis]);
                     }                
                 }
                 
@@ -220,8 +211,8 @@ class Configurator {
                         Serial.write(6); // payload length LSB  
                         
                         for (uint8_t motor = 0; motor <= MOTORS; motor++) {
-                            Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
-                            Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
+                            Serial.write(highByte(MotorOut[motor]));
+                            Serial.write(lowByte(MotorOut[motor]));
                         }                     
                     #elif MOTORS == 4
                         Serial.write(0xB5); // sync char 1
@@ -231,8 +222,8 @@ class Configurator {
                         Serial.write(8); // payload length LSB  
                         
                         for (uint8_t motor = 0; motor <= MOTORS; motor++) {
-                            Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
-                            Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
+                            Serial.write(highByte(MotorOut[motor]));
+                            Serial.write(lowByte(MotorOut[motor]));
                         }                    
                     #elif MOTORS == 6
                         Serial.write(0xB5); // sync char 1
@@ -242,8 +233,8 @@ class Configurator {
                         Serial.write(12); // payload length LSB  
                         
                         for (uint8_t motor = 0; motor <= MOTORS; motor++) {
-                            Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
-                            Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
+                            Serial.write(highByte(MotorOut[motor]));
+                            Serial.write(lowByte(MotorOut[motor]));
                         }                      
                     #elif MOTORS == 8
                         Serial.write(0xB5); // sync char 1
@@ -253,8 +244,8 @@ class Configurator {
                         Serial.write(16); // payload length LSB  
                         
                         for (uint8_t motor = 0; motor <= MOTORS; motor++) {
-                            Serial.write(highByte((int16_t) (MotorOut[motor] * motor_scale)));
-                            Serial.write(lowByte((int16_t) (MotorOut[motor] * motor_scale)));
+                            Serial.write(highByte(MotorOut[motor]));
+                            Serial.write(lowByte(MotorOut[motor]));
                         }                    
                     #endif
                 }
@@ -292,6 +283,14 @@ class Configurator {
                 Serial.write(CONFIG.raw[i]);
             }  
         };
+        
+        void send_float(float f) {
+            uint8_t *b = (uint8_t*) & f;
+            
+            for (uint8_t i = 0; i < sizeof(f); i++) {
+                Serial.write(b[i]);
+            }
+        };
     
     private:
         uint8_t data; // variable used to store a single byte from serial
@@ -309,13 +308,6 @@ class Configurator {
         bool output_RX_data;
         bool output_kinematics;
         bool output_motor_out;
-        
-        // Scale factors used to transmit float data over serial with just 2 bytes
-        int16_t gyro_scale;
-        int16_t accel_scale;   
-        int16_t kinematics_scale;
-        int16_t rx_scale;
-        int16_t motor_scale;
 } configurator;
 
 void readSerial() {

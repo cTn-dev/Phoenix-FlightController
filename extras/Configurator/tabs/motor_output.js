@@ -1,4 +1,5 @@
 var motor_output_gui_initialized = 0;
+
 function tab_initialize_motor_output() {
     motor_output_gui_initialized = 0; // reset
     
@@ -21,14 +22,22 @@ function tab_initialize_motor_output() {
 }
 
 function process_motor_output() {
-    var data = new Array();
+    var buffer = new ArrayBuffer(message_buffer.length); // arrayBuffer used to store the message
+    var bufferView = new Uint8Array(buffer); // uint8_t array used to access the arrayBuffer
     
-    var data_counter = 0;
-    for (var i = 0; i < message_buffer.length; i++) {
-        if (i % 2 == 0) {
-            data[data_counter] = (((message_buffer[i] << 8) | message_buffer[i + 1]) << 16) >> 16;
-            data_counter++;
-        }
+    // loop that crunches all the data from standard array to array buffer
+    for (var i = 0; i < message_buffer.length; i++) { 
+        bufferView[i] = message_buffer[i];
+    }
+    
+    var view = new DataView(buffer, 0); // DataView (allowing is to view arrayBuffer as struct/union)
+    
+    var data = new Array(); // array used to hold/store read values
+
+    var needle = 0;
+    for (var i = 0; i < (message_buffer.length / 2); i++) {
+        data[i] = view.getInt16(needle, 0);
+        needle += 2;
     }
     
     // initialize gui according to motor count
@@ -38,11 +47,6 @@ function process_motor_output() {
         }
         
         motor_output_gui_initialized = 1;
-    }
-    
-    // Apply scale factors
-    for (var i = 0; i < data.length; i++) {
-        data[i] /= 16.0;
     }
     
     // Render data

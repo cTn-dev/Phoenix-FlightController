@@ -27,20 +27,21 @@ function tab_initialize_vehicle_view() {
 
 function process_vehicle_view() {
     if ($('#tabs > ul .active').hasClass('tab_vehicle_view')) { // used to protect against flotr object loss while switching to another tab
-        data = new Array();
+        var buffer = new ArrayBuffer(message_buffer.length); // arrayBuffer used to store the message
+        var bufferView = new Uint8Array(buffer); // uint8_t array used to access the arrayBuffer
         
-        var data_counter = 0;
-        for (var i = 0; i < message_buffer.length; i++) {
-            if (i % 2 == 0) {
-                data[data_counter] = (((message_buffer[i] << 8) | message_buffer[i + 1]) << 16) >> 16;
-                data_counter++;
-            }
+        // loop that crunches all the data from standard array to array buffer
+        for (var i = 0; i < message_buffer.length; i++) { 
+            bufferView[i] = message_buffer[i];
         }
+        
+        var view = new DataView(buffer, 0); // DataView (allowing is to view arrayBuffer as struct/union)
+        
+        data = new Array(); // array used to hold/store read values
 
-        // Apply scale factors (rad_to_deg = 57.29)
-        for (var i = 0; i < data.length; i++) {
-            data[i] = (data[i] / 10435.0) * 57.29;
-        }
+        data[0] = view.getFloat32(0, 1) * 57.29;
+        data[1] = view.getFloat32(4, 1) * 57.29;
+        data[2] = view.getFloat32(8, 1) * 57.29;
         
         data[1] = -data[1]; // Reverse Pitch
         

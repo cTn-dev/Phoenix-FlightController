@@ -111,20 +111,26 @@ function tab_initialize_rx() {
 
 function process_data_receiver() {
     if ($('#tabs > ul .active').hasClass('tab_tx_rx')) { // used to protect against flotr object loss while switching to another tab
-        var data = new Array();
-
-        var data_counter = 0;
-        for (var i = 0; i < message_buffer.length; i++) {
-            if (i % 2 == 0) {
-                data[data_counter] = (((message_buffer[i] << 8) | message_buffer[i + 1]) << 16) >> 16;
-                data_counter++;
-            }
-        } 
-
-        // Apply scale factors
-        for (var i = 0; i < data.length; i++) {
-            data[i] /= 16.0;
+        var buffer = new ArrayBuffer(message_buffer.length); // arrayBuffer used to store the message
+        var bufferView = new Uint8Array(buffer); // uint8_t array used to access the arrayBuffer
+        
+        // loop that crunches all the data from standard array to array buffer
+        for (var i = 0; i < message_buffer.length; i++) { 
+            bufferView[i] = message_buffer[i];
         }
+        
+        var view = new DataView(buffer, 0); // DataView (allowing is to view arrayBuffer as struct/union)
+        
+        var data = new Array(); // array used to hold/store read values
+        
+        data[0] = view.getInt16(0, 0);
+        data[1] = view.getInt16(2, 0);
+        data[2] = view.getInt16(4, 0);
+        data[3] = view.getInt16(6, 0);
+        data[4] = view.getInt16(8, 0);
+        data[5] = view.getInt16(10, 0); 
+        data[6] = view.getInt16(12, 0);
+        data[7] = view.getInt16(14, 0);        
         
         // push latest data to the main array
         receiver_data[0].push([samples_i, data[0]]);
