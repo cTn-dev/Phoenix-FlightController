@@ -145,14 +145,14 @@ function process_data_sensors() {
         
         // Update graphs
         graph_gyro = Flotr.draw(e_graph_gyro, [ 
-            {data: gyro_data[0], label: "X - rate"}, 
-            {data: gyro_data[1], label: "Y - rate"}, 
-            {data: gyro_data[2], label: "Z - rate"} ], gyro_options);  
+            {data: gyro_data[0], label: "X - rate [" + data[0].toFixed(2) + "]"}, 
+            {data: gyro_data[1], label: "Y - rate [" + data[1].toFixed(2) + "]"}, 
+            {data: gyro_data[2], label: "Z - rate [" + data[2].toFixed(2) + "]"} ], gyro_options);  
 
         graph_accel = Flotr.draw(e_graph_accel, [ 
-            {data: accel_data[1], label: "X - acceleration"}, 
-            {data: accel_data[0], label: "Y - acceleration"}, 
-            {data: accel_data[2], label: "Z - acceleration"} ], accel_options); 
+            {data: accel_data[1], label: "X - acceleration [" + data[3].toFixed(2) + "]"}, 
+            {data: accel_data[0], label: "Y - acceleration [" + data[4].toFixed(2) + "]"}, 
+            {data: accel_data[2], label: "Z - acceleration [" + data[5].toFixed(2) + "]"} ], accel_options); 
 
         samples_i++;
     }

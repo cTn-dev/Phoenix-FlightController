@@ -319,15 +319,15 @@ table.channel_assigner {
     }
 .sensor_data #graph_gyro {
     width: 900px;
-    height: 180px;
+    height: 175px;
 } 
 .sensor_data #graph_accel {
     width: 900px;
-    height: 180px;
+    height: 175px;
 } 
 #graph_receiver {
     width: 900px;
-    height: 360px;
+    height: 355px;
 }
 #interactive_block {
     height: 350px;
