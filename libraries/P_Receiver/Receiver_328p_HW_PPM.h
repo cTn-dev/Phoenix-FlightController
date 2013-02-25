@@ -76,8 +76,8 @@ ISR(TIMER1_CAPT_vect) {
 void setupTimer1RX() {
     // Setup timer1 in normal mode, count at 2MHz
     TCCR1A = 0;
-    TCCR1B = (1<<CS11)|(1<<ICES1);
-    TIMSK1 |= (1<<ICIE1)|(1<<OCIE1A); // Enable ICP and OCRA interrupts
+    TCCR1B = (1 << CS11) | (1 << ICES1);
+    TIMSK1 |= (1 << ICIE1) | (1 << OCIE1A); // Enable ICP and OCRA interrupts
 }
 
 void initializeReceiver() {
