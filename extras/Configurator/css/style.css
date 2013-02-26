@@ -34,24 +34,13 @@ a:hover {
     padding: 0 10px 0 10px;
 }
 #port-picker {
-    float: left;
+    height: 22px;
+    margin-bottom: 10px;
 }
-    #port-picker dl {
+    #port-picker li {
         float: left;
-        width: 150px;
-    }
-    #port-picker dt {
-        float: left;
-        
-        width: 100px;
-        height: 25px;
-    }
-    #port-picker dd {
-        margin-left: 100px;
-        height: 25px;
     }
     #port-picker select {
-        width: 90px;
         height: 20px;
         line-height: 20px;
         
@@ -60,17 +49,18 @@ a:hover {
         
         border: 1px solid silver;
     }
-    #port-picker input {
-        width: 88px;
-        height: 20px;
-        line-height: 20px;
-        
-        float: left;
-        margin-right: 10px;
-        
-        border: 1px solid silver;        
+    #port-picker #port {
+        width: 120px;
+    }
+    #port-picker #baud {
+        width: 80px;
+    }
+    #port-picker #delay {
+        width: 60px;
     }
     #port-picker a {
+        float: left;
+        
         display: block;
         
         width: 80px;
@@ -81,6 +71,8 @@ a:hover {
         text-align: center;
     }
     #port-picker a.refresh {
+        margin-right: 10px;
+        
         background-color: #5569d0;
         color: white;
     }
@@ -89,7 +81,8 @@ a:hover {
             background-color: #424d84;
         }
     #port-picker a.connect {
-        margin-top: 5px;
+        margin-right: 10px;
+        
         background-color: #be2222;
         color: white;
     }
@@ -104,14 +97,12 @@ a:hover {
             background-color: #13d81d;
         }       
         
-#command-log {
-    float: right;
+#command-log {    
+    margin-bottom: 10px;
     
-    width: 680px;
-    height: 60px;
+    height: 80px;
     
     border: 1px solid silver;
-    
     background-color: white;
     
     overflow: auto;
@@ -125,13 +116,13 @@ a:hover {
 }
     #tabs li {
         float: left;
+        margin-right: 5px;
+        
         border: 1px solid #848484;
-        border-right: 0;
     }
         #tabs li.first {
         }
         #tabs li.last {
-            border-right: 1px solid #848484;
         }
         #tabs li.active {
             border-bottom: 1px solid white;
@@ -152,14 +143,14 @@ a:hover {
             padding-left: 15px;
             padding-right: 15px;
             
-            background-color: #e6e6e6;
+            background-color: #d0d0d0;
         }
         #tabs li a:hover {
             text-decoration: none;
-            background-color: #bdbdbd;
+            background-color: #acacac;
         }
 #content {
-    margin-top: 27px;
+    margin-top: 37px;
     
     padding: 10px;
     
@@ -257,6 +248,9 @@ table.pid_tuning {
         padding: 5px;
         border: 1px solid #8b8b8b;
     }
+    table.pid_tuning tr:nth-child(odd) {
+        background-color: #ececec;
+    }    
     table.pid_tuning input {
         width: 130px;
         height: 18px;
@@ -290,6 +284,9 @@ table.channel_assigner {
     table.channel_assigner, table.channel_assigner  th, table.channel_assigner td {
         padding: 5px;
         border: 1px solid #8b8b8b;    
+    }
+    table.channel_assigner tr:nth-child(odd) {
+        background-color: #ececec;
     }
     table.channel_assigner input {
         width: 130px;
