@@ -71,6 +71,7 @@ $(document).ready(function() {
     $('a', tabs).click(function() {
         if ($(this).parent().hasClass('active') == false) { // only initialize when the tab isn't already active
             if (connectionId < 1 || serial_poll < 1) { // if there is no active connection, return
+                command_log('You <span style="color: red;">can\'t</span> view the tabs unless you <span style="color: green">connect</span> to the flight controller.');
                 return;
             }
             
@@ -100,9 +101,6 @@ $(document).ready(function() {
             }            
         }
     });
- 
-    // Load initial tab to content div
-    $('li > a:first', tabs).click(); 
 });
 
 function command_log(message) {
