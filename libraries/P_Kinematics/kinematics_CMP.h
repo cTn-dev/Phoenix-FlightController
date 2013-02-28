@@ -29,7 +29,7 @@ void kinematics_update(float gyroX, float gyroY, float gyroZ, float accelX, floa
     //float accelYangle = atan2(*accelX, sqrt(*accelY * *accelY + *accelZ * *accelZ));   
     
     // Accelerometer cut-off
-    float accelWeight = 0.0025; // normal operation
+    float accelWeight = 0.0050; // normal operation
     if (norm > 13.0 || norm < 7.0) accelWeight = 0.00; // gyro only
     
     // Save current time into variable for better computation time
