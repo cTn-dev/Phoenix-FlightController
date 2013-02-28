@@ -102,15 +102,7 @@ function tab_initialize_sensor_data() {
 
 function process_data_sensors() {
     if ($('#tabs > ul .active').hasClass('tab_sensor_data')) { // used to protect against flotr object loss while switching to another tab
-        var buffer = new ArrayBuffer(message_buffer.length); // arrayBuffer used to store the message
-        var bufferView = new Uint8Array(buffer); // uint8_t array used to access the arrayBuffer
-        
-        // loop that crunches all the data from standard array to array buffer
-        for (var i = 0; i < message_buffer.length; i++) { 
-            bufferView[i] = message_buffer[i];
-        }
-        
-        var view = new DataView(buffer, 0); // DataView (allowing is to view arrayBuffer as struct/union)
+        var view = new DataView(message_buffer, 0); // DataView (allowing is to view arrayBuffer as struct/union)
         
         var data = new Array(); // array used to hold/store read values
         

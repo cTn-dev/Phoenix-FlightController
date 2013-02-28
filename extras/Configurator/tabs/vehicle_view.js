@@ -26,16 +26,8 @@ function tab_initialize_vehicle_view() {
 };
 
 function process_vehicle_view() {
-    if ($('#tabs > ul .active').hasClass('tab_vehicle_view')) { // used to protect against flotr object loss while switching to another tab
-        var buffer = new ArrayBuffer(message_buffer.length); // arrayBuffer used to store the message
-        var bufferView = new Uint8Array(buffer); // uint8_t array used to access the arrayBuffer
-        
-        // loop that crunches all the data from standard array to array buffer
-        for (var i = 0; i < message_buffer.length; i++) { 
-            bufferView[i] = message_buffer[i];
-        }
-        
-        var view = new DataView(buffer, 0); // DataView (allowing is to view arrayBuffer as struct/union)
+    if ($('#tabs > ul .active').hasClass('tab_vehicle_view')) { // used to protect against flotr object loss while switching to another tab        
+        var view = new DataView(message_buffer, 0); // DataView (allowing is to view arrayBuffer as struct/union)
         
         data = new Array(); // array used to hold/store read values
 

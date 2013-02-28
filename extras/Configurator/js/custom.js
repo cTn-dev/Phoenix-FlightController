@@ -195,7 +195,8 @@ var command;
 
 var message_length_expected = 0;
 var message_length_received = 0;
-var message_buffer = new Array();
+var message_buffer;
+var message_buffer_uint8_view;
 
 function onCharRead(readInfo) {
     if (readInfo && readInfo.bytesRead > 0 && readInfo.data) {
@@ -228,10 +229,14 @@ function onCharRead(readInfo) {
                 case 4: // payload length LSB
                     message_length_expected |= data[i];
                     
+                    // setup arraybuffer
+                    message_buffer = new ArrayBuffer(message_length_expected);
+                    message_buffer_uint8_view = new Uint8Array(message_buffer);
+                    
                     packet_state++;
                 break;
                 case 5: // payload
-                    message_buffer[message_length_received] = data[i];
+                    message_buffer_uint8_view[message_length_received] = data[i];
                     message_length_received++;
                     
                     if (message_length_received >= message_length_expected) {
@@ -239,7 +244,6 @@ function onCharRead(readInfo) {
                         process_data();
                         
                         // Reset variables
-                        message_buffer.length = 0; // empty array
                         message_length_received = 0;
                         
                         packet_state = 0;
@@ -253,17 +257,11 @@ function onCharRead(readInfo) {
 function process_data() {
     switch (command) {
         case 1: // configuration data
-            console.log('Expected UNION size: ' + message_length_expected + ', Received UNION size: ' + message_buffer.length);
+            console.log('Expected UNION size: ' + message_length_expected + ', Received UNION size: ' + message_buffer_uint8_view.length);
             // Store UNION size for later usage
             eepromConfigSize = message_length_expected;
             
-            var eepromConfigBytes = new ArrayBuffer(eepromConfigSize);
-            var eepromConfigBytesView = new Uint8Array(eepromConfigBytes);
-            for (var i = 0; i < message_buffer.length; i++) {
-                eepromConfigBytesView[i] = message_buffer[i];
-            }
-            
-            var view = new DataView(eepromConfigBytes, 0);
+            var view = new DataView(message_buffer, 0);
             view.parseUNION(eepromConfig); 
             
             $('#tabs li a:first').click();
@@ -285,7 +283,7 @@ function process_data() {
             process_accel_calibration();
         break;
         case 9: // ACK
-            var message = parseInt(message_buffer);
+            var message = parseInt(message_buffer_uint8_view[0]);
             
             if (message == 1) {
                 console.log("ACK");

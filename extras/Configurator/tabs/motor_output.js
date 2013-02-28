@@ -22,15 +22,7 @@ function tab_initialize_motor_output() {
 }
 
 function process_motor_output() {
-    var buffer = new ArrayBuffer(message_buffer.length); // arrayBuffer used to store the message
-    var bufferView = new Uint8Array(buffer); // uint8_t array used to access the arrayBuffer
-    
-    // loop that crunches all the data from standard array to array buffer
-    for (var i = 0; i < message_buffer.length; i++) { 
-        bufferView[i] = message_buffer[i];
-    }
-    
-    var view = new DataView(buffer, 0); // DataView (allowing is to view arrayBuffer as struct/union)
+    var view = new DataView(message_buffer, 0); // DataView (allowing is to view arrayBuffer as struct/union)
     
     var data = new Array(); // array used to hold/store read values
 
