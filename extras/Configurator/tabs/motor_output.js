@@ -27,7 +27,7 @@ function process_motor_output() {
     var data = new Array(); // array used to hold/store read values
 
     var needle = 0;
-    for (var i = 0; i < (message_buffer.length / 2); i++) {
+    for (var i = 0; i < (message_buffer_uint8_view.length / 2); i++) {
         data[i] = view.getInt16(needle, 0);
         needle += 2;
     }

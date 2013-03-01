@@ -49,7 +49,8 @@
     #include <GPS_ublox.h>
     
     // Current sensor
-    #include <BatteryMonitor_current.h>    
+    #include <BatteryMonitor_current.h>
+    
     // Kinematics used
     #include <kinematics_CMP.h>
     
