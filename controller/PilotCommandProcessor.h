@@ -146,15 +146,13 @@ void processPilotCommands() {
     // Reverse YAW
     TX_yaw = -TX_yaw;
     
-    // YAW deadband (its not 100% necessary, but i am more confiden't having it here)
-    // + i don't know anyone that is using YAW trimms on multicopter
-    // - it ruins YAW/Rudder trimms on TX
+    // YAW deadband (tiny 5us deadband to cancel any noise/offset from the TX)
+    // PWM2RAD = 0.002
+    // ATTITUDE_SCALING = 0.75 * PWM2RAD = 0.0015 // 0.75 is just an arbitrary scale factor to limit the range to about ~43 degrees (0.75 radians)
     if (abs(TX_yaw) > 5) { // If yaw signal is bigger then 5 (5us) allow commandYaw to change
-        // PWM2RAD = 0.002, ATTITUDE_SCALING = 0.75 * PWM2RAD = 0.0015
-        // division by 50 is used to slow down YAW build up 
         if (flightMode == ATTITUDE_MODE) {
             // YAW angle build up over time
-            commandYawAttitude += (TX_yaw * 0.0015) / 50;
+            commandYawAttitude += (TX_yaw * 0.0015) / 50; // division by 50 is used to slow down YAW build up 
             
             commandYaw = commandYawAttitude;           
         } else if (flightMode == RATE_MODE) {
@@ -162,8 +160,7 @@ void processPilotCommands() {
             commandYaw = (TX_yaw * 0.0015);
         }      
     } else {
-        // Pilot sticks didn't changed but commandYawAttitude is also accesed directly by kinematics
-        // so in theory it could change, and we need to handle this.
+        // Pilot sticks didn't changed but commandYawAttitude is also accesed directly by kinematics, this is the place where we handle that.
         if (flightMode == ATTITUDE_MODE) {
             commandYaw = commandYawAttitude;
         }
