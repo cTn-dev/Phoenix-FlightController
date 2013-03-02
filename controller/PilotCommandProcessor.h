@@ -30,7 +30,6 @@ void processPilotCommands() {
         
         if (flightMode = ATTITUDE_MODE) {
             commandYawAttitude = kinematicsAngle[ZAXIS];
-            commandYaw = commandYawAttitude;
         } else if (flightMode == RATE_MODE)  {
             commandYaw = 0.0;
         } 
@@ -55,7 +54,6 @@ void processPilotCommands() {
             // We just switched from rate to attitude mode
             // That means YAW correction should be applied to avoid YAW angle "jump"
             commandYawAttitude = kinematicsAngle[ZAXIS];
-            commandYaw = commandYawAttitude;
         }
         
         flightMode = ATTITUDE_MODE;
@@ -154,16 +152,13 @@ void processPilotCommands() {
             // YAW angle build up over time
             commandYawAttitude += (TX_yaw * 0.0015) / 50; // division by 50 is used to slow down YAW build up 
             
-            commandYaw = commandYawAttitude;           
+            // Handle command YAW rollover
+            if (commandYawAttitude > PI) commandYawAttitude -= TWO_PI;
+            else if (commandYawAttitude < -PI) commandYawAttitude += TWO_PI;        
         } else if (flightMode == RATE_MODE) {
             // raw stick input
             commandYaw = (TX_yaw * 0.0015);
         }      
-    } else {
-        // Pilot sticks didn't changed but commandYawAttitude is also accesed directly by kinematics, this is the place where we handle that.
-        if (flightMode == ATTITUDE_MODE) {
-            commandYaw = commandYawAttitude;
-        }
     }
  
     commandRoll = TX_roll * 0.0015;

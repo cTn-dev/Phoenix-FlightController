@@ -47,17 +47,9 @@ void kinematics_update(float gyroX, float gyroY, float gyroZ, float accelX, floa
     if (kinematicsAngle[YAXIS] > PI) kinematicsAngle[YAXIS] -= TWO_PI;
     else if (kinematicsAngle[YAXIS] < -PI) kinematicsAngle[YAXIS] += TWO_PI;
     
-    // While normalizing Z angle, attitudeYaw (angle desired by user) is also normalized
-    // attitudeYaw variable was added to handle clean normalization of angles while still
-    // allowing for a smooth rate/attitude mode switching.
-    if (kinematicsAngle[ZAXIS] > PI) {
-        kinematicsAngle[ZAXIS] -= TWO_PI;
-        commandYawAttitude -= TWO_PI;
-    } else if (kinematicsAngle[ZAXIS] < -PI) {
-        kinematicsAngle[ZAXIS] += TWO_PI; 
-        commandYawAttitude += TWO_PI;
-    }
-    
+    if (kinematicsAngle[ZAXIS] > PI) kinematicsAngle[ZAXIS] -= TWO_PI;
+    else if (kinematicsAngle[ZAXIS] < -PI) kinematicsAngle[ZAXIS] += TWO_PI; 
+
     // Fuse in accel (handling accel flip)
     // This is second order accelerometer cut off, which restricts accel data fusion in only
     // "up-side UP" angle estimation and restricts it further to avoid incorrect accelerometer
