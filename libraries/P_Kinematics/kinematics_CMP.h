@@ -36,19 +36,18 @@ void kinematics_update(float gyroX, float gyroY, float gyroZ, float accelX, floa
     unsigned long now = micros();    
     
     // Fuse in gyroscope
-    kinematicsAngle[XAXIS] = kinematicsAngle[XAXIS] + (gyroX * (float)(now - kinematics_timer) / 1000000);
-    kinematicsAngle[YAXIS] = kinematicsAngle[YAXIS] + (gyroY * (float)(now - kinematics_timer) / 1000000);
-    kinematicsAngle[ZAXIS] = kinematicsAngle[ZAXIS] + (gyroZ * (float)(now - kinematics_timer) / 1000000);  
+    kinematicsAngle[XAXIS] += (gyroX * (float)(now - kinematics_timer) / 1000000);
+    kinematicsAngle[YAXIS] += (gyroY * (float)(now - kinematics_timer) / 1000000);
+    kinematicsAngle[ZAXIS] += (gyroZ * (float)(now - kinematics_timer) / 1000000);  
     
     // Normalize gyro kinematics (+- PI)
     NORMALIZE(kinematicsAngle[XAXIS]);
     NORMALIZE(kinematicsAngle[YAXIS]);
     NORMALIZE(kinematicsAngle[ZAXIS]);
 
-    // Fuse in accel (handling accel flip)
+    // Fuse in accel
     // This is second order accelerometer cut off, which restricts accel data fusion in only
-    // "up-side UP" angle estimation and restricts it further to avoid incorrect accelerometer
-    // data correction.
+    // "up-side UP" orientation and restricts it further to avoid incorrect accelerometer data fusion.
     if (accelZ > 0.75) {
         if ((kinematicsAngle[XAXIS] - accelXangle) > PI) {
             kinematicsAngle[XAXIS] = (1.00 - accelWeight) * kinematicsAngle[XAXIS] + accelWeight * (accelXangle + TWO_PI);
