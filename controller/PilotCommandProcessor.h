@@ -150,11 +150,8 @@ void processPilotCommands() {
     if (abs(TX_yaw) > 5) { // If yaw signal is bigger then 5 (5us) allow commandYaw to change
         if (flightMode == ATTITUDE_MODE) {
             // YAW angle build up over time
-            commandYawAttitude += (TX_yaw * 0.0015) / 50; // division by 50 is used to slow down YAW build up 
-            
-            // Handle command YAW rollover
-            if (commandYawAttitude > PI) commandYawAttitude -= TWO_PI;
-            else if (commandYawAttitude < -PI) commandYawAttitude += TWO_PI;        
+            commandYawAttitude += (TX_yaw * 0.0015) / 48; // division by 48 is used to slow down YAW build up 
+            NORMALIZE(commandYawAttitude); // +- PI
         } else if (flightMode == RATE_MODE) {
             // raw stick input
             commandYaw = (TX_yaw * 0.0015);

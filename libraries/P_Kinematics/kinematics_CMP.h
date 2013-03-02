@@ -40,15 +40,10 @@ void kinematics_update(float gyroX, float gyroY, float gyroZ, float accelX, floa
     kinematicsAngle[YAXIS] = kinematicsAngle[YAXIS] + (gyroY * (float)(now - kinematics_timer) / 1000000);
     kinematicsAngle[ZAXIS] = kinematicsAngle[ZAXIS] + (gyroZ * (float)(now - kinematics_timer) / 1000000);  
     
-    // Normalize gyro kinematics (+ - PI)
-    if (kinematicsAngle[XAXIS] > PI) kinematicsAngle[XAXIS] -= TWO_PI;
-    else if (kinematicsAngle[XAXIS] < -PI) kinematicsAngle[XAXIS] += TWO_PI;    
-    
-    if (kinematicsAngle[YAXIS] > PI) kinematicsAngle[YAXIS] -= TWO_PI;
-    else if (kinematicsAngle[YAXIS] < -PI) kinematicsAngle[YAXIS] += TWO_PI;
-    
-    if (kinematicsAngle[ZAXIS] > PI) kinematicsAngle[ZAXIS] -= TWO_PI;
-    else if (kinematicsAngle[ZAXIS] < -PI) kinematicsAngle[ZAXIS] += TWO_PI; 
+    // Normalize gyro kinematics (+- PI)
+    NORMALIZE(kinematicsAngle[XAXIS]);
+    NORMALIZE(kinematicsAngle[YAXIS]);
+    NORMALIZE(kinematicsAngle[ZAXIS]);
 
     // Fuse in accel (handling accel flip)
     // This is second order accelerometer cut off, which restricts accel data fusion in only

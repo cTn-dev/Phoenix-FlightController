@@ -327,9 +327,7 @@ void process100HzTask() {
     
     // Update heading
     headingError = kinematicsAngle[ZAXIS] - commandYawAttitude;
-    
-    if (headingError > PI) headingError -= TWO_PI;
-    else if (headingError < -PI) headingError += TWO_PI;       
+    NORMALIZE(headingError); // +- PI
     
     // Update PIDs according the selected mode
     if (flightMode == ATTITUDE_MODE) {

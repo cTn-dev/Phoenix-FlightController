@@ -49,5 +49,8 @@ float YawCommandPIDSpeed, PitchCommandPIDSpeed, RollCommandPIDSpeed;
 float YawMotorSpeed, PitchMotorSpeed, RollMotorSpeed, AltitudeHoldMotorSpeed;
 int16_t throttle = 1000;
 
+// +- PI normalization macro
+#define NORMALIZE(x) do { if ((x) < -PI) (x) += 2 * PI; else if ((x) > PI) (x) -= 2 * PI; } while (0);
+
 // Custom definitions
 //#define DISPLAY_ITTERATIONS
