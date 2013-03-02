@@ -11,6 +11,10 @@ PIN setup (Teensy 3.0 pin numbering)
   - Rotor 2 23
   - Rotor 3 9
   - Rotor 4 10
+  - Rotor 5 6
+  - Rotor 6 20
+  - Rotor 7 21
+  - Rotor 8 5
   
   - Orientation lights / Armed-Disarmed indicator 14
   
@@ -20,12 +24,13 @@ Filters, kinematics, data handling
 ----------------------------------
   - Initial raw data from sensors (read every 1ms = 1000Hz) is being averaged by a simple averaging filter
   - Averaged data from sensors are being processed every 10ms (100Hz)
-  - By default i am using my own complementary kinematics algorythm
+  - CMP kinematitcs (my own) selected by default
   - ARG kinematics (from aeroquad) is also supported (can be enabled by simple include change)
   - DCM kinematics (from FreeIMU)
-  - Flight controller supports 2 modes
-    - Rate | (ACRO) gyro only
+  - Flight controller supports
+    - Rate (ACRO) | gyro only
     - Attitude | gyro with accel corrections
+    - Altitute hold | barometer or sonar
   - Pilot commands are being read by PPM sampling code via single PIN (with HW timer), this is the only pilot input supported for now
   - Stabilization and pilot commands are mixed together by 2 separate PID controllers
     - First (only used in attitude mode) mixes pilot commands with kinematics output
