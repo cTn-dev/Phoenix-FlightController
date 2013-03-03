@@ -36,6 +36,17 @@ void processPilotCommands() {
         
         armed = true;
     } else if (TX_throttle < 1100 && TX_yaw < 1250) {
+        if (armed == true) {
+            // We just dis-armed the controller
+            
+            // Reset all motors to 0 throttle / power
+            for (uint8_t i = 0; i < MOTORS; i++) {
+                MotorOut[i] = 1000;
+            }
+
+            updateMotors(); // Update ESCs
+        }
+        
         // controller is now dis-armed
         armed = false;
     }

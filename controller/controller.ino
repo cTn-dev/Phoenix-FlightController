@@ -351,35 +351,6 @@ void process100HzTask() {
     if (armed) {
         updateMotorsMix(); // Frame specific motor mix
         updateMotors(); // Update ESCs
-    } else {
-        // Reset all motors to 0 throttle/power
-        #if MOTORS == 3
-            MotorOut[0] = 1000;
-            MotorOut[1] = 1000;
-            MotorOut[2] = 1000;
-        #elif MOTORS == 4
-            MotorOut[0] = 1000;
-            MotorOut[1] = 1000;
-            MotorOut[2] = 1000;
-            MotorOut[3] = 1000;
-        #elif MOTORS == 6
-            MotorOut[0] = 1000;
-            MotorOut[1] = 1000;
-            MotorOut[2] = 1000;
-            MotorOut[3] = 1000;
-            MotorOut[4] = 1000;
-            MotorOut[5] = 1000;
-        #elif MOTORS == 8
-            MotorOut[0] = 1000;
-            MotorOut[1] = 1000;
-            MotorOut[2] = 1000;
-            MotorOut[3] = 1000;
-            MotorOut[4] = 1000;
-            MotorOut[5] = 1000; 
-            MotorOut[6] = 1000;
-            MotorOut[7] = 1000;
-        #endif
-        updateMotors(); // Update ESCs
     } 
 }
 
