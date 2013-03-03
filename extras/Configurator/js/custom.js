@@ -96,6 +96,8 @@ $(document).ready(function() {
                 $('#content').load("./tabs/vehicle_view.html", tab_initialize_vehicle_view);
             } else if ($(this).parent().hasClass('tab_motor_output')) {
                 $('#content').load("./tabs/motor_output.html", tab_initialize_motor_output);
+            } else if ($(this).parent().hasClass('tab_motor_command')) {
+                $('#content').load("./tabs/motor_command.html", tab_initialize_motor_command);
             } else if ($(this).parent().hasClass('tab_about')) {
                 $('#content').load("./tabs/about.html");
             }            
