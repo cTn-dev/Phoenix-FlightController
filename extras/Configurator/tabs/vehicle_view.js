@@ -31,9 +31,10 @@ function process_vehicle_view() {
         
         data = new Array(); // array used to hold/store read values
 
-        data[0] = view.getFloat32(0, 1) * 57.29;
-        data[1] = view.getFloat32(4, 1) * 57.29;
-        data[2] = view.getFloat32(8, 1) * 57.29;
+        // 57.2957795 = rad to deg scale factor
+        data[0] = view.getFloat32(0, 1) * 57.2957795;
+        data[1] = view.getFloat32(4, 1) * 57.2957795;
+        data[2] = view.getFloat32(8, 1) * 57.2957795;
         
         data[1] = -data[1]; // Reverse Pitch
         
