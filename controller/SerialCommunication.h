@@ -149,6 +149,14 @@ class Configurator {
                     // Send back configuration union
                     send_UNION();                    
                 break;
+                case 10: // Sending motor command
+                    // data_buffer should contain 2 bytes (byte 0 = motor number, byte 1 = value)
+                    if (data_buffer[0] < MOTORS) { // Check if motor number is within our setup
+                        MotorOut[data_buffer[0]] = 1000 + (data_buffer[1] * 10);
+                    } else { // Motor number is not in our setup
+                        REFUSED();
+                    }
+                break;
                 default: // Unrecognized command
                     REFUSED();
             }
