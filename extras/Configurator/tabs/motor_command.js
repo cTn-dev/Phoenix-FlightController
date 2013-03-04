@@ -1,4 +1,18 @@
-function tab_initialize_motor_command() {
+function tab_initialize_motor_command() { 
+    // Enable specific titles
+    for (var i = 0; i < motors; i++) {
+        $('div.tab-motor_command .names li:eq(' + i + ')').addClass('active');
+    }
+    
+    // Disable the rest
+    $('ul.sliders input').each(function() {
+        var index = $(this).parent().index();
+        
+        if (index >= motors) {
+            $(this).attr('disabled', 'disabled');
+        }
+    });
+
     $('ul.sliders input').change(function() {
         var motor_n = parseInt($(this).parent().index());
         var motor_v = parseInt($(this).val());
@@ -22,14 +36,12 @@ function tab_initialize_motor_command() {
         chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
             console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
         });
-
-        console.log(motor_n + ' ' + motor_v);
     });
     
     $('.tab-motor_command .stop').click(function() {
         // reset all to 0
         $('ul.sliders input').each(function() {
-            if ($(this).val() != 0) { // Protects .change event firing on motors that are already at 0 %
+            if ($(this).attr('disabled') != 'disabled') { // Protects .change event firing on motors that are disabled
                 $(this).val(0);
                 
                 // trigger change events

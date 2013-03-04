@@ -477,6 +477,9 @@ table.channel_assigner {
         
         text-align: center;
     }
+        .tab-motor_command .names .active {
+            color: green;
+        }
     .tab-motor_command .sliders {
         margin-left: -30px;
     }

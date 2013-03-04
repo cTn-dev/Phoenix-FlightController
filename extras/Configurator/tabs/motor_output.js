@@ -1,7 +1,7 @@
-var motor_output_gui_initialized = 0;
-
 function tab_initialize_motor_output() {
-    motor_output_gui_initialized = 0; // reset
+    for (var i = 0; i < motors; i++) {
+        $('div.tab-motor_output .titles li:eq(' + i + ')').addClass('active');
+    }
     
     // request motor out data from flight controller
     var bufferOut = new ArrayBuffer(6);
@@ -30,15 +30,6 @@ function process_motor_output() {
     for (var i = 0; i < (message_buffer_uint8_view.length / 2); i++) {
         data[i] = view.getInt16(needle, 0);
         needle += 2;
-    }
-    
-    // initialize gui according to motor count
-    if (motor_output_gui_initialized == 0) {
-        for (var i = 0; i < data.length; i++) {
-            $('div.tab-motor_output .titles li:eq(' + i + ')').addClass('active');
-        }
-        
-        motor_output_gui_initialized = 1;
     }
     
     // Render data

@@ -4,6 +4,7 @@ var port_list;
 var serial_poll = 0; // iterval timer refference
 
 var eepromConfigSize;
+var motors = 0;
 
 $(document).ready(function() { 
     port_picker = $('div#port-picker .port select');
@@ -143,7 +144,23 @@ function onOpen(openInfo) {
             chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
                 console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
                 command_log('Requesting configuration UNION from Flight Controller');
-            });              
+            }); 
+
+            // request number of motors used in this setup
+            var bufferOut = new ArrayBuffer(6);
+            var bufView = new Uint8Array(bufferOut);
+            
+            // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
+            bufView[0] = 0xB5; // sync char 1
+            bufView[1] = 0x62; // sync char 2
+            bufView[2] = 0x0B; // command // 11
+            bufView[3] = 0x00; // payload length MSB
+            bufView[4] = 0x01; // payload length LSB
+            bufView[5] = 0x01; // payload
+
+            chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
+                console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+            });            
         }, connection_delay * 1000);            
         
     } else {
@@ -294,6 +311,9 @@ function process_data() {
                 console.log("REFUSED");
                 command_log('Flight Controller responds with -- <span style="color: red">REFUSED</span>');
             }
+        break;
+        case 11: // Motor amount / count
+            motors = parseInt(message_buffer_uint8_view[0]);
         break;
     }
 };

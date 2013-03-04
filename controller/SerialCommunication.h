@@ -157,6 +157,15 @@ class Configurator {
                         REFUSED();
                     }
                 break;
+                case 11: // Requesting amount of motors used in current setup
+                    // Send over the accel calibration data
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x0B); // command
+                    Serial.write(0x00); // payload length MSB
+                    Serial.write(0x01); // payload length LSB  
+                    Serial.write(MOTORS); // payload
+                break;
                 default: // Unrecognized command
                     REFUSED();
             }
