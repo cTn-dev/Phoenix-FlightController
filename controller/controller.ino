@@ -26,10 +26,14 @@
 //#define AQ_SHIELD_V_21
 
 #ifdef PHOENIX_SHIELD_V_01
+    // Led defines
+    #define LED_WHITE 2
+    #define LED_BLUE 4
+    #define LED_ARDUINO 13
+    
     // Features requested
     #define Magnetometer
     #define AltitudeHoldBaro
-    #define AltitudeHoldSonar
     #define BatteryMonitorCurrent
     #define GPS
     
@@ -41,9 +45,6 @@
     
     // Barometer
     #include <Barometer_ms5611.h>
-    
-    // Sonar
-    #include <Sonar_srf04.h>
     
     // GPS (ublox neo 6m)
     #include <GPS_ublox.h>
@@ -66,6 +67,9 @@
 #endif
 
 #ifdef AQ_SHIELD_V_20
+    // Led defines
+    #define LED_ARDUINO 13
+    
     // Features requested
     #define Magnetometer
     
@@ -90,6 +94,9 @@
 #endif
 
 #ifdef AQ_SHIELD_V_21
+    // Led defines
+    #define LED_ARDUINO 13
+    
     // Features requested
     #define Magnetometer
     
@@ -163,9 +170,16 @@ void reset_PID_integrals() {
   
 void setup() {
     // PIN settings
-    pinMode(LED_PIN, OUTPUT); // build in status LED
-    pinMode(LED_ORIENTATION, OUTPUT); // orientation lights
+    pinMode(LED_ARDUINO, OUTPUT);
+    
+    #ifdef LED_WHITE
+        pinMode(LED_WHITE, OUTPUT);
+    #endif
 
+    #ifdef LED_BLUE
+        pinMode(LED_BLUE, OUTPUT);
+    #endif
+        
     // Initialize serial communication
     Serial.begin(38400); // Virtual USB Serial on teensy 3.0 is always 12 Mbit/sec (can be initialized with baud rate 0)
 
@@ -361,18 +375,20 @@ void process50HzTask() {
         sensors.evaluateBaroAltitude();
     #endif   
 
-    // Blink LED to indicated activity
-    if ((Alive_LED_state == 51) || (Alive_LED_state == 59) || (Alive_LED_state == 67)) {
-        digitalWrite(LED_PIN, HIGH);
-    } else {
-        digitalWrite(LED_PIN, LOW);
-    }
+    #ifdef LED_WHITE
+        // Blink "aircraft beacon" LED
+        if ((Beacon_LED_state == 51) || (Beacon_LED_state == 59) || (Beacon_LED_state == 67)) {
+            digitalWrite(LED_WHITE, HIGH);
+        } else {
+            digitalWrite(LED_WHITE, LOW);
+        }
 
-    if (Alive_LED_state >= 100) {
-        Alive_LED_state = 0;
-    } else {
-        Alive_LED_state++;
-    }
+        if (Beacon_LED_state >= 100) {
+            Beacon_LED_state = 0;
+        } else {
+            Beacon_LED_state++;
+        }
+    #endif
 }
 
 void process10HzTask() {
@@ -398,16 +414,21 @@ void process10HzTask() {
         Serial.println(itterations);
     #endif
     
+    // Blink integrated arduino LED
+    Arduino_LED_state = !Arduino_LED_state;
+    digitalWrite(LED_ARDUINO, Arduino_LED_state);   
+    
     // Reset Itterations
     itterations = 0;    
 }
 
 void process1HzTask() {   
-    // Orientation ligts
-    // also displaying armed / dis-armed status
-    if (armed) {
-        digitalWrite(LED_ORIENTATION, HIGH);
-    } else {
-        digitalWrite(LED_ORIENTATION, LOW);
-    }
+    #ifdef LED_BLUE
+        // Armed/ Dis-armed indicator
+        if (armed) {
+            digitalWrite(LED_BLUE, HIGH);
+        } else {
+            digitalWrite(LED_BLUE, LOW);
+        }
+    #endif
 }

@@ -17,9 +17,8 @@ bool positionHoldGPS = false;
 #define ATTITUDE_MODE 1
 
 // Blinking LED to indicate activity
-#define LED_PIN 13
-#define LED_ORIENTATION 14
-uint8_t Alive_LED_state = 0;
+bool Arduino_LED_state = 0;
+uint8_t Beacon_LED_state = 0;
 
 // Modulo definitions (integer remainder)
 #define TASK_50HZ 2
