@@ -22,13 +22,14 @@
     Big thanks to kha from #aeroquad for setting up the shared timer.
 */
 
-#define PPM_CHANNELS 8
+#define CHANNELS 8
 volatile uint16_t startPulse = 0;
-volatile uint16_t RX[PPM_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
-volatile uint16_t PPM_temp[PPM_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
-volatile uint8_t  ppmCounter = PPM_CHANNELS;
+volatile uint16_t RX[CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+volatile uint16_t PPM_temp[CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+volatile uint8_t  ppmCounter = CHANNELS;
 volatile uint16_t PPM_error = 0;
 
+volatile uint16_t RX_failsafeStatus;
 volatile uint8_t RX_signalReceived = 0;
 
 #define TIMER1_FREQUENCY_HZ 50
@@ -46,24 +47,24 @@ ISR(TIMER1_CAPT_vect) {
         PPM_error++;
         
         // set ppmCounter out of range so rest and (later on) whole frame is dropped
-        ppmCounter = PPM_CHANNELS + 1;    
+        ppmCounter = CHANNELS + 1;    
     }
     
     if (pulseWidth > 8000) {  // Verify if this is the sync pulse (4ms >)
-        if (ppmCounter == PPM_CHANNELS) {
+        if (ppmCounter == CHANNELS) {
             // This indicates that we received an correct frame = push to the "main" PPM array
             // if we received an broken frame, it will get ignored here and later get over-written
             // by new data, that will also be checked for sanity.
-            for (uint8_t i = 0; i < PPM_CHANNELS; i++) {
+            for (uint8_t i = 0; i < CHANNELS; i++) {
                 RX[i] = PPM_temp[i];
-            }
-
-            // Set signal received flag to 0 every time we accept a valid frame
-            RX_signalReceived = 0;            
+                
+                // Bring failsafe status flag down every time we accept a valid signal / frame
+                RX_failsafeStatus &= ~(1 << i);
+            }         
         }
         ppmCounter = 0; // restart the channel counter
     } else {
-        if (ppmCounter < PPM_CHANNELS) {      // extra channels will get ignored here
+        if (ppmCounter < CHANNELS) {      // extra channels will get ignored here
             PPM_temp[ppmCounter] = pulseWidth / 2; // Store measured pulse length in us
             ppmCounter++;                     // Advance to next channel
         }
@@ -85,8 +86,15 @@ void initializeReceiver() {
 }
 
 void RX_failSafe() {
-    // if this flag reaches 10, an auto-descent routine will be triggered.
-    RX_signalReceived++;
+    if (RX_failsafeStatus > 0) {
+        RX_signalReceived++; // if this flag reaches 10, an auto-descent routine will be triggered.
+    } else {
+        // Raise the FLAGS
+        RX_failsafeStatus |= (1 << CHANNELS) - 1;
+        
+        // Reset the counter
+        RX_signalReceived = 0;
+    }
     
     if (RX_signalReceived > 10) {
         RX_signalReceived = 10; // don't let the variable overflow

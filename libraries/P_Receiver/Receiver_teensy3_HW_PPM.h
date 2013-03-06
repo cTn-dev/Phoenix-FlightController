@@ -31,6 +31,7 @@ volatile uint16_t PPM_temp[CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000
 volatile uint8_t  ppmCounter = CHANNELS;
 volatile uint16_t PPM_error = 0;
 
+volatile uint16_t RX_failsafeStatus;
 volatile uint8_t RX_signalReceived = 0;
 
 extern "C" void ftm1_isr(void) {
@@ -59,10 +60,10 @@ extern "C" void ftm1_isr(void) {
             
             for (uint8_t i = 0; i < CHANNELS; i++) {
                 RX[i] = PPM_temp[i];
+                
+                // Bring failsafe status flag down every time we accept a valid signal / frame
+                RX_failsafeStatus &= ~(1 << i);                
             }
-            
-            // Set signal received flag to 0 every time we accept a valid frame
-            RX_signalReceived = 0;
         }
         ppmCounter = 0; // restart the channel counter
     } else {
@@ -98,8 +99,15 @@ void initializeReceiver() {
 }
 
 void RX_failSafe() {
-    // if this flag reaches 10, an auto-descent routine will be triggered.
-    RX_signalReceived++;
+    if (RX_failsafeStatus > 0) {
+        RX_signalReceived++; // if this flag reaches 10, an auto-descent routine will be triggered.
+    } else {
+        // Raise the FLAGS
+        RX_failsafeStatus |= (1 << CHANNELS) - 1;
+        
+        // Reset the counter
+        RX_signalReceived = 0;
+    }
     
     if (RX_signalReceived > 10) {
         RX_signalReceived = 10; // don't let the variable overflow

@@ -3,18 +3,20 @@ uint8_t PWM_PINS[CHANNELS] = {2, 3, 4, 5, 6, 7, 8, 9};
 
 volatile uint16_t RX[CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
 volatile uint32_t PWM_time[CHANNELS] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+volatile uint16_t RX_failsafeStatus;
 volatile uint8_t RX_signalReceived = 0;
 
 void readPWM(uint8_t channel) {
     uint32_t now = PIT_CVAL0; // Current counter value
-    uint32_t delta = PWM_time[channel] - now; // Delta (calcualted in reverse, because PIT is downcounting timer)
+    uint32_t delta = PWM_time[channel] - now; // Delta (calculated in reverse, because PIT is downcounting timer)
     
     // All of the number below are scaled to use with Teensy 3.0 running at 48Mhz
     if (delta < 120000 && delta > 43200) { // This is a valid pulse
         RX[channel] = delta / 48;
         
-        // Set signal received flag to 0 every time we accept a valid frame
-        RX_signalReceived = 0;
+        // Bring failsafe status flag down every time we accept a valid signal / frame
+        RX_failsafeStatus &= ~(1 << channel);
     } else { // Beginning of the pulse
         PWM_time[channel] = now;
     }
@@ -70,8 +72,15 @@ void initializeReceiver() {
 }
 
 void RX_failSafe() {
-    // if this flag reaches 10, an auto-descent routine will be triggered.
-    RX_signalReceived++;
+    if (RX_failsafeStatus > 0) {
+        RX_signalReceived++; // if this flag reaches 10, an auto-descent routine will be triggered.
+    } else {
+        // Raise the FLAGS
+        RX_failsafeStatus |= (1 << CHANNELS) - 1;
+        
+        // Reset the counter
+        RX_signalReceived = 0;
+    }
     
     if (RX_signalReceived > 10) {
         RX_signalReceived = 10; // don't let the variable overflow
