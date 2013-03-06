@@ -24,11 +24,11 @@
     Big thanks to kha from #aeroquad and Ragnorok from #arduino for helping me get this up and running.
 */
 
-#define PPM_CHANNELS 8
+#define CHANNELS 8
 volatile uint16_t startPulse = 0;
-volatile uint16_t RX[PPM_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
-volatile uint16_t PPM_temp[PPM_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
-volatile uint8_t  ppmCounter = PPM_CHANNELS;
+volatile uint16_t RX[CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+volatile uint16_t PPM_temp[CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+volatile uint8_t  ppmCounter = CHANNELS;
 volatile uint16_t PPM_error = 0;
 
 volatile uint8_t RX_signalReceived = 0;
@@ -48,16 +48,16 @@ extern "C" void ftm1_isr(void) {
         PPM_error++;
         
         // set ppmCounter out of range so rest and (later on) whole frame is dropped
-        ppmCounter = PPM_CHANNELS + 1;
+        ppmCounter = CHANNELS + 1;
     }
     
     if (pulseWidth > 12000) {  // Verify if this is the sync pulse (4ms >)
-        if (ppmCounter == PPM_CHANNELS) {
+        if (ppmCounter == CHANNELS) {
             // This indicates that we received an correct frame = push to the "main" PPM array
             // if we received an broken frame, it will get ignored here and later get over-written
             // by new data, that will also be checked for sanity.
             
-            for (uint8_t i = 0; i < PPM_CHANNELS; i++) {
+            for (uint8_t i = 0; i < CHANNELS; i++) {
                 RX[i] = PPM_temp[i];
             }
             
@@ -66,7 +66,7 @@ extern "C" void ftm1_isr(void) {
         }
         ppmCounter = 0; // restart the channel counter
     } else {
-        if (ppmCounter < PPM_CHANNELS) {           // extra channels will get ignored here
+        if (ppmCounter < CHANNELS) {           // extra channels will get ignored here
             PPM_temp[ppmCounter] = pulseWidth / 3; // Store measured pulse length in us
             ppmCounter++;                          // Advance to next channel
         }
