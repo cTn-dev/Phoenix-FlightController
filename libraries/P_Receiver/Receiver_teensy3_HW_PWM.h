@@ -1,3 +1,19 @@
+/*  PWM (Pulse Width Modulation) sampling done in hardware via pin interrupts and PIT timer.
+    
+    I am using one, out of 4 PIT timers build into the Teensy 3.0.
+    
+    Pins used for PWM signal capture are fully definable by the user.
+    However, i do recommend avoiding FLEX timer enabled pins, (Teensy 3.0 pin numbering) 5, 6, 9, 10, 20, 21, 22, 23,
+    as those are used for PWM signal generation (for Electronic Speed Controllers).
+    
+    Using the hardware timer for timing / counting the pulses gives us superior accuracy of ~21 nano seconds.
+    
+    This receiver code also utilizes a more advanced failsafe sequence.
+    In case of receiver malfunction / signal cable damage, RX Failasefe will kicks in
+    which will start auto-descent sequence.
+    
+*/
+
 #define CHANNELS 8
 uint8_t PWM_PINS[CHANNELS] = {2, 3, 4, 5, 6, 7, 8, 9};
 
@@ -15,7 +31,7 @@ void readPWM(uint8_t channel) {
     if (delta < 120000 && delta > 43200) { // This is a valid pulse
         RX[channel] = delta / 48;
         
-        // Bring failsafe status flag down every time we accept a valid signal / frame
+        // Bring failsafe status flag for current channel down every time we accept a valid signal
         RX_failsafeStatus &= ~(1 << channel);
     } else { // Beginning of the pulse
         PWM_time[channel] = now;
@@ -62,7 +78,7 @@ void (*PWM_Handlers [])(void) = {
 void initializeReceiver() {
     // initialize PIT timer (teensy running at 48000000)
     PIT_MCR = 0x00;          // Turn on PIT
-    PIT_LDVAL0 = 0xffffffff; // Load initial value of 4294967295
+    PIT_LDVAL0 = 0xFFFFFFFF; // Load initial value of 4294967295
     PIT_TCTRL0 = 0x01;       // Start the counter
     
     for (uint8_t i = 0; i < CHANNELS; i++) {
