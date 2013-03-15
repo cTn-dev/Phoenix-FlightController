@@ -193,10 +193,7 @@ a:hover {
         background-color: #424d84;
     }
     .tab-initial_setup .calibrateAccel {
-        float: left;
         display: block;
-        
-        margin-top: 25px;
         
         width: 160px;
         height: 23px;
@@ -207,11 +204,60 @@ a:hover {
         
         background-color: #5569d0;
         border: 1px solid silver;
-    }
+    }   
     .tab-initial_setup .calibrateAccel:hover {
         text-decoration: none;
         background-color: #424d84;
     }
+    .tab-initial_setup .titles {
+        margin-top: 5px;
+        height: 20px;
+    }
+        .tab-initial_setup .titles li {
+            float: left;
+            width: 54px;
+            
+            text-align: center;
+            font-weight: bold;
+        }
+    .tab-initial_setup .calibrateAccelManual {
+        height: 20px;
+    }
+        .tab-initial_setup .calibrateAccelManual li {
+            float: left;
+            margin-right: 3px;
+        }
+        .tab-initial_setup .calibrateAccelManual .last {
+            margin-right: 0px;
+        }
+        .tab-initial_setup .calibrateAccelManual input {
+            width: 50px;
+            height: 18px;
+            line-height: 18px;
+            
+            text-align: center;
+            
+            border: 1px solid silver;
+        }
+    .tab-initial_setup .calibrateAccelManualUpdate {
+        display: block;
+        
+        margin-top: 5px;
+        
+        width: 160px;
+        height: 23px;
+        line-height: 23px;
+        
+        text-align: center;
+        color: white;
+        
+        background-color: #2e386d;
+        border: 1px solid silver;        
+    }
+    .tab-initial_setup .calibrateAccelManualUpdate:hover {
+        text-decoration: none;
+        background-color: #0c0f1d;        
+    }    
     .tab-initial_setup .initializeEEPROM {
         float: left;
         display: block;
