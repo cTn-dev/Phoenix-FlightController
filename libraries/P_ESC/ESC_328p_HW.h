@@ -93,7 +93,7 @@ void initializeESC() {
         // Calibration sequence requested
         
         // Signal range TOP maximum
-        for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+        for (uint8_t motor = 0; motor < MOTORS; motor++) {
             MotorOut[motor] = 2000;
         }
         updateMotors();
@@ -102,7 +102,7 @@ void initializeESC() {
         delay(5000);
         
         // Signal range BOTTOM minimum
-        for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+        for (uint8_t motor = 0; motor < MOTORS; motor++) {
             MotorOut[motor] = 1000;
         }
         updateMotors();     

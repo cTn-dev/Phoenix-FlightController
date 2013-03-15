@@ -383,10 +383,10 @@ void process50HzTask() {
             digitalWrite(LED_WHITE, LOW);
         }
 
+        Beacon_LED_state++;
+        
         if (Beacon_LED_state >= 100) {
             Beacon_LED_state = 0;
-        } else {
-            Beacon_LED_state++;
         }
     #endif
 }
