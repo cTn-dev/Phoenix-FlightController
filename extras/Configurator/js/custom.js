@@ -3,6 +3,8 @@ var connection_delay = 0; // delay which defines "when" will the configurator re
 var port_list;
 var serial_poll = 0; // iterval timer refference
 
+var version = 1; // configurator version to check against version number stored in eeprom
+
 var eepromConfigSize;
 var motors = 0;
 
@@ -282,6 +284,17 @@ function process_data() {
             
             var view = new DataView(message_buffer, 0);
             view.parseUNION(eepromConfig); 
+            
+            if (version != eepromConfig.version) {
+                command_log('Configurator version doesn\'t match the Flight software version');
+                command_log('Configurator version: <strong>' + version + '</strong> - Flight software version: <strong>' + eepromConfig.version + '</strong>');
+                command_log('<span style="color: red">Please upgrade your flight software and configurator to the lastest version.</span>');
+                
+                // Disconnect
+                $('div#port-picker a.connect').click();
+                
+                break;
+            }
             
             $('#tabs li a:first').click();
             command_log('Configuration UNION received -- <span style="color: green">OK</span>');

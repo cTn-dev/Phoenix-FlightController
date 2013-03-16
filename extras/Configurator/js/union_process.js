@@ -1,3 +1,13 @@
+/*  Code below contains an exact representation of eeprom configuration array
+    that is stored inside the flight controller.
+    
+    Rest of the code extends the DataView low-level interface, that is now included 
+    by default inside the javascript engine (chrome v9, firefox v15, IE v10).
+    
+    You can read more about the DataView interface and its methods
+    @ https://developer.mozilla.org/en-US/docs/JavaScript/Typed_arrays/DataView
+*/
+
 var eepromConfig = {
     version:      0,
     calibrateESC: 0,
