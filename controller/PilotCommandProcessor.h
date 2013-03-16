@@ -70,79 +70,79 @@ void processPilotCommands() {
         flightMode = ATTITUDE_MODE;
     }
     
+#if defined(AltitudeHoldBaro) || defined(AltitudeHoldSonar)
     // Altitude hold ON/OFF
-    #if defined(AltitudeHoldBaro) || defined(AltitudeHoldSonar)
-        if (TX_altitude < 1100) {
-            // throttle controlled by stick
-            altitudeHoldBaro = false;
-            altitudeHoldSonar = false;
-            
-            // reset throttle panic flag
-            throttlePanic = false;
-        }
-    #endif
+    if (TX_altitude < 1100) {
+        // throttle controlled by stick
+        altitudeHoldBaro = false;
+        altitudeHoldSonar = false;
+        
+        // reset throttle panic flag
+        throttlePanic = false;
+    }
+#endif
 
-    #ifdef AltitudeHoldBaro
-        else if (TX_altitude > 1400 && TX_altitude < 1600 && throttlePanic == false) {
-            // throttle controlled by baro
-            if (altitudeHoldBaro == false) { // We just switched on the altitudeHoldBaro
-                // save the current altitude and throttle
-                baroAltitudeToHoldTarget = baroAltitudeRunning;
-                baroAltitudeHoldThrottle = TX_throttle;
-            }
-            
-            altitudeHoldSonar = false;
-            altitudeHoldBaro = true;
-            
-            // Trigger throttle panic if throttle is higher or lower then 100 compared
-            // to initial altitude hold throttle.
-            if (abs(TX_throttle - baroAltitudeHoldThrottle) > 100) {
-                // Pilot will be forced to re-flip the altitude hold switch to reset the throttlePanic flag.
-                throttlePanic = true;
-                altitudeHoldBaro = false;
-            }
+#ifdef AltitudeHoldBaro
+    else if (TX_altitude > 1400 && TX_altitude < 1600 && throttlePanic == false) {
+        // throttle controlled by baro
+        if (altitudeHoldBaro == false) { // We just switched on the altitudeHoldBaro
+            // save the current altitude and throttle
+            baroAltitudeToHoldTarget = baroAltitudeRunning;
+            baroAltitudeHoldThrottle = TX_throttle;
         }
-    #endif
-    
-    #ifdef AltitudeHoldSonar
-        else if (TX_altitude > 1900 && throttlePanic == false) {
-            // throttle controlled by sonar
-            if (altitudeHoldSonar == false) { // We just switched on the altitudeHoldSonar
-                sonarAltitudeToHoldTarget = sonarAltitude;
-                sonarAltitudeHoldThrottle = TX_throttle;
-            }
-            
+        
+        altitudeHoldSonar = false;
+        altitudeHoldBaro = true;
+        
+        // Trigger throttle panic if throttle is higher or lower then 100 compared
+        // to initial altitude hold throttle.
+        if (abs(TX_throttle - baroAltitudeHoldThrottle) > 100) {
+            // Pilot will be forced to re-flip the altitude hold switch to reset the throttlePanic flag.
+            throttlePanic = true;
             altitudeHoldBaro = false;
-            altitudeHoldSonar = true;
-            
-            // Trigger throttle panic if throttle is higher or lower then 100 compared
-            // to initial altitude hold throttle.
-            if (abs(TX_throttle - sonarAltitudeHoldThrottle) > 100) {
-                // Pilot will be forced to re-flip the altitude hold switch to reset the throttlePanic flag.
-                throttlePanic = true;
-                altitudeHoldSonar = false;
-            }        
         }
-    #endif
+    }
+#endif
     
-    // GPS Position Hold
-    #ifdef GPS
-        if (TX_pos_hold < 1100) {
-            // Position hold disabled
-            if (positionHoldGPS == true) { // We just switched off the position hold
-            }
-            
-            positionHoldGPS = false;
-        } else if (TX_pos_hold > 1900) {
-            // Position hold enabled
-            if (positionHoldGPS == false) { // We just switched on the position hold
-                // current heading (from magnetometer should be saved here)
-                // current GPS pos should be saved here
-            }
-            
-            positionHoldGPS = true;
+#ifdef AltitudeHoldSonar
+    else if (TX_altitude > 1900 && throttlePanic == false) {
+        // throttle controlled by sonar
+        if (altitudeHoldSonar == false) { // We just switched on the altitudeHoldSonar
+            sonarAltitudeToHoldTarget = sonarAltitude;
+            sonarAltitudeHoldThrottle = TX_throttle;
         }
-    #endif
+        
+        altitudeHoldBaro = false;
+        altitudeHoldSonar = true;
+        
+        // Trigger throttle panic if throttle is higher or lower then 100 compared
+        // to initial altitude hold throttle.
+        if (abs(TX_throttle - sonarAltitudeHoldThrottle) > 100) {
+            // Pilot will be forced to re-flip the altitude hold switch to reset the throttlePanic flag.
+            throttlePanic = true;
+            altitudeHoldSonar = false;
+        }        
+    }
+#endif
+    
+#ifdef GPS
+    // GPS Position Hold
+    if (TX_pos_hold < 1100) {
+        // Position hold disabled
+        if (positionHoldGPS == true) { // We just switched off the position hold
+        }
+        
+        positionHoldGPS = false;
+    } else if (TX_pos_hold > 1900) {
+        // Position hold enabled
+        if (positionHoldGPS == false) { // We just switched on the position hold
+            // current heading (from magnetometer should be saved here)
+            // current GPS pos should be saved here
+        }
+        
+        positionHoldGPS = true;
+    }
+#endif
     
     // Ignore TX_yaw while throttle is below 1100
     if (TX_throttle < 1100) TX_yaw = 1500;
@@ -177,23 +177,23 @@ void processPilotCommands() {
         throttle = TX_throttle;
     }
     
-    #ifdef AltitudeHoldBaro
-        else if (altitudeHoldBaro == true) {
-            altitude_hold_baro_pid.Compute();
-            throttle = baroAltitudeHoldThrottle - constrain(AltitudeHoldMotorSpeed, -200.0, 200.0);
-        }
-    #endif
+#ifdef AltitudeHoldBaro
+    else if (altitudeHoldBaro == true) {
+        altitude_hold_baro_pid.Compute();
+        throttle = baroAltitudeHoldThrottle - constrain(AltitudeHoldMotorSpeed, -200.0, 200.0);
+    }
+#endif
     
-    #ifdef AltitudeHoldSonar
-        else if (altitudeHoldSonar == true) {
-            altitude_hold_sonar_pid.Compute();
-            throttle = sonarAltitudeHoldThrottle - constrain(AltitudeHoldMotorSpeed, -200.0, 200.0);
-        }
-    #endif
+#ifdef AltitudeHoldSonar
+    else if (altitudeHoldSonar == true) {
+        altitude_hold_sonar_pid.Compute();
+        throttle = sonarAltitudeHoldThrottle - constrain(AltitudeHoldMotorSpeed, -200.0, 200.0);
+    }
+#endif
     
-    #ifdef GPS
-        if (positionHoldGPS == true) {
-            // compute gps pids
-        }
-    #endif
+#ifdef GPS
+    if (positionHoldGPS == true) {
+        // compute gps pids
+    }
+#endif
 }    

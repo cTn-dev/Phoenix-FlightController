@@ -16,6 +16,21 @@ bool positionHoldGPS = false;
 #define RATE_MODE 0
 #define ATTITUDE_MODE 1
 
+// PID pseudo names
+#define P  0 // Proportional
+#define I  1 // Integral
+#define D  2 // Derivative
+#define WG 3 // WindupGuard
+
+// Axis definitions
+#define XAXIS 0
+#define YAXIS 1
+#define ZAXIS 2
+
+// Arbitrary definitions
+#define OFF 0
+#define ON 1
+
 // Blinking LED to indicate activity
 bool Arduino_LED_state = 0;
 uint8_t Beacon_LED_state = 0;
@@ -24,14 +39,6 @@ uint8_t Beacon_LED_state = 0;
 #define TASK_50HZ 2
 #define TASK_10HZ 10
 #define TASK_1HZ 100
-
-// Axis definitions
-#define XAXIS 0
-#define YAXIS 1
-#define ZAXIS 2
-
-#define OFF 0
-#define ON 1
 
 // Kinematics variable defnitions
 float kinematicsAngle[3];

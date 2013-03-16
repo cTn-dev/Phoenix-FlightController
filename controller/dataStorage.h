@@ -1,8 +1,3 @@
-#define P  0 // Proportional
-#define I  1 // Integral
-#define D  2 // Derivative
-#define WG 3 // WindupGuard
-
 #if defined(__MK20DX128__)
     #define EEPROM_SIZE 512
 #endif    

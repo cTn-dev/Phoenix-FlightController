@@ -131,17 +131,17 @@ PID pitch_motor_pid;
 PID roll_motor_pid;
 
 #ifdef AltitudeHoldBaro
-    PID altitude_hold_baro_pid;
+PID altitude_hold_baro_pid;
 #endif
 
 #ifdef AltitudeHoldSonar    
-    PID altitude_hold_sonar_pid;
+PID altitude_hold_sonar_pid;
 #endif
 
 #ifdef GPS
-    PID yaw_position_hold_pid;
-    PID pitch_position_hold_pid;
-    PID roll_position_hold_pid;
+PID yaw_position_hold_pid;
+PID pitch_position_hold_pid;
+PID roll_position_hold_pid;
 #endif  
 
 // Function to reset I terms inside PID objects
@@ -155,11 +155,11 @@ void reset_PID_integrals() {
     roll_motor_pid.IntegralReset();
     
     #ifdef AltitudeHoldBaro
-        altitude_hold_baro_pid.IntegralReset();
+    altitude_hold_baro_pid.IntegralReset();
     #endif
     
     #ifdef AltitudeHoldSonar
-        altitude_hold_sonar_pid.IntegralReset();
+    altitude_hold_sonar_pid.IntegralReset();
     #endif      
 }
   
@@ -172,35 +172,33 @@ void setup() {
     // PIN settings
     pinMode(LED_ARDUINO, OUTPUT);
     
-    #ifdef LED_WHITE
-        pinMode(LED_WHITE, OUTPUT);
-    #endif
+#ifdef LED_WHITE
+    pinMode(LED_WHITE, OUTPUT);
+#endif
 
-    #ifdef LED_BLUE
-        pinMode(LED_BLUE, OUTPUT);
-    #endif
-        
+#ifdef LED_BLUE
+    pinMode(LED_BLUE, OUTPUT);
+#endif
+
     // Initialize serial communication
     Serial.begin(38400); // Virtual USB Serial on teensy 3.0 is always 12 Mbit/sec (can be initialized with baud rate 0)
 
-    #ifdef GPS
-        Serial3.begin(38400);
-    #endif
+#ifdef GPS
+    Serial3.begin(38400);
+#endif
  
     // Join I2C bus as master
     Wire.begin();
 
     // I2C bus hardware specific settings
-    #if defined(__MK20DX128__)
-        // I2C bus settings
-        I2C0_F = 0x00; // 2.4 MHz (prescaler 20)
-        I2C0_FLT = 4;
-    #endif
+#if defined(__MK20DX128__)
+    I2C0_F = 0x00; // 2.4 MHz (prescaler 20)
+    I2C0_FLT = 4;
+#endif
     
-    #if defined(__AVR__)
-        // I2C bus settings
-        TWBR = 12; // 400 KHz (maximum supported frequency)
-    #endif
+#if defined(__AVR__)
+    TWBR = 12; // 400 KHz (maximum supported frequency)
+#endif
     
     // Read data from EEPROM to CONFIG union
     readEEPROM();
@@ -224,21 +222,21 @@ void setup() {
     roll_motor_pid = PID(&gyro[XAXIS], &RollMotorSpeed, &RollCommandPIDSpeed, 
         &CONFIG.data.PID_ROLL_m[P], &CONFIG.data.PID_ROLL_m[I], &CONFIG.data.PID_ROLL_m[D], &CONFIG.data.PID_ROLL_m[WG]);  
     
-    #ifdef AltitudeHoldBaro
-        altitude_hold_baro_pid = PID(&baroAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &baroAltitudeRunning, 
-            &CONFIG.data.PID_BARO[P], &CONFIG.data.PID_BARO[I], &CONFIG.data.PID_BARO[D], &CONFIG.data.PID_BARO[WG]);
-    #endif
+#ifdef AltitudeHoldBaro
+    altitude_hold_baro_pid = PID(&baroAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &baroAltitudeRunning, 
+        &CONFIG.data.PID_BARO[P], &CONFIG.data.PID_BARO[I], &CONFIG.data.PID_BARO[D], &CONFIG.data.PID_BARO[WG]);
+#endif
     
-    #ifdef AltitudeHoldSonar
-        altitude_hold_sonar_pid = PID(&sonarAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &sonarAltitude, 
-            &CONFIG.data.PID_SONAR[P], &CONFIG.data.PID_SONAR[I], &CONFIG.data.PID_SONAR[D], &CONFIG.data.PID_SONAR[WG]);
-    #endif    
+#ifdef AltitudeHoldSonar
+    altitude_hold_sonar_pid = PID(&sonarAltitudeToHoldTarget, &AltitudeHoldMotorSpeed, &sonarAltitude, 
+        &CONFIG.data.PID_SONAR[P], &CONFIG.data.PID_SONAR[I], &CONFIG.data.PID_SONAR[D], &CONFIG.data.PID_SONAR[WG]);
+#endif    
     
-    #ifdef GPS
-        // yaw_position_hold_pid = PID();
-        // pitch_position_hold = PID();
-        // roll_position_hold = PID();
-    #endif
+#ifdef GPS
+    // yaw_position_hold_pid = PID();
+    // pitch_position_hold = PID();
+    // roll_position_hold = PID();
+#endif
     
     // Initialize motors/receivers/sensors
     initializeESC();    
@@ -247,21 +245,21 @@ void setup() {
     sensors.initializeGyro();
     sensors.initializeAccel();
     
-    #ifdef Magnetometer
-        sensors.initializeMag();
-    #endif
+#ifdef Magnetometer
+    sensors.initializeMag();
+#endif
     
-    #ifdef AltitudeHoldBaro
-        sensors.initializeBaro();    
-    #endif
+#ifdef AltitudeHoldBaro
+    sensors.initializeBaro();    
+#endif
     
-    #ifdef AltitudeHoldSonar
-        initializeSonar();
-    #endif    
+#ifdef AltitudeHoldSonar
+    initializeSonar();
+#endif    
     
-    #ifdef GPS
-        gps.initializeBaseStation();
-    #endif
+#ifdef GPS
+    gps.initializeBaseStation();
+#endif
     
     // All is ready, start the loop
     all_ready = true;
@@ -282,10 +280,10 @@ void loop() {
         sensors.readGyroSum();
         sensors.readAccelSum();        
         
-        #ifdef AltitudeHoldSonar
-            // Bring sonar pin down (complete TLL trigger pulse)
-            readSonarFinish();
-        #endif    
+#ifdef AltitudeHoldSonar
+        // Bring sonar pin down (complete TLL trigger pulse)
+        readSonarFinish();
+#endif    
         
         sensorPreviousTime = currentTime;
     }    
@@ -324,14 +322,14 @@ void process100HzTask() {
     sensors.evaluateGyro();
     sensors.evaluateAccel();
     
-    #ifdef AltitudeHoldBaro
-        // Baro is being sampled every 10ms (because measuring pressure is slow) 
-        sensors.readBaroSum();
-    #endif    
+#ifdef AltitudeHoldBaro
+    // Baro is being sampled every 10ms (because measuring pressure is slow) 
+    sensors.readBaroSum();
+#endif    
     
-    #ifdef GPS
-        sensors.readGPS();
-    #endif
+#ifdef GPS
+    sensors.readGPS();
+#endif
 
     // Listens/read Serial commands on Serial1 interface (used to pass data from configurator)
     readSerial();
@@ -371,48 +369,48 @@ void process100HzTask() {
 void process50HzTask() {
     processPilotCommands();
     
-    #ifdef AltitudeHoldBaro
-        sensors.evaluateBaroAltitude();
-    #endif   
+#ifdef AltitudeHoldBaro
+    sensors.evaluateBaroAltitude();
+#endif   
 
-    #ifdef LED_WHITE
-        // Blink "aircraft beacon" LED
-        if ((Beacon_LED_state == 51) || (Beacon_LED_state == 59) || (Beacon_LED_state == 67)) {
-            digitalWrite(LED_WHITE, HIGH);
-        } else {
-            digitalWrite(LED_WHITE, LOW);
-        }
+#ifdef LED_WHITE
+    // Blink "aircraft beacon" LED
+    if ((Beacon_LED_state == 51) || (Beacon_LED_state == 59) || (Beacon_LED_state == 67)) {
+        digitalWrite(LED_WHITE, HIGH);
+    } else {
+        digitalWrite(LED_WHITE, LOW);
+    }
 
-        Beacon_LED_state++;
-        
-        if (Beacon_LED_state >= 100) {
-            Beacon_LED_state = 0;
-        }
-    #endif
+    Beacon_LED_state++;
+    
+    if (Beacon_LED_state >= 100) {
+        Beacon_LED_state = 0;
+    }
+#endif
 }
 
 void process10HzTask() {
     // Trigger RX failsafe function every 100ms
     RX_failSafe();
     
-    #ifdef AltitudeHoldSonar
-        // Request sonar reading
-        readSonar();
-    #endif    
+#ifdef AltitudeHoldSonar
+    // Request sonar reading
+    readSonar();
+#endif    
     
-    #ifdef Magnetometer
-        sensors.readMag();
-        sensors.evaluateMag();
-    #endif
+#ifdef Magnetometer
+    sensors.readMag();
+    sensors.evaluateMag();
+#endif
     
-    #ifdef BatteryMonitorCurrent
-        readBatteryMonitorCurrent();
-    #endif   
+#ifdef BatteryMonitorCurrent
+    readBatteryMonitorCurrent();
+#endif   
     
     // Print itterations per 100ms
-    #ifdef DISPLAY_ITTERATIONS
-        Serial.println(itterations);
-    #endif
+#ifdef DISPLAY_ITTERATIONS
+    Serial.println(itterations);
+#endif
     
     // Blink integrated arduino LED
     Arduino_LED_state = !Arduino_LED_state;
@@ -423,12 +421,12 @@ void process10HzTask() {
 }
 
 void process1HzTask() {   
-    #ifdef LED_BLUE
-        // Armed/ Dis-armed indicator
-        if (armed) {
-            digitalWrite(LED_BLUE, HIGH);
-        } else {
-            digitalWrite(LED_BLUE, LOW);
-        }
-    #endif
+#ifdef LED_BLUE
+    // Armed/ Dis-armed indicator
+    if (armed) {
+        digitalWrite(LED_BLUE, HIGH);
+    } else {
+        digitalWrite(LED_BLUE, LOW);
+    }
+#endif
 }
