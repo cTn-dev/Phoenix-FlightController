@@ -202,7 +202,7 @@ class Configurator {
                     Serial.write(0x00); // payload length MSB
                     Serial.write(CHANNELS * 2); // payload length LSB  
                     
-                    for (uint8_t channel = 0; channel <= CHANNELS; channel++) {
+                    for (uint8_t channel = 0; channel < CHANNELS; channel++) {
                         Serial.write(highByte(RX[channel]));
                         Serial.write(lowByte(RX[channel]));
                     }                 
@@ -227,7 +227,7 @@ class Configurator {
                     Serial.write(0x00); // payload length MSB
                     Serial.write(MOTORS * 2); // payload length LSB (* 2 because of 2 bytes for each motor) 
                     
-                    for (uint8_t motor = 0; motor <= MOTORS; motor++) {
+                    for (uint8_t motor = 0; motor < MOTORS; motor++) {
                         Serial.write(highByte(MotorOut[motor]));
                         Serial.write(lowByte(MotorOut[motor]));
                     }
