@@ -1,3 +1,17 @@
+/*  EEPROM based configuration data storage structure
+
+    Whole flight controller configuration is being stored inside an CONFIG structure
+    that can be accesed as data union (which is required for easy manipulation with
+    the configuration data over serial and easy way of storing this data in EEPROM).
+    
+    This method allow us to do "smart" memory checking with the new data against
+    data stored in EEPROM, which means we doesn't have to re-write whole configuration
+    union inside the EEPROM, but we just modify bytes that changed.
+    
+    This will protect EEPROM from unnecessary writes, extending its lifetime
+    (because EEPROM writes are limited, actual number of writes depends on the chip).
+*/
+
 #if defined(__MK20DX128__)
     #define EEPROM_SIZE 512
 #endif    
@@ -106,15 +120,15 @@ void initializeEEPROM() {
     CONFIG.data.PID_GPS[D] = 0.0;
     CONFIG.data.PID_GPS[WG] = 0.0;
     
-    // This function will only initialize data "locally"
-    // writeEEPROM() have to be called manually to store this data in EEPROM
+    // This function will only initialize data variables
+    // writeEEPROM() needs to be called manually to store this data in EEPROM
 }
 
 void writeEEPROM() {
     for (uint16_t i = 0; i < sizeof(CONFIG_struct); i++) {
         if (CONFIG.raw[i] != EEPROM.read(i)) {
             // Only re-write new data
-            // blocks containing the same value will be left alone (cool huh?)
+            // blocks containing the same value will be left alone
             EEPROM.write(i, CONFIG.raw[i]);
         }    
     }
