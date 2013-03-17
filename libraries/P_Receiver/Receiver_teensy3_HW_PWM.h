@@ -107,11 +107,11 @@ void RX_failSafe() {
         // 1000 = 0 throttle;
         // Descending from FULL throttle 2000 (most unlikely) would take about 1 minute and 40 seconds
         // Descending from HALF throttle 1500 (more likely) would take about 50 seconds
-        RX[2] -= 2;
-        RX[4] = 2000; // force attitude mode
+        RX[CONFIG.data.CHANNEL_ASSIGNMENT[THROTTLE]] -= 2;
+        RX[CONFIG.data.CHANNEL_ASSIGNMENT[FLIGHT_MODE]] = 2000; // force attitude mode
         
-        if (RX[2] < 1000) {
-            RX[2] = 1000; // don't let the value fall below 1000
+        if (RX[CONFIG.data.CHANNEL_ASSIGNMENT[THROTTLE]] < 1000) {
+            RX[CONFIG.data.CHANNEL_ASSIGNMENT[THROTTLE]] = 1000; // don't let the value fall below 1000
             
             // at this point, we will also disarm
             armed = false;

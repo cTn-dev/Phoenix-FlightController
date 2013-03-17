@@ -16,7 +16,14 @@ bool positionHoldGPS = false;
 #define RATE_MODE 0
 #define ATTITUDE_MODE 1
 
-// PID pseudo names
+// Primary channel definitions
+#define ROLL        0
+#define PITCH       1
+#define THROTTLE    2
+#define YAW         3
+#define FLIGHT_MODE 4
+
+// PID pseudo definitions
 #define P  0 // Proportional
 #define I  1 // Integral
 #define D  2 // Derivative
@@ -27,7 +34,7 @@ bool positionHoldGPS = false;
 #define YAXIS 1
 #define ZAXIS 2
 
-// Arbitrary definitions
+// Arbitrary ON/OFF definitions
 #define OFF 0
 #define ON 1
 
