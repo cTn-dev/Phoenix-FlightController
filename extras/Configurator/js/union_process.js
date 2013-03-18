@@ -11,6 +11,7 @@
 var eepromConfig = {
     version:      0,
     calibrateESC: 0,
+    minimumArmedThrottle: 0,
     
     ACCEL_BIAS:  [0, 0, 0],
     
@@ -48,6 +49,8 @@ DataView.prototype.parseUNION = function (structure) {
     
     structure.version = this.getUint8(needle++);
     structure.calibrateESC = this.getUint8(needle++);
+    structure.minimumArmedThrottle = this.getUint16(needle, 1);
+    needle += 2;
     
     for (var i = 0; i < structure.ACCEL_BIAS.length; i++) {
         structure.ACCEL_BIAS[i] = this.getInt16(needle, 1);
@@ -81,6 +84,8 @@ DataView.prototype.setUNION = function (structure) {
     
     this.setUint8(needle++, structure.version);
     this.setUint8(needle++, structure.calibrateESC);
+    this.setUint16(needle, structure.minimumArmedThrottle, 1);
+    needle += 2;
     
     for (var i = 0; i < structure.ACCEL_BIAS.length; i++) {
         this.setInt16(needle, structure.ACCEL_BIAS[i], 1);

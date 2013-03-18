@@ -19,6 +19,7 @@
 struct __attribute__((packed)) CONFIG_struct {
     uint8_t version;
     bool calibrateESC;
+    uint16_t minimumArmedThrottle;
     
     // Accelerometer
     int16_t ACCEL_BIAS[3];    
@@ -52,9 +53,10 @@ CONFIG_union CONFIG;
 
 void initializeEEPROM() {
     // Default settings should be initialized here
-    CONFIG.data.version = 1;
+    CONFIG.data.version = 2; // configuration union version (used to check against configurator)
     CONFIG.data.calibrateESC = 0;
-
+    CONFIG.data.minimumArmedThrottle = 1100;
+    
     // Accelerometer
     CONFIG.data.ACCEL_BIAS[XAXIS] = 0;
     CONFIG.data.ACCEL_BIAS[YAXIS] = 0;
@@ -90,7 +92,7 @@ void initializeEEPROM() {
     CONFIG.data.PID_YAW_m[P]  = 200.0;
     CONFIG.data.PID_YAW_m[I]  = 5.0;
     CONFIG.data.PID_YAW_m[D]  = 0.0;
-    CONFIG.data.PID_YAW_m[WG] = 1000.0;
+    CONFIG.data.PID_YAW_m[WG] = 100.0;
     
     CONFIG.data.PID_PITCH_m[P]  = 80.0;
     CONFIG.data.PID_PITCH_m[I]  = 0.0;

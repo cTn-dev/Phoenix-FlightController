@@ -257,6 +257,43 @@ a:hover {
     .tab-initial_setup .calibrateAccelManualUpdate:hover {
         text-decoration: none;
         background-color: #0c0f1d;        
+    }
+    .tab-initial_setup .minimumThrottle input {
+        float: left;
+        
+        margin-top: 10px;
+        
+        width: 84px;
+        height: 18px;
+        
+        padding-right: 5px;
+        
+        text-align: right;
+        margin-right: 10px;
+        
+        line-height: 18px;
+        border: 1px solid silver;
+    }
+    .tab-initial_setup .minimumThrottleUpdate {
+        float: left;
+        display: block;
+        
+        margin-top: 10px;
+        
+        width: 60px;
+        height: 18px;
+        line-height: 18px;
+        
+        text-align: center;
+        color: white;
+        
+        border: 1px solid silver;
+        
+        background-color: #078814;
+    }
+    .tab-initial_setup .minimumThrottleUpdate:hover {
+        text-decoration: none;
+        background-color: #13b723;
     }    
     .tab-initial_setup .initializeEEPROM {
         float: left;

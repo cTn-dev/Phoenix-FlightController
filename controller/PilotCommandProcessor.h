@@ -144,8 +144,14 @@ void processPilotCommands() {
     }
 #endif
     
-    // Ignore TX_yaw while throttle is below 1100
-    if (TX_throttle < 1100) TX_yaw = 1500;
+    // Ignore TX_yaw while throttle is below minimum armed throttle
+    if (TX_throttle < CONFIG.data.minimumArmedThrottle) {
+        TX_yaw = 1500;
+        
+        // Keep command yaw and attitude yaw error around ~0
+        commandYawAttitude = kinematicsAngle[ZAXIS];
+        commandYaw = 0.0;
+    }    
     
     // Channel center = 1500
     TX_roll = TX_roll - 1500;

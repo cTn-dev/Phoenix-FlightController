@@ -3,7 +3,7 @@ var connection_delay = 0; // delay which defines "when" will the configurator re
 var port_list;
 var serial_poll = 0; // iterval timer refference
 
-var version = 1; // configurator version to check against version number stored in eeprom
+var version = 2; // configurator version to check against version number stored in eeprom
 
 var eepromConfigSize;
 var motors = 0;
