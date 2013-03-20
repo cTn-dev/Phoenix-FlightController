@@ -13,7 +13,7 @@
 #define HMC5883L_MODE_SINGLE        0x01
 #define HMC5883L_MODE_IDLE          0x02
 
-float magHeadingX, magHeadingY;
+float magHeadingX, magHeadingY, magHeadingAbsolute;
 
 class HMC5883L {
     public:
@@ -56,7 +56,10 @@ class HMC5883L {
             const float norm = sqrt(magX * magX + magY * magY);
             
             magHeadingX = magX / norm;
-            magHeadingY = -magY / norm;           
+            magHeadingY = -magY / norm;
+
+            // Calculate absolute heading
+            magHeadingAbsolute = atan2(magHeadingY, magHeadingX);
         };
         
     private:
