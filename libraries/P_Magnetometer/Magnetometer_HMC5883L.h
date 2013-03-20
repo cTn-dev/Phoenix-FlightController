@@ -1,6 +1,11 @@
-/*  HMC5883L magnetometer integration in C++
+/*  HMC5883L magnetometer implementation
 
-    Needs testing
+    Featuring accelerometer tilt compensation, for more information visit
+    @ https://www.loveelectronics.co.uk/Tutorials/13/tilt-compensated-compass-arduino-tutorial
+    
+    Supporting 360 deg heading (+- 180deg), to use with 0-360 deg kinematics add + PI
+    
+    Output inside absolute heading is in radians.
 */
 
 #define HMC5883L_ADDRESS            0x1E
@@ -13,7 +18,17 @@
 #define HMC5883L_MODE_SINGLE        0x01
 #define HMC5883L_MODE_IDLE          0x02
 
-float magHeadingX, magHeadingY, magHeadingAbsolute;
+#define HMC5883L_GAIN_07            0x00 // +- 0.7 Ga
+#define HMC5883L_GAIN_10            0x20 // +- 1.0 Ga (default)
+#define HMC5883L_GAIN_15            0x40 // +- 1.5 Ga
+#define HMC5883L_GAIN_20            0x60 // +- 2.0 Ga
+#define HMC5883L_GAIN_32            0x80 // +- 3.2 Ga
+#define HMC5883L_GAIN_38            0xA0 // +- 3.8 Ga
+#define HMC5883L_GAIN_45            0xC0 // +- 4.5 Ga
+#define HMC5883L_GAIN_65            0xE0 // +- 6.5 Ga
+
+float magHeadingX, magHeadingY;
+float magHeadingAbsolute = 0.0;
 
 class HMC5883L {
     public:
@@ -23,7 +38,7 @@ class HMC5883L {
         
         void initialize() {
             // Set gain to +- 1.0 Ga
-            sensors.i2c_write8(HMC5883L_ADDRESS, HMC5883L_RA_CONFIG_B, 0x20);
+            sensors.i2c_write8(HMC5883L_ADDRESS, HMC5883L_RA_CONFIG_B, HMC5883L_GAIN_10);
             
             // Start in single mode
             sensors.i2c_write8(HMC5883L_ADDRESS, HMC5883L_RA_MODE, HMC5883L_MODE_SINGLE);           
@@ -45,15 +60,17 @@ class HMC5883L {
         };
         
         void evaluateMag() {            
-            const float cosRoll =  cos(kinematicsAngle[XAXIS]);
-            const float sinRoll =  sin(kinematicsAngle[XAXIS]);
-            const float cosPitch = cos(kinematicsAngle[YAXIS]);
-            const float sinPitch = sin(kinematicsAngle[YAXIS]);  
+            float cosRoll =  cos(kinematicsAngle[XAXIS]);
+            float sinRoll =  sin(kinematicsAngle[XAXIS]);
+            float cosPitch = cos(kinematicsAngle[YAXIS]);
+            float sinPitch = sin(kinematicsAngle[YAXIS]);  
 
-            magX = magRaw[XAXIS] * cosPitch + magRaw[YAXIS] * sinRoll * sinPitch + magRaw[ZAXIS] * cosRoll * sinPitch;
-            magY = magRaw[YAXIS] * cosRoll - magRaw[ZAXIS] * sinRoll;
+            // Apply accelerometer tilt corrections
+            magX = magRaw[XAXIS] * cosPitch + magRaw[ZAXIS] * sinPitch;
+            magY = magRaw[XAXIS] * sinRoll * sinPitch + magRaw[YAXIS] * cosRoll - magRaw[ZAXIS] * sinRoll * cosPitch;
 
-            const float norm = sqrt(magX * magX + magY * magY);
+            // Normalize measurements
+            float norm = sqrt(magX * magX + magY * magY);
             
             magHeadingX = magX / norm;
             magHeadingY = -magY / norm;
