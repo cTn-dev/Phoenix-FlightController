@@ -8,6 +8,15 @@
     Please note that external pullup resistors are required on Teensy 3.0,
     while they are not "required" on other platforms, i highly recommend adding them.
     1000 ohm pullup seems to work best in my case.
+    
+    Experimental: Overtime gyroscope bias calibration
+    This feature is still considered experimental, but its proving to work really nicely
+    thats why i am including this in the main build.
+    
+    Overtime gyrscope calibration is ran in time cycles, 10 steps of 6 seconds (60 seconds for full cycle)
+    each step is calculated from ~6000 samples (depending on the speed of hardware used) and afterwards saved 
+    in multidimensional array (3x10), that means 10 "buckets" for each of the gyroscope axis.
+    Gyroscope overtime bias is adjusted/calculated in the end of each cycle (every 6 seconds).
 */
 
 // MPU 6050 Registers
@@ -82,17 +91,15 @@ class MPU6050 {
             // or you can use full range / full sensitivity, which will result in the same output.
             gyroScaleFactor = radians(1000.0 / 32768.0); // 0.030517578125
             
-            // Manually defined accel bias
-            // To calculate accel bias measure maximum positive and maximum negative value for axis
-            // and then calculate average which will be used as bias
-            // accelXpositive and accelXnegative should be an average of at least 500 samples
-            // biasX = (accelXpositive + accelXnegative) / 2;
-            
             // Accel scale factor = 9.81 m/s^2 / scale
             accelScaleFactor = 9.81 / 8192.0; // 0.001197509765625
             
             gyroSamples = 0;
             accelSamples = 0;
+            
+            gyroOvertimeSamples = 0;
+            gyroOvertimeBiasNeedle = 0;
+            gyroOvertimeTime = 0;
         };
 
         void initialize(int16_t bias0, int16_t bias1, int16_t bias2) {
@@ -225,6 +232,13 @@ class MPU6050 {
             gyroSum[ZAXIS] += gyroRaw[ZAXIS];
             
             gyroSamples++;
+            
+            // Data for over time gyro bias
+            gyroOvertimeSum[XAXIS] += gyroRaw[XAXIS];
+            gyroOvertimeSum[YAXIS] += gyroRaw[YAXIS];
+            gyroOvertimeSum[ZAXIS] += gyroRaw[ZAXIS];
+            
+            gyroOvertimeSamples++;
         };        
         
         void readAccelSum() {
@@ -246,7 +260,11 @@ class MPU6050 {
             // Apply offsets
             gyro[XAXIS] += gyro_offset[XAXIS];
             gyro[YAXIS] += gyro_offset[YAXIS];
-            gyro[ZAXIS] += gyro_offset[ZAXIS];         
+            gyro[ZAXIS] += gyro_offset[ZAXIS]; 
+
+            gyro[XAXIS] += gyroOvertimeBias[XAXIS];
+            gyro[YAXIS] += gyroOvertimeBias[YAXIS];
+            gyro[ZAXIS] += gyroOvertimeBias[ZAXIS];
             
             // Apply correct scaling (at this point gyro is in radians)
             gyro[XAXIS] *= gyroScaleFactor;
@@ -257,7 +275,57 @@ class MPU6050 {
             gyroSum[XAXIS] = 0;
             gyroSum[YAXIS] = 0;
             gyroSum[ZAXIS] = 0;
-            gyroSamples = 0;            
+            gyroSamples = 0;
+
+            // Handle overtime bias
+            if ((millis() - gyroOvertimeTime) >= 6000) { // 6 seconds
+                // Every 6 seconds a position in the overtime array will be changed
+                gyroOvertimeTime = millis(); // save time for next comparison
+                
+                // Calculate average
+                gyroOvertimeBiasStorage[XAXIS][gyroOvertimeBiasNeedle] = gyroOvertimeSum[XAXIS] / gyroOvertimeSamples;
+                gyroOvertimeBiasStorage[YAXIS][gyroOvertimeBiasNeedle] = gyroOvertimeSum[YAXIS] / gyroOvertimeSamples;
+                gyroOvertimeBiasStorage[ZAXIS][gyroOvertimeBiasNeedle] = gyroOvertimeSum[ZAXIS] / gyroOvertimeSamples;
+                
+                // Apply static calibration offsets
+                // In this moment gyroOvertimeBiasStorage contains positive force where gyro_offset contains negative force
+                // Effectively canceling the calibration error out
+                gyroOvertimeBiasStorage[XAXIS][gyroOvertimeBiasNeedle] += gyro_offset[XAXIS];
+                gyroOvertimeBiasStorage[YAXIS][gyroOvertimeBiasNeedle] += gyro_offset[YAXIS];
+                gyroOvertimeBiasStorage[ZAXIS][gyroOvertimeBiasNeedle] += gyro_offset[ZAXIS];
+                
+                // Reverse forces
+                gyroOvertimeBiasStorage[XAXIS][gyroOvertimeBiasNeedle] *= -1;
+                gyroOvertimeBiasStorage[YAXIS][gyroOvertimeBiasNeedle] *= -1;
+                gyroOvertimeBiasStorage[ZAXIS][gyroOvertimeBiasNeedle] *= -1;
+                
+                // Reset SUM variables
+                gyroOvertimeSum[XAXIS] = 0;
+                gyroOvertimeSum[YAXIS] = 0;
+                gyroOvertimeSum[ZAXIS] = 0;
+                gyroOvertimeSamples = 0;
+                
+                gyroOvertimeBiasNeedle++;
+                
+                if (gyroOvertimeBiasNeedle > 9) { // reset back to 0
+                    gyroOvertimeBiasNeedle = 0;
+                }
+                
+                // Calculate overtime bias from storage
+                gyroOvertimeBias[XAXIS] = 0;
+                gyroOvertimeBias[YAXIS] = 0;
+                gyroOvertimeBias[ZAXIS] = 0;
+                
+                for (uint8_t i = 0;i < 10; i++) {
+                    gyroOvertimeBias[XAXIS] += gyroOvertimeBiasStorage[XAXIS][i];
+                    gyroOvertimeBias[YAXIS] += gyroOvertimeBiasStorage[YAXIS][i];
+                    gyroOvertimeBias[ZAXIS] += gyroOvertimeBiasStorage[ZAXIS][i];
+                }
+                
+                gyroOvertimeBias[XAXIS] /= 10;
+                gyroOvertimeBias[YAXIS] /= 10;
+                gyroOvertimeBias[ZAXIS] /= 10;
+            }
         };
         
         void evaluateAccel() {
@@ -306,7 +374,16 @@ class MPU6050 {
         float accelSum[3];
         
         uint8_t gyroSamples;
-        uint8_t accelSamples;        
+        uint8_t accelSamples;
+        
+        int32_t gyroOvertimeSum[3];
+        uint16_t gyroOvertimeSamples;
+        
+        int16_t gyroOvertimeBiasStorage[3][10];
+        uint8_t gyroOvertimeBiasNeedle;
+        uint32_t gyroOvertimeTime;
+        
+        int16_t gyroOvertimeBias[3];
 };
 
 MPU6050 mpu;
