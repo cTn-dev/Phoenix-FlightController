@@ -16,6 +16,8 @@
     #define EEPROM_SIZE 512
 #endif    
 
+#define EEPROM_VERSION 2
+
 struct __attribute__((packed)) CONFIG_struct {
     uint8_t version;
     bool calibrateESC;
@@ -53,7 +55,7 @@ CONFIG_union CONFIG;
 
 void initializeEEPROM() {
     // Default settings should be initialized here
-    CONFIG.data.version = 2; // configuration union version (used to check against configurator)
+    CONFIG.data.version = EEPROM_VERSION;
     CONFIG.data.calibrateESC = 0;
     CONFIG.data.minimumArmedThrottle = 1100;
     
@@ -138,12 +140,18 @@ void writeEEPROM() {
 
 void readEEPROM() {
     if (EEPROM.read(0) == 255) {
-        // No EEPROM values detected, automatic re-initialize
+        // No EEPROM values detected, re-initialize
         initializeEEPROM();
     } else {
         // There "is" data in the EEPROM, read it all
         for (uint16_t i = 0; i < sizeof(CONFIG_struct); i++) {
             CONFIG.raw[i] = EEPROM.read(i);
+        }
+        
+        // Verify version
+        if (CONFIG.data.version != EEPROM_VERSION) {
+            // Version doesn't match, re-initialize
+            initializeEEPROM();
         }
     }
 }
