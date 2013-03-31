@@ -11,6 +11,8 @@
     Empty constructor will allow us to declare PID object globally anywhere before the setup() function
     This will allow us to feed PID settings and other variables when they are ready
     (in our case, after EEPROM has been initialized / read into variables)
+    
+    Pointer arithmetic used to parse terms into PID controller @http://www.cs.umd.edu/class/sum2003/cmsc311/Notes/BitOp/pointer.html
 */
 class PID {
     public:
@@ -18,7 +20,7 @@ class PID {
         PID() {
         };
         
-        PID(float* Input, float* Output, float* Setpoint, float* kp, float* ki, float* kd, float* wg) {
+        PID(float* Input, float* Output, float* Setpoint, float* terms) {
             previous_error = 0.0;
             integral = 0.0;
             
@@ -26,11 +28,11 @@ class PID {
             PID_output = Output;
             PID_setpoint = Setpoint;
             
-            Kp = kp;
-            Ki = ki;
-            Kd = kd;
+            Kp = &terms[P];
+            Ki = &terms[I];
+            Kd = &terms[D];
             
-            windupGuard = wg;        
+            windupGuard = &terms[WG];        
         };
         
         void Compute() {            
