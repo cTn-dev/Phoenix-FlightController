@@ -1,11 +1,9 @@
 var connectionId = -1;
 var connection_delay = 0; // delay which defines "when" will the configurator request configurator data after connection was established
-var port_list;
-var serial_poll = 0; // iterval timer refference
 
 var version = 2; // configurator version to check against version number stored in eeprom
-
 var eepromConfigSize;
+
 var motors = 0;
 
 $(document).ready(function() { 
@@ -47,7 +45,6 @@ $(document).ready(function() {
             
             clearTimeout(connection_delay);
             clearInterval(serial_poll);
-            serial_poll = 0; // this also indicates that we are not reading anything
             
             $(this).text('Connect');
             $(this).removeClass('active');            
@@ -73,7 +70,7 @@ $(document).ready(function() {
     var tabs = $('#tabs > ul');
     $('a', tabs).click(function() {
         if ($(this).parent().hasClass('active') == false) { // only initialize when the tab isn't already active
-            if (connectionId < 1 || serial_poll < 1) { // if there is no active connection, return
+            if (connectionId < 1) { // if there is no active connection, return
                 command_log('You <span style="color: red;">can\'t</span> view the tabs unless you <span style="color: green">connect</span> to the flight controller.');
                 return;
             }

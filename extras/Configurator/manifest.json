@@ -1,5 +1,5 @@
 {
-    "name": "Phoenix Configurator - Alpha",
+    "name": "Phoenix Configurator",
     "description": "Application required to change Phoenix configuration stored in EEPROM",
     "version": "0.1",
     "manifest_version": 2,
