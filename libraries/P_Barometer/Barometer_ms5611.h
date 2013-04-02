@@ -65,7 +65,7 @@ class MS5611 {
             delay(500); // Wait for sensor to heat up properly
             
             // check if measured ground altitude is valid
-            while (abs(baroRawAltitude - baroGroundAltitude) > 5) {
+            while (abs(baroRawAltitude - baroGroundAltitude) > 4) {
                 delay(26);
                 measureGroundBaro();
             }
@@ -88,7 +88,7 @@ class MS5611 {
             
             lastRawPressure = (Wire.read() << 16) | (Wire.read() << 8) | (Wire.read() << 0);
             
-            return (((( lastRawPressure * sens) >> 21) - offset) >> (15 - 5)) / ((float)(1 << 5));
+            return (((lastRawPressure * sens) >> 21) - offset) >> 15;
         };
         
         void requestRawTemperature() {
