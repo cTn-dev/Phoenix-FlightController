@@ -1,17 +1,17 @@
-/*  This is an BMP085 implementation pretty much "ripped" from aeroquad
-    however i did re-write it from pure C to C++ class format
-    
-    TODO: This class needs quite a bit of polishing and proper documentation
+/*  BMP085 barometer implementation in C++
+
+    Big shoutout to whoever wrote the aeroquad BMP085 sensor integration
+    (because it was used as example/base to create this one)
 */
 
 // BMP085 Registers
-#define BMP085_ADDRESS 0x77
+#define BMP085_ADDRESS           0x77
 
 // Operating Modes
-#define BMP085_ULTRALOWPOWER 0
-#define BMP085_STANDARD      1
-#define BMP085_HIGHRES       2
-#define BMP085_ULTRAHIGHRES  3
+#define BMP085_ULTRALOWPOWER     0
+#define BMP085_STANDARD          1
+#define BMP085_HIGHRES           2
+#define BMP085_ULTRAHIGHRES      3
 
 #define BMP085_CAL_AC1           0xAA  // R   Calibration data (16 bits)
 #define BMP085_CAL_AC2           0xAC  // R   Calibration data (16 bits)
@@ -100,14 +100,14 @@ class BMP085 {
             
             Wire.requestFrom(BMP085_ADDRESS, 3);
             
-            return (((unsigned long)Wire.read() << 16) | ((unsigned long)Wire.read() << 8) | ((unsigned long)Wire.read())) >> (8 - overSamplingSetting);
+            return (((uint32_t)Wire.read() << 16) | ((uint32_t)Wire.read() << 8) | ((uint32_t)Wire.read())) >> (8 - overSamplingSetting);
         };
         
         void requestRawTemperature() {
             sensors.i2c_write8(BMP085_ADDRESS, BMP085_CONTROL, BMP085_READTEMPCMD);
         };
         
-        unsigned int readRawTemperature() {
+        uint16_t readRawTemperature() {
             uint16_t data;
             
             Wire.beginTransmission(BMP085_ADDRESS);
@@ -152,7 +152,7 @@ class BMP085 {
         void measureGroundBaro() {
             // measure initial ground pressure (multiple samples)
             float altSum = 0.0;
-            for (int i = 0; i < 25; i++) {
+            for (uint8_t i = 0; i < 25; i++) {
                 measureBaro();
                 altSum += baroRawAltitude;
                 delay(12);
@@ -162,13 +162,13 @@ class BMP085 {
         };
         
         void evaluateBaroAltitude() {
-            long x1, x2, x3, b3, b5, b6, p;
-            unsigned long b4, b7;
+            int32_t x1, x2, x3, b3, b5, b6, p;
+            uint32_t b4, b7;
             int32_t tmp;
 
             //calculate true temperature
-            x1 = ((long)rawTemperature - ac6) * ac5 >> 15;
-            x2 = ((long) mc << 11) / (x1 + md);
+            x1 = ((int32_t)rawTemperature - ac6) * ac5 >> 15;
+            x2 = ((int32_t) mc << 11) / (x1 + md);
             b5 = x1 + x2;
 
             if (rawPressureSumCount == 0) { // it may occur at init time that no pressure has been read yet!
@@ -203,7 +203,7 @@ class BMP085 {
             x2 = (-7357 * p) >> 16;
             pressure = (p + ((x1 + x2 + 3791) >> 4));
 
-            baroRawAltitude = 44330 * (1 - pow(pressure / 101325.0, pressureFactor)); // returns absolute baroAltitude in meters 
+            baroRawAltitude = (1.0 - pow(pressure / 101325.0, pressureFactor)) * 44330.0; // returns absolute baroAltitude in meters 
             baroAltitude = filterSmooth(baroRawAltitude, baroAltitude, baroSmoothFactor);
         };
         
@@ -220,7 +220,7 @@ class BMP085 {
         float rawPressureSum;
         uint8_t rawPressureSumCount;
         
-        long pressure, rawPressure, rawTemperature;
+        int32_t pressure, rawPressure, rawTemperature;
         uint8_t pressureCount;
         
         float pressureFactor;

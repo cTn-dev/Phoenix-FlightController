@@ -2,11 +2,9 @@
 
     Big shoutout to whoever wrote the aeroquad ms5611 sensor integration
     (because it was used as example/base to create this one)
-    
-    Needs serious polishing and maybe even some testing
 */
 
-#define MS5611_I2C_ADDRESS      0x77 // address can also be 0x76
+#define MS5611_I2C_ADDRESS         0x77 // address can also be 0x76
 
 #define MS561101BA_PROM_BASE_ADDR  0xA0
 #define MS561101BA_PROM_REG_COUNT  8     // number of registers in the PROM
@@ -22,7 +20,6 @@
 #define MS561101BA_OSR_1024        0x04
 #define MS561101BA_OSR_2048        0x06
 #define MS561101BA_OSR_4096        0x08
-
 
 float baroRawAltitude = 0.0;
 float baroGroundAltitude = 0.0; 
@@ -100,7 +97,7 @@ class MS5611 {
             Wire.endTransmission();
         };
         
-        unsigned long readRawTemperature() {
+        uint32_t readRawTemperature() {
             Wire.beginTransmission(MS5611_I2C_ADDRESS);
             Wire.write(0);
             Wire.endTransmission();
@@ -109,7 +106,7 @@ class MS5611 {
 
             lastRawTemperature = (Wire.read() << 16) | (Wire.read() << 8) | (Wire.read() << 0);
             
-            int64_t dT = lastRawTemperature - (((long)MS5611Prom[5]) << 8);
+            int64_t dT = lastRawTemperature - (((int32_t)MS5611Prom[5]) << 8);
             offset  = (((int64_t)MS5611Prom[2]) << 16) + ((MS5611Prom[4] * dT) >> 7);
             sens    = (((int64_t)MS5611Prom[1]) << 15) + ((MS5611Prom[3] * dT) >> 8);
 
@@ -138,7 +135,7 @@ class MS5611 {
                 }
                 pressureCount++;
             } else { // select must equal TEMPERATURE
-                rawTemperature = (long)readRawTemperature();
+                rawTemperature = (int32_t)readRawTemperature();
                 requestRawPressure();
                 isReadPressure = true;
             }        
@@ -147,7 +144,7 @@ class MS5611 {
         void measureGroundBaro() {
             // measure initial ground pressure (multiple samples)
             float altSum = 0.0;
-            for (int i = 0; i < 25; i++) {
+            for (uint8_t i = 0; i < 25; i++) {
                 measureBaro();
                 altSum += baroRawAltitude;
                 delay(12);
@@ -165,7 +162,7 @@ class MS5611 {
             rawPressureSum = 0.0;
             rawPressureSumCount = 0;            
             
-            baroRawAltitude = 44330 * (1 - pow(pressure / 101325.0, pressureFactor)); // returns absolute baroAltitude in meters
+            baroRawAltitude = (1.0 - pow(pressure / 101325.0, pressureFactor)) * 44330.0; // returns absolute baroAltitude in centimeters
             
             baroAltitude = filterSmooth(baroRawAltitude, baroAltitude, baroSmoothFactor);
         };
@@ -176,7 +173,7 @@ class MS5611 {
     
     private:
         // Private variables
-        unsigned short MS5611Prom[MS561101BA_PROM_REG_COUNT];
+        uint16_t MS5611Prom[MS561101BA_PROM_REG_COUNT];
         int64_t offset, sens;
         
         bool isReadPressure;
@@ -186,29 +183,29 @@ class MS5611 {
         float rawPressureSum;
         uint8_t rawPressureSumCount;
         
-        long pressure, rawPressure, rawTemperature;
+        int32_t pressure, rawPressure, rawTemperature;
         uint8_t pressureCount;
         
-        long lastRawTemperature;
-        long lastRawPressure; 
+        int32_t lastRawTemperature;
+        int32_t lastRawPressure; 
         
         // Taken from aeroquad
-        unsigned char crc4(unsigned short n_prom[]) {
-            unsigned short n_rem = 0;           // crc reminder
-            unsigned short crc_read;            // original value of the crc
+        uint8_t crc4(uint16_t n_prom[]) {
+            uint16_t n_rem = 0;           // crc reminder
+            uint16_t crc_read;            // original value of the crc
 
             crc_read  = n_prom[7];              // save read CRC
             n_prom[7] = (0xFF00 & (n_prom[7])); // CRC byte is replaced by 0
 
-            for (int cnt = 0; cnt < 16; cnt++) {   // operation is performed on bytes
+            for (int16_t cnt = 0; cnt < 16; cnt++) {   // operation is performed on bytes
                 // choose LSB or MSB
-                if (cnt%2 == 1) {
+                if (cnt % 2 == 1) {
                     n_rem ^= (n_prom[cnt >> 1]) & 0x00FF;
                 } else {
                     n_rem ^= n_prom[cnt >> 1] >> 8;
                 }
 
-                for (int n_bit = 8; n_bit > 0; n_bit--) {
+                for (int16_t n_bit = 8; n_bit > 0; n_bit--) {
                     if (n_rem & (0x8000)) {
                         n_rem = (n_rem << 1) ^ 0x3000;
                     } else {
@@ -218,15 +215,14 @@ class MS5611 {
             }
 
             n_rem = (n_rem >> 12) & 0xF; // // final 4-bit reminder is CRC code
-
             n_prom[7] = crc_read; // restore the crc_read to its original place
 
             return (n_rem);
         }        
         
         // Taken from aeroquad
-        int readPROM() {
-            for (int i = 0; i < MS561101BA_PROM_REG_COUNT; i++) {                
+        int16_t readPROM() {
+            for (int16_t i = 0; i < MS561101BA_PROM_REG_COUNT; i++) {                
                 Wire.beginTransmission(MS5611_I2C_ADDRESS);
                 Wire.write(MS561101BA_PROM_BASE_ADDR + 2 * i);
                 Wire.endTransmission();                
@@ -238,8 +234,8 @@ class MS5611 {
                 }
             }
 
-            int crc = crc4(MS5611Prom);
-            int crcProm = MS5611Prom[7] & 0xf;
+            int16_t crc = crc4(MS5611Prom);
+            int16_t crcProm = MS5611Prom[7] & 0xf;
             if (crc == crcProm) {
                 return 1;
             }
