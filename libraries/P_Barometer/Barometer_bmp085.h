@@ -38,7 +38,7 @@ float baroAltitude = 0.0;
 float baroAltitudeRunning = 0.0;
 
 float baroAltitudeToHoldTarget = 0.0;
-int16_t baroAltitudeHoldThrottle = 1000;
+uint16_t baroAltitudeHoldThrottle = 1000;
 
 class BMP085 {
     public:
@@ -52,6 +52,21 @@ class BMP085 {
             overSamplingSetting = BMP085_STANDARD;
             pressureFactor = 1/5.255;
             baroSmoothFactor = 0.02;
+            
+            // Check if sensor is alive
+            Wire.beginTransmission(BMP085_ADDRESS);
+            Wire.write(0xD0); // BMP085_CHIP_ID_REG
+            Wire.endTransmission();
+            
+            Wire.requestFrom(BMP085_ADDRESS, 1);
+            
+            uint8_t register_value = Wire.read();
+            
+            if (register_value == 0x55) {
+                sensors.sensors_detected |= BAROMETER_DETECTED;
+            } else {
+                return;
+            }                
             
             // Read Calibration Data
             ac1 = sensors.i2c_read16(BMP085_ADDRESS, BMP085_CAL_AC1);

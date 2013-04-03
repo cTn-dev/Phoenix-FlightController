@@ -27,7 +27,7 @@ float baroAltitude = 0.0;
 float baroAltitudeRunning = 0.0;
 
 float baroAltitudeToHoldTarget = 0.0;
-int16_t baroAltitudeHoldThrottle = 1000;
+uint16_t baroAltitudeHoldThrottle = 1000;
 
 class MS5611 {
     public:
@@ -42,15 +42,19 @@ class MS5611 {
             baroSmoothFactor = 0.03;
             
             pressure = 0.0;
-            
+
             // Reset the sensor (to populate its internal PROM registers)
             Wire.beginTransmission(MS5611_I2C_ADDRESS);
             Wire.write(MS561101BA_RESET);
             Wire.endTransmission();
-            delay(100);
+            delay(100);            
             
-            // Read calibration data
-            readPROM();
+            // Check if sensor is alive & Read calibration data            
+            if (readPROM()) {
+                sensors.sensors_detected |= BAROMETER_DETECTED;
+            } else {
+                return;
+            }
             
             requestRawTemperature(); // setup up next measure() for temperature
             isReadPressure = false;

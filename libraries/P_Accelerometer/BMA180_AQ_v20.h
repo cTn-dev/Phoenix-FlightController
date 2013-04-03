@@ -40,10 +40,26 @@ class BMA180 {
         };
 
         void initialize(int bias0, int bias1, int bias2) {
-                accel_bias[XAXIS] = bias0;
-                accel_bias[YAXIS] = bias1;
-                accel_bias[ZAXIS] = bias2;
-                initialize();
+            accel_bias[XAXIS] = bias0;
+            accel_bias[YAXIS] = bias1;
+            accel_bias[ZAXIS] = bias2;
+
+            // Check if sensor is alive
+            Wire.beginTransmission(BMA180_ADDRESS);
+            Wire.write(0x00);
+            Wire.endTransmission();
+            
+            Wire.requestFrom(BMA180_ADDRESS, 1);
+            
+            uint8_t register_value = Wire.read();
+            
+            if (register_value == BMA180_IDENTITY) {
+                sensors.sensors_detected |= ACCELEROMETER_DETECTED;
+            } else {
+                return;
+            }            
+            
+            initialize();
         };
     
         void initialize() {

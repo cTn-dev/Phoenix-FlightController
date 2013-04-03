@@ -102,7 +102,23 @@ class MPU6050 {
             accel_bias[XAXIS] = bias0;
             accel_bias[YAXIS] = bias1;
             accel_bias[ZAXIS] = bias2;       
-        
+ 
+            // Check if sensor is alive
+            Wire.beginTransmission(MPU6050_ADDRESS);
+            Wire.write(MPUREG_WHOAMI);
+            Wire.endTransmission();
+            
+            Wire.requestFrom(MPU6050_ADDRESS, 1);
+            
+            uint8_t register_value = Wire.read();
+            
+            if (register_value == 0x68) {
+                sensors.sensors_detected |= GYROSCOPE_DETECTED;
+                sensors.sensors_detected |= ACCELEROMETER_DETECTED;
+            } else {
+                return;
+            }
+ 
             // Chip reset
             sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_PWR_MGMT_1, BIT_H_RESET);
             

@@ -37,6 +37,21 @@ class HMC5883L {
         };
         
         void initialize() {
+            // Check if sensor is alive
+            Wire.beginTransmission(HMC5883L_ADDRESS);
+            Wire.write(0x00);
+            Wire.endTransmission();
+            
+            Wire.requestFrom(HMC5883L_ADDRESS, 1);
+            
+            uint8_t register_value = Wire.read();
+            
+            if (register_value == 0x10) {
+                sensors.sensors_detected |= MAGNETOMETER_DETECTED;
+            } else {
+                return;
+            }          
+        
             // Set gain to +- 1.0 Ga
             sensors.i2c_write8(HMC5883L_ADDRESS, HMC5883L_RA_CONFIG_B, HMC5883L_GAIN_10);
             

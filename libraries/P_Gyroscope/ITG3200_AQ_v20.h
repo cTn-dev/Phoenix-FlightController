@@ -31,6 +31,21 @@ class ITG3200 {
         };
         
         void initialize() {
+            // Check if sensor is alive
+            Wire.beginTransmission(ITG3200_ADDRESS);
+            Wire.write(0x00);
+            Wire.endTransmission();
+            
+            Wire.requestFrom(ITG3200_ADDRESS, 1);
+            
+            uint8_t register_value = Wire.read();
+            
+            if ((register_value & ITG3200_IDENTITY_MASK) == ITG3200_IDENTITY) {
+                sensors.sensors_detected |= GYROSCOPE_DETECTED;
+            } else {
+                return;
+            } 
+        
             sensors.i2c_write8(ITG3200_ADDRESS, ITG3200_RESET_ADDRESS, ITG3200_RESET_VALUE); // send a reset to the device
             
             // Startup delay 
