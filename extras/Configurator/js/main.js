@@ -334,34 +334,26 @@ function process_data() {
             
             if (bit_check(sensors_detected, 0)) { // Gyroscope detected
                 $('.gyro', e_sensor_status).addClass('on');
-                $('.gyro span', e_sensor_status).html('ON');
             } else {
                 $('.gyro', e_sensor_status).removeClass('on');
-                $('.gyro span', e_sensor_status).html('OFF');
             }
             
             if (bit_check(sensors_detected, 1)) { // Accelerometer detected
                 $('.accel', e_sensor_status).addClass('on');
-                $('.accel span', e_sensor_status).html('ON');
             } else {
                 $('.accel', e_sensor_status).removeClass('on');
-                $('.accel span', e_sensor_status).html('OFF');
             }
 
             if (bit_check(sensors_detected, 2)) { // Magnetometer detected
                 $('.mag', e_sensor_status).addClass('on');
-                $('.mag span', e_sensor_status).html('ON');
             } else {
                 $('.mag', e_sensor_status).removeClass('on');
-                $('.mag span', e_sensor_status).html('OFF');
             }  
 
             if (bit_check(sensors_detected, 3)) { // Barometer detected
                 $('.baro', e_sensor_status).addClass('on');
-                $('.baro span', e_sensor_status).html('ON');
             } else {
                 $('.baro', e_sensor_status).removeClass('on');
-                $('.baro span', e_sensor_status).html('OFF');
             }              
         break;
     }

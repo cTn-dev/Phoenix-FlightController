@@ -99,9 +99,7 @@ a:hover {
             background-color: #13d81d;
         }       
 #sensor-status {
-    float: left;
-    
-    margin-left: 40px;
+    float: right;
     
     height: 22px;
     line-height: 22px;
@@ -109,14 +107,20 @@ a:hover {
     #sensor-status li {
         float: left;
         
-        width: 80px;
+        margin-left: 10px;
+        padding: 0 5px 0 5px;
+        
+        height: 18px;
+        line-height: 18px;
+        
+        color: white;
+        text-align: center;
+        
+        border: 1px solid #c0c0c0;
+        background-color: #be2222;
     }
-    #sensor-status span {
-        font-weight: bold;
-        color: red;
-    }
-    #sensor-status .on span {
-        color: green;
+    #sensor-status .on {
+        background-color: #0fab16;
     }
 #command-log {    
     margin-bottom: 10px;

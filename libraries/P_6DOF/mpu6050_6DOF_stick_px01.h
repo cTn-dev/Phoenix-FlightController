@@ -102,7 +102,13 @@ class MPU6050 {
             accel_bias[XAXIS] = bias0;
             accel_bias[YAXIS] = bias1;
             accel_bias[ZAXIS] = bias2;       
- 
+
+            // Chip reset
+            sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_PWR_MGMT_1, BIT_H_RESET);
+            
+            // Startup delay 
+            delay(100);  
+
             // Check if sensor is alive
             Wire.beginTransmission(MPU6050_ADDRESS);
             Wire.write(MPUREG_WHOAMI);
@@ -118,12 +124,6 @@ class MPU6050 {
             } else {
                 return;
             }
- 
-            // Chip reset
-            sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_PWR_MGMT_1, BIT_H_RESET);
-            
-            // Startup delay 
-            delay(100);  
             
             // Enable auxiliary I2C bus bypass
             // *NOT* Necessary for all setups, but some boards have magnetometer attached to the auxiliary I2C bus
