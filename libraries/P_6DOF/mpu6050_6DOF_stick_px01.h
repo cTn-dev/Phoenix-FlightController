@@ -84,12 +84,6 @@ class MPU6050 {
             // or you can use full range / full sensitivity, which will result in the same output.
             gyroScaleFactor = radians(1000.0 / 32768.0); // 0.030517578125
             
-            // Manually defined accel bias
-            // To calculate accel bias measure maximum positive and maximum negative value for axis
-            // and then calculate average which will be used as bias
-            // accelXpositive and accelXnegative should be an average of at least 500 samples
-            // biasX = (accelXpositive + accelXnegative) / 2;
-            
             // Accel scale factor = 9.81 m/s^2 / scale
             accelScaleFactor = 9.81 / 8192.0; // 0.001197509765625
             

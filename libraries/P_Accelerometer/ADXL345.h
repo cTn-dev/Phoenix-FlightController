@@ -6,6 +6,7 @@
 */
 
 #define ADXL345_ADDRESS 0x53
+#define ADXL345_DEVID   0xE5
 
 float accel[3];
 
@@ -32,15 +33,15 @@ class ADXL345 {
             
             uint8_t register_value = Wire.read();
             
-            if (register_value == 0xE5) {
+            if (register_value == ADXL345_DEVID) {
                 sensors.sensors_detected |= ACCELEROMETER_DETECTED;
             } else {
                 return;
             }
             
-            sensors.i2c_write8(ADXL345_ADDRESS, 0x2D, 1 << 3);     // set device to *measure*
-            sensors.i2c_write8(ADXL345_ADDRESS, 0x31, 0x09);       // set full range and +/- 4G
-            sensors.i2c_write8(ADXL345_ADDRESS, 0x2C, 8 + 2 + 1);  // 200hz sampling
+            sensors.i2c_write8(ADXL345_ADDRESS, 0x2D, 0x08);  // set device to *measure*
+            sensors.i2c_write8(ADXL345_ADDRESS, 0x31, 0x09);  // set full range and +/- 4G
+            sensors.i2c_write8(ADXL345_ADDRESS, 0x2C, 0x0B);  // 200hz sampling
         };
 
         // ~1280ms (only runs when requested)
