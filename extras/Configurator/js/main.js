@@ -26,7 +26,10 @@ $(document).ready(function() {
                     }));        
                 });
             } else {
-                $(port_picker).append('<option>NOT FOUND</option>');
+                $(port_picker).append($("<option/>", {
+                    value: 0,
+                    text: 'NOT FOUND'
+                }));
                 
                 console.log("No serial ports detected");
             }
@@ -39,31 +42,33 @@ $(document).ready(function() {
     $('div#port-picker a.connect').click(function() {
         var clicks = $(this).data('clicks');
         
-        if (clicks) { // odd number of clicks
-            stop_data_stream();
-            chrome.serial.close(connectionId, onClosed);
-            
-            clearTimeout(connection_delay);
-            clearInterval(serial_poll);
-            
-            $(this).text('Connect');
-            $(this).removeClass('active');            
-        } else { // even number of clicks         
-            var selected_port = String($(port_picker).val());
-            var selected_baud = parseInt(baud_picker.val());
-            connection_delay = parseInt(delay_picker.val());
-            
-            console.log('Connecting to: ' + selected_port);
-            
-            chrome.serial.open(selected_port, {
-                bitrate: selected_baud
-            }, onOpen);
-            
-            $(this).text('Disconnect');  
-            $(this).addClass('active');
-        }
+        selected_port = String($(port_picker).val());
+        selected_baud = parseInt(baud_picker.val());
+        connection_delay = parseInt(delay_picker.val());
         
-        $(this).data("clicks", !clicks);
+        if (selected_port != '0') {
+            if (clicks) { // odd number of clicks
+                stop_data_stream();
+                chrome.serial.close(connectionId, onClosed);
+                
+                clearTimeout(connection_delay);
+                clearInterval(serial_poll);
+                
+                $(this).text('Connect');
+                $(this).removeClass('active');            
+            } else { // even number of clicks        
+                console.log('Connecting to: ' + selected_port);
+                
+                chrome.serial.open(selected_port, {
+                    bitrate: selected_baud
+                }, onOpen);
+                
+                $(this).text('Disconnect');  
+                $(this).addClass('active');
+            }
+            
+            $(this).data("clicks", !clicks);
+        }
     }); 
 
     // Tabs
@@ -179,6 +184,7 @@ function onClosed(result) {
         connectionId = -1; // reset connection id
         $('#content').empty(); // empty content
         $('#tabs > ul li').removeClass('active'); // de-select any selected tabs
+        sensor_status(sensors_detected = 0x00); // reset active sensor indicators
     } else { // Something went wrong
         if (connectionId > 0) {
             console.log('There was an error that happened during "connection-close" procedure.');
@@ -329,35 +335,38 @@ function process_data() {
         break;
         case 12:
             sensors_detected = parseInt((message_buffer_uint8_view[0] << 8) | message_buffer_uint8_view[1]);
-            
-            var e_sensor_status = $('div#sensor-status');
-            
-            if (bit_check(sensors_detected, 0)) { // Gyroscope detected
-                $('.gyro', e_sensor_status).addClass('on');
-            } else {
-                $('.gyro', e_sensor_status).removeClass('on');
-            }
-            
-            if (bit_check(sensors_detected, 1)) { // Accelerometer detected
-                $('.accel', e_sensor_status).addClass('on');
-            } else {
-                $('.accel', e_sensor_status).removeClass('on');
-            }
-
-            if (bit_check(sensors_detected, 2)) { // Magnetometer detected
-                $('.mag', e_sensor_status).addClass('on');
-            } else {
-                $('.mag', e_sensor_status).removeClass('on');
-            }  
-
-            if (bit_check(sensors_detected, 3)) { // Barometer detected
-                $('.baro', e_sensor_status).addClass('on');
-            } else {
-                $('.baro', e_sensor_status).removeClass('on');
-            }              
+            sensor_status(sensors_detected);            
         break;
     }
 };
+
+function sensor_status(sensors_detected) {
+    var e_sensor_status = $('div#sensor-status');
+    
+    if (bit_check(sensors_detected, 0)) { // Gyroscope detected
+        $('.gyro', e_sensor_status).addClass('on');
+    } else {
+        $('.gyro', e_sensor_status).removeClass('on');
+    }
+    
+    if (bit_check(sensors_detected, 1)) { // Accelerometer detected
+        $('.accel', e_sensor_status).addClass('on');
+    } else {
+        $('.accel', e_sensor_status).removeClass('on');
+    }
+
+    if (bit_check(sensors_detected, 2)) { // Magnetometer detected
+        $('.mag', e_sensor_status).addClass('on');
+    } else {
+        $('.mag', e_sensor_status).removeClass('on');
+    }  
+
+    if (bit_check(sensors_detected, 3)) { // Barometer detected
+        $('.baro', e_sensor_status).addClass('on');
+    } else {
+        $('.baro', e_sensor_status).removeClass('on');
+    }  
+}
 
 function highByte(num) {
     return num >> 8;
