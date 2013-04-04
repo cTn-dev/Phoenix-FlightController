@@ -34,6 +34,8 @@ a:hover {
     padding: 0 10px 0 10px;
 }
 #port-picker {
+    float: left;
+    
     height: 22px;
     margin-bottom: 10px;
 }
@@ -96,7 +98,26 @@ a:hover {
         #port-picker a.connect.active:hover {
             background-color: #13d81d;
         }       
+#sensor-status {
+    float: left;
+    
+    margin-left: 40px;
+    
+    height: 22px;
+    line-height: 22px;
+}
+    #sensor-status li {
+        float: left;
         
+        width: 80px;
+    }
+    #sensor-status span {
+        font-weight: bold;
+        color: red;
+    }
+    #sensor-status .on span {
+        color: green;
+    }
 #command-log {    
     margin-bottom: 10px;
     

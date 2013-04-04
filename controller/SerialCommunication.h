@@ -162,10 +162,21 @@ class Configurator {
                     // Send over the accel calibration data
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
-                    Serial.write(0x0B); // command
+                    Serial.write(0x0B); // command 11
                     Serial.write(0x00); // payload length MSB
                     Serial.write(0x01); // payload length LSB  
+                    
                     Serial.write(MOTORS); // payload
+                break;
+                case 12: // Requesting sensors detected in current setup
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x0C); // command 12
+                    Serial.write(0x00); // payload length MSB
+                    Serial.write(0x02); // payload length LSB  
+                    
+                    Serial.write(highByte(sensors.sensors_detected)); // payload high byte
+                    Serial.write(lowByte(sensors.sensors_detected)); // payload low byte
                 break;
                 default: // Unrecognized command
                     REFUSED();

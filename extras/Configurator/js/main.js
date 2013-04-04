@@ -138,14 +138,30 @@ function onOpen(openInfo) {
             // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
             bufView[0] = 0xB5; // sync char 1
             bufView[1] = 0x62; // sync char 2
-            bufView[2] = 0x0B; // command // 11
+            bufView[2] = 0x0B; // command 11
             bufView[3] = 0x00; // payload length MSB
             bufView[4] = 0x01; // payload length LSB
             bufView[5] = 0x01; // payload
 
             chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
                 console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
-            });            
+            });
+
+            // requesting sensors detected
+            var bufferOut = new ArrayBuffer(6);
+            var bufView = new Uint8Array(bufferOut);
+            
+            // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
+            bufView[0] = 0xB5; // sync char 1
+            bufView[1] = 0x62; // sync char 2
+            bufView[2] = 0x0C; // command // 12
+            bufView[3] = 0x00; // payload length MSB
+            bufView[4] = 0x01; // payload length LSB
+            bufView[5] = 0x01; // payload
+
+            chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
+                console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+            });
         }, connection_delay * 1000);            
         
     } else {
@@ -311,6 +327,43 @@ function process_data() {
         case 11: // Motor amount / count
             motors = parseInt(message_buffer_uint8_view[0]);
         break;
+        case 12:
+            sensors_detected = parseInt((message_buffer_uint8_view[0] << 8) | message_buffer_uint8_view[1]);
+            
+            var e_sensor_status = $('div#sensor-status');
+            
+            if (bit_check(sensors_detected, 0)) { // Gyroscope detected
+                $('.gyro', e_sensor_status).addClass('on');
+                $('.gyro span', e_sensor_status).html('ON');
+            } else {
+                $('.gyro', e_sensor_status).removeClass('on');
+                $('.gyro span', e_sensor_status).html('OFF');
+            }
+            
+            if (bit_check(sensors_detected, 1)) { // Accelerometer detected
+                $('.accel', e_sensor_status).addClass('on');
+                $('.accel span', e_sensor_status).html('ON');
+            } else {
+                $('.accel', e_sensor_status).removeClass('on');
+                $('.accel span', e_sensor_status).html('OFF');
+            }
+
+            if (bit_check(sensors_detected, 2)) { // Magnetometer detected
+                $('.mag', e_sensor_status).addClass('on');
+                $('.mag span', e_sensor_status).html('ON');
+            } else {
+                $('.mag', e_sensor_status).removeClass('on');
+                $('.mag span', e_sensor_status).html('OFF');
+            }  
+
+            if (bit_check(sensors_detected, 3)) { // Barometer detected
+                $('.baro', e_sensor_status).addClass('on');
+                $('.baro span', e_sensor_status).html('ON');
+            } else {
+                $('.baro', e_sensor_status).removeClass('on');
+                $('.baro span', e_sensor_status).html('OFF');
+            }              
+        break;
     }
 };
 
@@ -320,4 +373,8 @@ function highByte(num) {
 
 function lowByte(num) {
     return 0x00FF & num;
+}
+
+function bit_check(num, bit) {
+    return ((num >> bit) % 2 != 0)
 }
