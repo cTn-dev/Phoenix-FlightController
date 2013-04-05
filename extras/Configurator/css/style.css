@@ -633,3 +633,10 @@ table.channel_assigner {
         background-color: #ff0000;
         text-decoration: none;
     }
+.tab-about .supporters {
+    height: 200px;
+    
+    line-height: 18px;
+    text-align: center;
+    font-weight: bold;
+}    
