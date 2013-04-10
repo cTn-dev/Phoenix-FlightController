@@ -5,9 +5,12 @@
 
 class SensorArray {
     public:
-        uint16_t sensors_detected = 0x00;
+        uint16_t sensors_detected;
         
-        SensorArray() {};
+        SensorArray() {
+            sensors_detected = 0x00;
+        };
+        
         void initializeGyro();
         void readGyroSum();
         void evaluateGyro();
