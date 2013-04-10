@@ -8,6 +8,11 @@ function tab_initialize_vehicle_view() {
     });    
     
     // request kinematics data from flight controller
+    timers.push(setInterval(kinematics_pull, 50));
+    command_log('Requesting Kinematics Data from Flight Controller');
+}
+
+function kinematics_pull() {
     var bufferOut = new ArrayBuffer(7);
     var bufView = new Uint8Array(bufferOut);
     
@@ -21,10 +26,9 @@ function tab_initialize_vehicle_view() {
     bufView[6] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5]; // crc
     
     chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
-        console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
-        command_log('Requesting Kinematics Data (vehicle state) from Flight Controller');
+        //console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
     }); 
-};
+}
 
 function process_vehicle_view() {
     if ($('#tabs > ul .active').hasClass('tab_vehicle_view')) { // used to protect against flotr object loss while switching to another tab        
@@ -45,4 +49,4 @@ function process_vehicle_view() {
         $('#cubePITCH', cube).css('-webkit-transform', 'rotateX(' + data[1] + 'deg)');
         $('#cubeROLL', cube).css('-webkit-transform', 'rotateZ(' + data[0] + 'deg)');        
     }
-};
+}

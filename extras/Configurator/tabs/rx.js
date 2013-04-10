@@ -92,6 +92,11 @@ function tab_initialize_rx() {
         {data: receiver_data[7], label: "CH-7"} ], receiver_options);                      
     
     // request receiver data from flight controller
+    timers.push(setInterval(rx_poll, 50));
+    command_log('Requesting Receiver Data from Flight Controller');
+}
+
+function rx_poll() {
     var bufferOut = new ArrayBuffer(7);
     var bufView = new Uint8Array(bufferOut);
     
@@ -105,10 +110,9 @@ function tab_initialize_rx() {
     bufView[6] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5]; // crc
     
     chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
-        console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
-        command_log('Requesting Receiver Data from Flight Controller');
-    });    
-};
+        //console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+    });  
+}
 
 function process_data_receiver() {
     if ($('#tabs > ul .active').hasClass('tab_tx_rx')) { // used to protect against flotr object loss while switching to another tab

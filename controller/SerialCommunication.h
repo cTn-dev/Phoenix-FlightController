@@ -1,10 +1,9 @@
-#if defined(__MK20DX128__)
-    #define CONFIGURATOR_DATA_SPEED_DIVIDER 4 // 100hz / divider(4) = 25Hz
-#endif
-
-#if defined(__AVR__)
-    #define CONFIGURATOR_DATA_SPEED_DIVIDER 8 // 100hz / divider(8) = 12.5Hz
-#endif
+/*  PSP - Phoenix Serial Protocol
+    
+    Inspired by uBlox serial protocol and multiwii serial protocol
+    
+    Data structure is subject to change without further notice.   
+*/
 
 class Configurator {
     public:
@@ -14,12 +13,6 @@ class Configurator {
             
             payload_length_expected = 0;
             payload_length_received = 0;
-            
-            output_counter = 0;
-            output_sensor_data = 0;
-            output_RX_data = 0;
-            output_kinematics = 0;
-            output_motor_out = 0;
         };
     
         void read_packet() {
@@ -31,49 +24,49 @@ class Configurator {
                         if (data == 0xB5) { // sync char 1  
                             state++;
                         }
-                    break;
+                        break;
                     case 1:
                         if (data == 0x62) { // sync char 2  
                             state++;
                         } else {
                             state = 0; // Restart and try again
                         }
-                    break;
+                        break;
                     case 2: // command
                         command = data;
-                        crc = data;
+                        message_crc = data;
                         
                         state++;
-                    break;
+                        break;
                     case 3: // payload length MSB
                         payload_length_expected = 0; // reset
                         payload_length_expected = data << 8;
-                        crc ^= data;
+                        message_crc ^= data;
                         
                         state++;
-                    break; // payload length LSB
+                        break; // payload length LSB
                     case 4:
                         payload_length_expected |= data;
-                        crc ^= data;
+                        message_crc ^= data;
                         
                         state++;
-                    break;
+                        break;
                     case 5: // payload
                         data_buffer[payload_length_received] = data;
-                        crc ^= data;
+                        message_crc ^= data;
                         payload_length_received++;
                         
                         if (payload_length_received >= payload_length_expected) {
                             state++;
                         }
-                    break;
+                        break;
                     case 6: // CRC
-                        if (crc == data) {
+                        if (message_crc == data) {
                             // CRC is ok, proecss data
                             process_data();
                         } else {
                             // respond that CRC failed
-                            CRC_FAILED(crc);
+                            CRC_FAILED(message_crc);
                         }
                         
                         // reset variables
@@ -81,7 +74,7 @@ class Configurator {
                         
                         payload_length_received = 0;
                         state = 0;
-                    break;
+                        break;
                 }
             }        
         };
@@ -92,7 +85,7 @@ class Configurator {
                     ACK();
                     
                     send_UNION();
-                break;
+                    break;
                 case 2: // Received configuration union
                     if (payload_length_received == sizeof(CONFIG)) {
                         // process data from buffer (throw it inside union)
@@ -108,30 +101,83 @@ class Configurator {
                         // Refuse (buffer size doesn't match struct memory size)
                         REFUSED();
                     }
-                break;                
-                case 3: // Requesting Sensor Data (gyro + accel)
-                    ACK();
-                    output_sensor_data = 1;
-                break;
-                case 4: // Requesting TX (RX) Data
-                    ACK();
-                    output_RX_data = 1;
-                break;
-                case 5: // Requesting 3D vehicle view
-                    ACK();
-                    output_kinematics = 1;
-                break;
-                case 6: // Requesting Motor Output
-                    ACK();
-                    output_motor_out = 1;
-                break;
-                case 7: // Disable all periodic data outputs
-                    // there is no ACK in this case (this command is executed silently)
-                    output_sensor_data = 0;
-                    output_RX_data = 0;
-                    output_kinematics = 0;
-                    output_motor_out = 0;
-                break;
+                    break;                
+                case 3: { // Requesting Sensor Data (gyro + accel)
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x03); // command
+                    Serial.write(0x00); // payload length MSB
+                    Serial.write(24); // payload length LSB
+                    
+                    uint8_t crc = 0x03 ^ 0x00 ^ 24;
+                    // gyro
+                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                        crc = send_float(gyro[axis], crc);
+                    }
+
+                    // accel
+                    float norm = sqrt(accel[XAXIS] * accel[XAXIS] + accel[YAXIS] * accel[YAXIS] + accel[ZAXIS] * accel[ZAXIS]);
+                    
+                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                        crc = send_float((float)(accel[axis] / norm), crc);
+                    } 
+                    
+                    Serial.write(crc); // crc
+                    }
+                    break;
+                case 4: { // Requesting TX (RX) Data
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x04); // command
+                    Serial.write(0x00); // payload length MSB
+                    Serial.write(CHANNELS * 2); // payload length LSB  
+                    
+                    uint8_t crc = 0x04 ^ 0x00 ^ (CHANNELS * 2);
+                    for (uint8_t channel = 0; channel < CHANNELS; channel++) {
+                        Serial.write(highByte(RX[channel]));
+                        Serial.write(lowByte(RX[channel]));
+                        
+                        crc ^= highByte(RX[channel]);
+                        crc ^= lowByte(RX[channel]);
+                    }
+                    
+                    Serial.write(crc); // crc
+                    }
+                    break;
+                case 5: { // Requesting 3D vehicle view
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x05); // command
+                    Serial.write(0x00); // payload length MSB
+                    Serial.write(12); // payload length LSB  
+
+                    uint8_t crc = 0x05 ^ 0x00 ^ 12;
+                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                        crc = send_float(kinematicsAngle[axis], crc);
+                    }
+
+                    Serial.write(crc); // crc
+                    }
+                    break;
+                case 6: {// Requesting Motor Output
+                    Serial.write(0xB5); // sync char 1
+                    Serial.write(0x62); // sync char 2
+                    Serial.write(0x06); // command
+                    Serial.write(0x00); // payload length MSB
+                    Serial.write(MOTORS * 2); // payload length LSB (* 2 because of 2 bytes for each motor) 
+                    
+                    uint8_t crc = 0x06 ^ 0x00 ^ (MOTORS * 2);
+                    for (uint8_t motor = 0; motor < MOTORS; motor++) {
+                        Serial.write(highByte(MotorOut[motor]));
+                        Serial.write(lowByte(MotorOut[motor]));
+                        
+                        crc ^= highByte(MotorOut[motor]);
+                        crc ^= lowByte(MotorOut[motor]);
+                    }
+                    
+                    Serial.write(crc); // crc
+                    }
+                    break;
                 case 8: { // Requesting Accel calibration
                     sensors.calibrateAccel();
                     
@@ -157,8 +203,8 @@ class Configurator {
                     }
                     
                     Serial.write(crc); // crc
-                }
-                break;
+                    }
+                    break;
                 case 9: // Requesting eeprom re-initialization
                     ACK();
                     
@@ -167,7 +213,7 @@ class Configurator {
 
                     // Send back configuration union
                     send_UNION();                    
-                break;
+                    break;
                 case 10: // Sending motor command
                     // data_buffer should contain 2 bytes (byte 0 = motor number, byte 1 = value)
                     if (data_buffer[0] < MOTORS) { // Check if motor number is within our setup
@@ -176,7 +222,7 @@ class Configurator {
                     } else { // Motor number is not in our setup
                         REFUSED();
                     }
-                break;
+                    break;
                 case 11: // Requesting amount of motors used in current setup
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
@@ -187,7 +233,7 @@ class Configurator {
                     Serial.write(MOTORS); // payload
                     
                     Serial.write(0x0B ^ 0x00 ^ 0x01 ^ MOTORS); // crc
-                break;
+                    break;
                 case 12: // Requesting sensors detected in current setup
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
@@ -199,92 +245,9 @@ class Configurator {
                     Serial.write(lowByte(sensors.sensors_detected)); // payload low byte
                     
                     Serial.write(0x0C ^ 0x00 ^ 0x02 ^ highByte(sensors.sensors_detected) ^ lowByte(sensors.sensors_detected)); // crc
-                break;
+                    break;
                 default: // Unrecognized command
                     REFUSED();
-            }
-        };
-        
-        void process_output() {
-            output_counter++;
-            if (output_counter >= CONFIGURATOR_DATA_SPEED_DIVIDER) {
-                if (output_sensor_data) {
-                    Serial.write(0xB5); // sync char 1
-                    Serial.write(0x62); // sync char 2
-                    Serial.write(0x03); // command
-                    Serial.write(0x00); // payload length MSB
-                    Serial.write(24); // payload length LSB
-                    
-                    uint8_t crc = 0x03 ^ 0x00 ^ 24;
-                    // gyro
-                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        crc = send_float(gyro[axis], crc);
-                    }
-
-                    // accel
-                    float norm = sqrt(accel[XAXIS] * accel[XAXIS] + accel[YAXIS] * accel[YAXIS] + accel[ZAXIS] * accel[ZAXIS]);
-                    
-                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        crc = send_float((float)(accel[axis] / norm), crc);
-                    } 
-                    
-                    Serial.write(crc); // crc
-                }
-                
-                if (output_RX_data) {
-                    Serial.write(0xB5); // sync char 1
-                    Serial.write(0x62); // sync char 2
-                    Serial.write(0x04); // command
-                    Serial.write(0x00); // payload length MSB
-                    Serial.write(CHANNELS * 2); // payload length LSB  
-                    
-                    uint8_t crc = 0x04 ^ 0x00 ^ (CHANNELS * 2);
-                    for (uint8_t channel = 0; channel < CHANNELS; channel++) {
-                        Serial.write(highByte(RX[channel]));
-                        Serial.write(lowByte(RX[channel]));
-                        
-                        crc ^= highByte(RX[channel]);
-                        crc ^= lowByte(RX[channel]);
-                    }
-                    
-                    Serial.write(crc); // crc
-                }
-                
-                if (output_kinematics) {
-                    Serial.write(0xB5); // sync char 1
-                    Serial.write(0x62); // sync char 2
-                    Serial.write(0x05); // command
-                    Serial.write(0x00); // payload length MSB
-                    Serial.write(12); // payload length LSB  
-
-                    uint8_t crc = 0x05 ^ 0x00 ^ 12;
-                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        crc = send_float(kinematicsAngle[axis], crc);
-                    }
-
-                    Serial.write(crc); // crc
-                }
-                
-                if (output_motor_out) {
-                    Serial.write(0xB5); // sync char 1
-                    Serial.write(0x62); // sync char 2
-                    Serial.write(0x06); // command
-                    Serial.write(0x00); // payload length MSB
-                    Serial.write(MOTORS * 2); // payload length LSB (* 2 because of 2 bytes for each motor) 
-                    
-                    uint8_t crc = 0x06 ^ 0x00 ^ (MOTORS * 2);
-                    for (uint8_t motor = 0; motor < MOTORS; motor++) {
-                        Serial.write(highByte(MotorOut[motor]));
-                        Serial.write(lowByte(MotorOut[motor]));
-                        
-                        crc ^= highByte(MotorOut[motor]);
-                        crc ^= lowByte(MotorOut[motor]);
-                    }
-                    
-                    Serial.write(crc); // crc
-                }
-                
-                output_counter = 0; // reset
             }
         };
         
@@ -350,21 +313,14 @@ class Configurator {
         
         uint8_t state;
         uint8_t command;
-        uint8_t crc;
+        uint8_t message_crc;
         
         uint16_t payload_length_expected;
         uint16_t payload_length_received;
         
         uint8_t data_buffer[200];
-
-        uint8_t output_counter;
-        bool output_sensor_data;
-        bool output_RX_data;
-        bool output_kinematics;
-        bool output_motor_out;
 } configurator;
 
 void readSerial() {
     configurator.read_packet();
-    configurator.process_output();
 }

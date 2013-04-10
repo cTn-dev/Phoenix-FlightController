@@ -6,6 +6,8 @@ var eepromConfigSize;
 
 var motors = 0;
 
+var timers = new Array();
+
 $(document).ready(function() { 
     port_picker = $('div#port-picker .port select');
     baud_picker = $('div#port-picker #baud');
@@ -48,12 +50,13 @@ $(document).ready(function() {
         
         if (selected_port != '0') {
             if (clicks) { // odd number of clicks
-                stop_data_stream();
                 chrome.serial.close(connectionId, onClosed);
                 
                 clearTimeout(connection_delay);
                 clearInterval(serial_poll);
                 clearInterval(port_usage_poll);
+                // Disable any active "data pulling" timer
+                disable_timers();
                 
                 // Reset port usage indicator to 0
                 $('span.port-usage').html(0 + ' %');
@@ -83,10 +86,12 @@ $(document).ready(function() {
                 command_log('You <span style="color: red;">can\'t</span> view the tabs unless you <span style="color: green">connect</span> to the flight controller.');
                 return;
             }
+
+            // Disable any active "data pulling" timer
+            disable_timers();
             
             // disable previous active button
             $('li', tabs).removeClass('active');
-            stop_data_stream();
             
             // Highlight selected button
             $(this).parent().addClass('active');
@@ -124,6 +129,15 @@ function command_log(message) {
     $('div#command-log').scrollTop($('div#command-log div.wrapper').height());    
 };
 
+function disable_timers() {
+    for (var i = 0; i < timers.length; i++) {
+        clearInterval(timers[i]);
+    }
+    
+    // kill all the refferences
+    timers = [];
+}    
+
 function onOpen(openInfo) {
     connectionId = openInfo.connectionId;
     
@@ -155,7 +169,7 @@ function onOpen(openInfo) {
             bufView[6] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5]; // crc
 
             chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
-                console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+                // console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
             });
 
             // requesting sensors detected
@@ -172,7 +186,7 @@ function onOpen(openInfo) {
             bufView[6] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5]; // crc
 
             chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
-                console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+                // console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
             });
         }, connection_delay * 1000);            
         
@@ -202,24 +216,6 @@ function onClosed(result) {
 
 function readPoll() {
     chrome.serial.read(connectionId, 24, onCharRead);
-};
-
-function stop_data_stream() {
-    var bufferOut = new ArrayBuffer(7);
-    var bufView = new Uint8Array(bufferOut);
-
-    // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
-    bufView[0] = 0xB5; // sync char 1
-    bufView[1] = 0x62; // sync char 2
-    bufView[2] = 0x07; // command
-    bufView[3] = 0x00; // payload length MSB
-    bufView[4] = 0x01; // payload length LSB
-    bufView[5] = 0x01; // payload
-    bufView[6] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5]; // crc
-
-    chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
-        console.log("STOP DATA STREAM command - Wrote: " + writeInfo.bytesWritten + " bytes");
-    });     
 };
 
 

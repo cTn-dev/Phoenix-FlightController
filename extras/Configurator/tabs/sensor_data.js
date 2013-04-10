@@ -83,6 +83,11 @@ function tab_initialize_sensor_data() {
         {data: accel_data[2], label: "Z - acceleration"} ], accel_options);                         
     
     // request sensor data from flight controller
+    timers.push(setInterval(sensor_pull, 50));
+    command_log('Requesting Sensor Data from Flight Controller');
+}
+
+function sensor_pull() {
     var bufferOut = new ArrayBuffer(7);
     var bufView = new Uint8Array(bufferOut);
     
@@ -96,10 +101,9 @@ function tab_initialize_sensor_data() {
     bufView[6] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5]; // crc
     
     chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
-        console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
-        command_log('Requesting Sensor Data from Flight Controller');
-    });                      
-};
+        //console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+    });     
+}
 
 function process_data_sensors() {
     if ($('#tabs > ul .active').hasClass('tab_sensor_data')) { // used to protect against flotr object loss while switching to another tab
@@ -150,4 +154,4 @@ function process_data_sensors() {
 
         samples_i++;
     }
-};
+}
