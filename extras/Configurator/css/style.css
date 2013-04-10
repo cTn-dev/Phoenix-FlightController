@@ -135,6 +135,29 @@ a:hover {
     #command-log .wrapper {
         padding: 5px;
     }
+#port-usage {
+    position: absolute;
+    
+    right: 11px;
+    margin-top: 1px;
+    
+    padding-top: 2px;
+    padding-right: 5px;
+    padding-left: 5px;
+    
+    width: 115px;
+    
+    line-height: 20px;
+    
+    border: 1px solid silver;
+    border-top: 0;
+    border-right: 0;
+    
+    background-color: #ededed;
+}
+    #port-usage span {
+        font-weight: bold;
+    }
 #tabs {
     position: absolute;
     margin-top: 1px;

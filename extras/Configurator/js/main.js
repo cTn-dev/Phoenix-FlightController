@@ -53,6 +53,10 @@ $(document).ready(function() {
                 
                 clearTimeout(connection_delay);
                 clearInterval(serial_poll);
+                clearInterval(port_usage_poll);
+                
+                // Reset port usage indicator to 0
+                $('span.port-usage').html(0 + ' %');
                 
                 $(this).text('Connect');
                 $(this).removeClass('active');            
@@ -132,6 +136,7 @@ function onOpen(openInfo) {
         connection_delay = setTimeout(function() {
             // start polling
             serial_poll = setInterval(readPoll, 10);
+            port_usage_poll = setInterval(port_usage, 1000);
             
             // request configuration data (so we have something to work with)
             requestUNION();
@@ -223,6 +228,7 @@ var message_length_expected = 0;
 var message_length_received = 0;
 var message_buffer;
 var message_buffer_uint8_view;
+var char_counter = 0;
 
 function onCharRead(readInfo) {
     if (readInfo && readInfo.bytesRead > 0 && readInfo.data) {
@@ -276,9 +282,11 @@ function onCharRead(readInfo) {
                     }
                 break;
             }
+            
+            char_counter++;
         }
     }
-};
+}
 
 function process_data() {
     switch (command) {
@@ -338,7 +346,7 @@ function process_data() {
             sensor_status(sensors_detected);            
         break;
     }
-};
+}
 
 function sensor_status(sensors_detected) {
     var e_sensor_status = $('div#sensor-status');
@@ -366,6 +374,14 @@ function sensor_status(sensors_detected) {
     } else {
         $('.baro', e_sensor_status).removeClass('on');
     }  
+}
+
+function port_usage() {
+    var port_usage = (char_counter * 10 / selected_baud) * 100;
+    $('span.port-usage').html(parseInt(port_usage) + ' %');
+
+    // reset counter
+    char_counter = 0;
 }
 
 function highByte(num) {
