@@ -86,7 +86,7 @@ DataView.prototype.setUNION = function (structure) {
     this.setUint8(needle++, structure.calibrateESC);
     this.setUint16(needle, structure.minimumArmedThrottle, 1);
     needle += 2;
-    
+
     for (var i = 0; i < structure.ACCEL_BIAS.length; i++) {
         this.setInt16(needle, structure.ACCEL_BIAS[i], 1);
         needle += 2;
@@ -101,17 +101,17 @@ DataView.prototype.setUNION = function (structure) {
         this.setFloat32(needle, structure.PID_YAW_c[i],        1);
         this.setFloat32(needle + 16, structure.PID_PITCH_c[i], 1);
         this.setFloat32(needle + 32, structure.PID_ROLL_c[i],  1);
-
+        
         this.setFloat32(needle + 48, structure.PID_YAW_m[i],   1);
         this.setFloat32(needle + 64, structure.PID_PITCH_m[i], 1);
         this.setFloat32(needle + 80, structure.PID_ROLL_m[i],  1);
-
+        
         this.setFloat32(needle + 96, structure.PID_BARO[i],    1);
         this.setFloat32(needle + 112, structure.PID_SONAR[i],  1);
         this.setFloat32(needle + 128, structure.PID_GPS[i],    1);
         
         needle += 4;
-    }   
+    }
 }
 
 function requestUNION() {
@@ -126,8 +126,6 @@ function requestUNION() {
     bufView[4] = 0x01; // payload length LSB
     bufView[5] = 0x01; // payload
     bufView[6] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5]; // crc
-   
-    console.log(bufferOut);
     
     chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
         console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
@@ -136,10 +134,6 @@ function requestUNION() {
 }
 
 function sendUNION() {
-    var eepromConfigBytes = new ArrayBuffer(eepromConfigSize);
-    var view = new DataView(eepromConfigBytes, 0);
-    view.setUNION(eepromConfig); 
-
     var bufferOut = new ArrayBuffer(5);
     var bufView = new Uint8Array(bufferOut);
     
@@ -151,6 +145,19 @@ function sendUNION() {
     bufView[4] = lowByte(eepromConfigSize); // payload length LSB    
     
     chrome.serial.write(connectionId, bufferOut, function(writeInfo) {});
+
+    var eepromConfigBytes = new ArrayBuffer(eepromConfigSize + 1);
+    var view = new DataView(eepromConfigBytes, 0);
+    view.setUNION(eepromConfig);
+    
+    var crc = (bufView[2] ^ bufView[3] ^ bufView[4]);
+    var crc_check_view = new Uint8Array(eepromConfigBytes);
+    
+    for (var i = 0; i < eepromConfigSize; i++) {
+        crc ^= crc_check_view[i];
+    }
+    
+    view.setUint8(eepromConfigSize, crc);
     
     // payload
     chrome.serial.write(connectionId, eepromConfigBytes, function(writeInfo) {

@@ -348,6 +348,9 @@ function process_data() {
             sensors_detected = parseInt((message_buffer_uint8_view[0] << 8) | message_buffer_uint8_view[1]);
             sensor_status(sensors_detected);            
         break;
+        case 21:
+            console.log('crc check failed: ' + message_buffer_uint8_view[0]);
+        break;
     }
 }
 

@@ -73,6 +73,7 @@ class Configurator {
                             process_data();
                         } else {
                             // respond that CRC failed
+                            CRC_FAILED(crc);
                         }
                         
                         // reset variables
@@ -276,6 +277,15 @@ class Configurator {
             Serial.write(0x00); // payload length MSB
             Serial.write(0x01); // payload length LSB  
             Serial.write(0x00); // payload      
+        };
+        
+        void CRC_FAILED(uint8_t crc) {
+            Serial.write(0xB5); // sync char 1
+            Serial.write(0x62); // sync char 2
+            Serial.write(0x15); // command
+            Serial.write(0x00); // payload length MSB
+            Serial.write(0x01); // payload length LSB  
+            Serial.write(crc);  // payload   
         };
         
         void send_UNION() {
