@@ -231,6 +231,7 @@ var message_length_expected = 0;
 var message_length_received = 0;
 var message_buffer;
 var message_buffer_uint8_view;
+var message_crc = 0;
 var char_counter = 0;
 
 function onCharRead(readInfo) {
@@ -253,16 +254,19 @@ function onCharRead(readInfo) {
                 break;
                 case 2: // command
                     command = data[i];
+                    message_crc = data[i];
                     
                     packet_state++;
                 break;
                 case 3: // payload length MSB
                     message_length_expected = data[i] << 8;
+                    message_crc ^= data[i];
                     
                     packet_state++;
                 break;
                 case 4: // payload length LSB
                     message_length_expected |= data[i];
+                    message_crc ^= data[i];
                     
                     // setup arraybuffer
                     message_buffer = new ArrayBuffer(message_length_expected);
@@ -272,17 +276,26 @@ function onCharRead(readInfo) {
                 break;
                 case 5: // payload
                     message_buffer_uint8_view[message_length_received] = data[i];
+                    message_crc ^= data[i];
                     message_length_received++;
                     
                     if (message_length_received >= message_length_expected) {
+                        packet_state++;
+                    }
+                break;
+                case 6:
+                    if (message_crc == data[i]) {
                         // message received, process
                         process_data();
-                        
-                        // Reset variables
-                        message_length_received = 0;
-                        
-                        packet_state = 0;
-                    }
+                    } else {
+                        // crc failed
+                        console.log('crc failed');
+                    }   
+                    
+                    // Reset variables
+                    message_length_received = 0;
+                    
+                    packet_state = 0;
                 break;
             }
             

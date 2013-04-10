@@ -145,12 +145,18 @@ class Configurator {
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x08); // command
                     Serial.write(0x00); // payload length MSB
-                    Serial.write(6); // payload length LSB  
+                    Serial.write(6);    // payload length LSB  
                     
+                    uint8_t crc = 0x08 ^ 0x00 ^ 6;
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
                         Serial.write(highByte(CONFIG.data.ACCEL_BIAS[axis]));
                         Serial.write(lowByte(CONFIG.data.ACCEL_BIAS[axis]));
+                        
+                        crc ^= highByte(CONFIG.data.ACCEL_BIAS[axis]);
+                        crc ^= lowByte(CONFIG.data.ACCEL_BIAS[axis]);
                     }
+                    
+                    Serial.write(crc); // crc
                 }
                 break;
                 case 9: // Requesting eeprom re-initialization
@@ -172,7 +178,6 @@ class Configurator {
                     }
                 break;
                 case 11: // Requesting amount of motors used in current setup
-                    // Send over the accel calibration data
                     Serial.write(0xB5); // sync char 1
                     Serial.write(0x62); // sync char 2
                     Serial.write(0x0B); // command 11
@@ -180,6 +185,8 @@ class Configurator {
                     Serial.write(0x01); // payload length LSB  
                     
                     Serial.write(MOTORS); // payload
+                    
+                    Serial.write(0x0B ^ 0x00 ^ 0x01 ^ MOTORS); // crc
                 break;
                 case 12: // Requesting sensors detected in current setup
                     Serial.write(0xB5); // sync char 1
@@ -190,6 +197,8 @@ class Configurator {
                     
                     Serial.write(highByte(sensors.sensors_detected)); // payload high byte
                     Serial.write(lowByte(sensors.sensors_detected)); // payload low byte
+                    
+                    Serial.write(0x0C ^ 0x00 ^ 0x02 ^ highByte(sensors.sensors_detected) ^ lowByte(sensors.sensors_detected)); // crc
                 break;
                 default: // Unrecognized command
                     REFUSED();
@@ -206,17 +215,20 @@ class Configurator {
                     Serial.write(0x00); // payload length MSB
                     Serial.write(24); // payload length LSB
                     
+                    uint8_t crc = 0x03 ^ 0x00 ^ 24;
                     // gyro
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        send_float(gyro[axis]);
+                        crc = send_float(gyro[axis], crc);
                     }
 
                     // accel
                     float norm = sqrt(accel[XAXIS] * accel[XAXIS] + accel[YAXIS] * accel[YAXIS] + accel[ZAXIS] * accel[ZAXIS]);
                     
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        send_float((float)(accel[axis] / norm));
+                        crc = send_float((float)(accel[axis] / norm), crc);
                     } 
+                    
+                    Serial.write(crc); // crc
                 }
                 
                 if (output_RX_data) {
@@ -226,10 +238,16 @@ class Configurator {
                     Serial.write(0x00); // payload length MSB
                     Serial.write(CHANNELS * 2); // payload length LSB  
                     
+                    uint8_t crc = 0x04 ^ 0x00 ^ (CHANNELS * 2);
                     for (uint8_t channel = 0; channel < CHANNELS; channel++) {
                         Serial.write(highByte(RX[channel]));
                         Serial.write(lowByte(RX[channel]));
-                    }                 
+                        
+                        crc ^= highByte(RX[channel]);
+                        crc ^= lowByte(RX[channel]);
+                    }
+                    
+                    Serial.write(crc); // crc
                 }
                 
                 if (output_kinematics) {
@@ -239,9 +257,12 @@ class Configurator {
                     Serial.write(0x00); // payload length MSB
                     Serial.write(12); // payload length LSB  
 
+                    uint8_t crc = 0x05 ^ 0x00 ^ 12;
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        send_float(kinematicsAngle[axis]);
-                    }                
+                        crc = send_float(kinematicsAngle[axis], crc);
+                    }
+
+                    Serial.write(crc); // crc
                 }
                 
                 if (output_motor_out) {
@@ -251,10 +272,16 @@ class Configurator {
                     Serial.write(0x00); // payload length MSB
                     Serial.write(MOTORS * 2); // payload length LSB (* 2 because of 2 bytes for each motor) 
                     
+                    uint8_t crc = 0x06 ^ 0x00 ^ (MOTORS * 2);
                     for (uint8_t motor = 0; motor < MOTORS; motor++) {
                         Serial.write(highByte(MotorOut[motor]));
                         Serial.write(lowByte(MotorOut[motor]));
+                        
+                        crc ^= highByte(MotorOut[motor]);
+                        crc ^= lowByte(MotorOut[motor]);
                     }
+                    
+                    Serial.write(crc); // crc
                 }
                 
                 output_counter = 0; // reset
@@ -268,6 +295,7 @@ class Configurator {
             Serial.write(0x00); // payload length MSB
             Serial.write(0x01); // payload length LSB  
             Serial.write(0x01); // payload
+            Serial.write(0x09 ^ 0x00 ^ 0x01 ^ 0x01); // crc
         };
         
         void REFUSED() {
@@ -276,7 +304,8 @@ class Configurator {
             Serial.write(0x09); // command
             Serial.write(0x00); // payload length MSB
             Serial.write(0x01); // payload length LSB  
-            Serial.write(0x00); // payload      
+            Serial.write(0x00); // payload
+            Serial.write(0x09 ^ 0x00 ^ 0x01 ^ 0x00); // crc
         };
         
         void CRC_FAILED(uint8_t crc) {
@@ -285,7 +314,8 @@ class Configurator {
             Serial.write(0x15); // command
             Serial.write(0x00); // payload length MSB
             Serial.write(0x01); // payload length LSB  
-            Serial.write(crc);  // payload   
+            Serial.write(crc);  // payload
+            Serial.write(0x15 ^ 0x00 ^ 0x01 ^ crc); // crc
         };
         
         void send_UNION() {
@@ -295,17 +325,24 @@ class Configurator {
             Serial.write(highByte(sizeof(CONFIG))); // payload length MSB
             Serial.write(lowByte(sizeof(CONFIG))); // payload length LSB  
     
+            uint8_t crc = 0x01 ^ highByte(sizeof(CONFIG)) ^ lowByte(sizeof(CONFIG));
             for (uint16_t i = 0; i < sizeof(CONFIG); i++) {
                 Serial.write(CONFIG.raw[i]);
-            }  
+                crc ^= CONFIG.raw[i];
+            }
+            
+            Serial.write(crc); // crc
         };
         
-        void send_float(float f) {
+        uint8_t send_float(float f, uint8_t crc) {
             uint8_t *b = (uint8_t*) & f;
             
             for (uint8_t i = 0; i < sizeof(f); i++) {
                 Serial.write(b[i]);
+                crc ^= b[i];
             }
+            
+            return crc;
         };
     
     private:
