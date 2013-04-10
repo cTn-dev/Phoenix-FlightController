@@ -21,7 +21,7 @@ function tab_initialize_motor_command() {
         $('ul.values li').eq(motor_n).html(motor_v + ' %');
         
         // Send data to flight controller
-        var bufferOut = new ArrayBuffer(7);
+        var bufferOut = new ArrayBuffer(8);
         var bufView = new Uint8Array(bufferOut);
         
         // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
@@ -32,6 +32,7 @@ function tab_initialize_motor_command() {
         bufView[4] = 0x02; // payload length LSB
         bufView[5] = motor_n; // motor number
         bufView[6] = motor_v; // motor value
+        bufView[7] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5] ^ bufView[6]; // crc
         
         chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
             console.log("Wrote: " + writeInfo.bytesWritten + " bytes");

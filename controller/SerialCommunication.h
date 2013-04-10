@@ -41,33 +41,45 @@ class Configurator {
                     break;
                     case 2: // command
                         command = data;
+                        crc = data;
                         
                         state++;
                     break;
                     case 3: // payload length MSB
                         payload_length_expected = 0; // reset
                         payload_length_expected = data << 8;
+                        crc ^= data;
                         
                         state++;
                     break; // payload length LSB
                     case 4:
                         payload_length_expected |= data;
+                        crc ^= data;
                         
                         state++;
                     break;
                     case 5: // payload
                         data_buffer[payload_length_received] = data;
+                        crc ^= data;
                         payload_length_received++;
                         
                         if (payload_length_received >= payload_length_expected) {
-                            process_data();
-                            
-                            // reset variables
-                            memset(data_buffer, 0, sizeof(data_buffer));
-                            
-                            payload_length_received = 0;
-                            state = 0;
+                            state++;
                         }
+                    break;
+                    case 6: // CRC
+                        if (crc == data) {
+                            // CRC is ok, proecss data
+                            process_data();
+                        } else {
+                            // respond that CRC failed
+                        }
+                        
+                        // reset variables
+                        memset(data_buffer, 0, sizeof(data_buffer));
+                        
+                        payload_length_received = 0;
+                        state = 0;
                     break;
                 }
             }        
@@ -291,6 +303,7 @@ class Configurator {
         
         uint8_t state;
         uint8_t command;
+        uint8_t crc;
         
         uint16_t payload_length_expected;
         uint16_t payload_length_received;
