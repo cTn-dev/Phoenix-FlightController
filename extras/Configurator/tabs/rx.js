@@ -81,19 +81,8 @@ function tab_initialize_rx() {
         }        
     }
 
-    graph_receiver = Flotr.draw(e_graph_receiver, [ 
-        {data: receiver_data[0], label: "CH-0"}, 
-        {data: receiver_data[1], label: "CH-1"},
-        {data: receiver_data[2], label: "CH-2"},
-        {data: receiver_data[3], label: "CH-3"},
-        {data: receiver_data[4], label: "CH-4"},
-        {data: receiver_data[5], label: "CH-5"},
-        {data: receiver_data[6], label: "CH-6"},
-        {data: receiver_data[7], label: "CH-7"} ], receiver_options);                      
-    
     // request receiver data from flight controller
     timers.push(setInterval(rx_poll, 50));
-    command_log('Requesting Receiver Data from Flight Controller');
 }
 
 function rx_poll() {

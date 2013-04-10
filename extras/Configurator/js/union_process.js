@@ -128,7 +128,7 @@ function requestUNION() {
     bufView[6] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5]; // crc
     
     chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
-        console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+        // console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
         command_log('Requesting configuration UNION from Flight Controller');
     }); 
 }
@@ -162,8 +162,7 @@ function sendUNION() {
     // payload
     chrome.serial.write(connectionId, eepromConfigBytes, function(writeInfo) {
         if (writeInfo.bytesWritten > 0) {
-            console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
-            
+            // console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
             command_log('Sending Configuration UNION to Flight Controller ...');
         }    
     });

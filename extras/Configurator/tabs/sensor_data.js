@@ -72,19 +72,8 @@ function tab_initialize_sensor_data() {
         }
     } 
 
-    graph_gyro = Flotr.draw(e_graph_gyro, [ 
-        {data: gyro_data[0], label: "X - rate"}, 
-        {data: gyro_data[1], label: "Y - rate"}, 
-        {data: gyro_data[2], label: "Z - rate"} ], gyro_options);  
-
-    graph_accel = Flotr.draw(e_graph_accel, [ 
-        {data: accel_data[1], label: "X - acceleration"}, 
-        {data: accel_data[0], label: "Y - acceleration"}, 
-        {data: accel_data[2], label: "Z - acceleration"} ], accel_options);                         
-    
     // request sensor data from flight controller
     timers.push(setInterval(sensor_pull, 50));
-    command_log('Requesting Sensor Data from Flight Controller');
 }
 
 function sensor_pull() {

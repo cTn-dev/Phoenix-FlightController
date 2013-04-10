@@ -9,7 +9,6 @@ function tab_initialize_vehicle_view() {
     
     // request kinematics data from flight controller
     timers.push(setInterval(kinematics_pull, 50));
-    command_log('Requesting Kinematics Data from Flight Controller');
 }
 
 function kinematics_pull() {

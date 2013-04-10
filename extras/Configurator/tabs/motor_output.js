@@ -4,6 +4,10 @@ function tab_initialize_motor_output() {
     }
     
     // request motor out data from flight controller
+    timers.push(setInterval(motor_pull, 50));
+}
+
+function motor_pull() {
     var bufferOut = new ArrayBuffer(7);
     var bufView = new Uint8Array(bufferOut);
 
@@ -17,9 +21,8 @@ function tab_initialize_motor_output() {
     bufView[6] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5]; // crc
     
     chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
-        console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
-        command_log('Requesting Motor Output Data from Flight Controller');
-    });  
+        // console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
+    }); 
 }
 
 function process_motor_output() {
