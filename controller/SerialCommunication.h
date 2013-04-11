@@ -2,7 +2,10 @@
     
     Inspired by uBlox serial protocol and multiwii serial protocol
     
-    Data structure is subject to change without further notice.   
+    Data structure is subject to change without further notice.  
+
+    Protocol data structure:
+    [SYNC1][SYNC2][CODE][LENGTH_H][LENGTH_L][DATA/DATA ARRAY][CRC]
 */
 
 #define PSP_SYNC1 0xB5
@@ -47,37 +50,37 @@ class Configurator {
                 
                 switch (state) {
                     case 0:
-                        if (data == PSP_SYNC1) { // sync char 1  
+                        if (data == PSP_SYNC1) {
                             state++;
                         }
                         break;
                     case 1:
-                        if (data == PSP_SYNC2) { // sync char 2  
+                        if (data == PSP_SYNC2) {
                             state++;
                         } else {
                             state = 0; // Restart and try again
                         }
                         break;
-                    case 2: // code
+                    case 2:
                         code = data;
                         message_crc = data;
                         
                         state++;
                         break;
-                    case 3: // payload length MSB
+                    case 3:
                         payload_length_expected = 0; // reset
                         payload_length_expected = data << 8;
                         message_crc ^= data;
                         
                         state++;
-                        break; // payload length LSB
+                        break;
                     case 4:
                         payload_length_expected |= data;
                         message_crc ^= data;
                         
                         state++;
                         break;
-                    case 5: // payload
+                    case 5:
                         data_buffer[payload_length_received] = data;
                         message_crc ^= data;
                         payload_length_received++;
@@ -86,7 +89,7 @@ class Configurator {
                             state++;
                         }
                         break;
-                    case 6: // CRC
+                    case 6:
                         if (message_crc == data) {
                             // CRC is ok, proecss data
                             process_data();
@@ -107,15 +110,15 @@ class Configurator {
         
         void process_data() {
             switch (code) {
-                case PSP_REQ_CONFIGURATION: // Requesting configuration union
+                case PSP_REQ_CONFIGURATION:
                     send_UNION();
                     break;              
-                case PSP_REQ_GYRO_ACC: { // Requesting Sensor Data (gyro + accel)
-                    Serial.write(PSP_SYNC1); // sync char 1
-                    Serial.write(PSP_SYNC2); // sync char 2
-                    Serial.write(PSP_REQ_GYRO_ACC); // code
-                    Serial.write(0x00); // payload length MSB
-                    Serial.write(24); // payload length LSB
+                case PSP_REQ_GYRO_ACC: {
+                    Serial.write(PSP_SYNC1);
+                    Serial.write(PSP_SYNC2);
+                    Serial.write(PSP_REQ_GYRO_ACC);
+                    Serial.write(0x00);
+                    Serial.write(24);
                     
                     uint8_t crc = PSP_REQ_GYRO_ACC ^ 0x00 ^ 24;
                     // gyro
@@ -130,15 +133,15 @@ class Configurator {
                         crc = send_float((float)(accel[axis] / norm), crc);
                     } 
                     
-                    Serial.write(crc); // crc
+                    Serial.write(crc);
                     }
                     break;
                 case PSP_REQ_RC: {
-                    Serial.write(PSP_SYNC1); // sync char 1
-                    Serial.write(PSP_SYNC2); // sync char 2
-                    Serial.write(PSP_REQ_RC); // code
-                    Serial.write(0x00); // payload length MSB
-                    Serial.write(CHANNELS * 2); // payload length LSB  
+                    Serial.write(PSP_SYNC1);
+                    Serial.write(PSP_SYNC2);
+                    Serial.write(PSP_REQ_RC);
+                    Serial.write(0x00);
+                    Serial.write(CHANNELS * 2);
                     
                     uint8_t crc = PSP_REQ_RC ^ 0x00 ^ (CHANNELS * 2);
                     for (uint8_t channel = 0; channel < CHANNELS; channel++) {
@@ -149,29 +152,29 @@ class Configurator {
                         crc ^= lowByte(RX[channel]);
                     }
                     
-                    Serial.write(crc); // crc
+                    Serial.write(crc);
                     }
                     break;
                 case PSP_REQ_KINEMATICS: {
-                    Serial.write(PSP_SYNC1); // sync char 1
-                    Serial.write(PSP_SYNC2); // sync char 2
-                    Serial.write(PSP_REQ_KINEMATICS); // code
-                    Serial.write(0x00); // payload length MSB
-                    Serial.write(12); // payload length LSB  
+                    Serial.write(PSP_SYNC1);
+                    Serial.write(PSP_SYNC2);
+                    Serial.write(PSP_REQ_KINEMATICS);
+                    Serial.write(0x00);
+                    Serial.write(12);
 
                     uint8_t crc = PSP_REQ_KINEMATICS ^ 0x00 ^ 12;
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
                         crc = send_float(kinematicsAngle[axis], crc);
                     }
 
-                    Serial.write(crc); // crc
+                    Serial.write(crc);
                     }
                     break;
                 case PSP_REQ_MOTORS_OUTPUT: {
-                    Serial.write(PSP_SYNC1); // sync char 1
-                    Serial.write(PSP_SYNC2); // sync char 2
-                    Serial.write(PSP_REQ_MOTORS_OUTPUT); // code
-                    Serial.write(0x00); // payload length MSB
+                    Serial.write(PSP_SYNC1);
+                    Serial.write(PSP_SYNC2);
+                    Serial.write(PSP_REQ_MOTORS_OUTPUT);
+                    Serial.write(0x00);
                     Serial.write(MOTORS * 2); // payload length LSB (* 2 because of 2 bytes for each motor) 
                     
                     uint8_t crc = PSP_REQ_MOTORS_OUTPUT ^ 0x00 ^ (MOTORS * 2);
@@ -183,74 +186,31 @@ class Configurator {
                         crc ^= lowByte(MotorOut[motor]);
                     }
                     
-                    Serial.write(crc); // crc
-                    }
-                    break;
-                case PSP_SET_ACCEL_CALIBRATION: { // Requesting Accel calibration
-                    sensors.calibrateAccel();
-                    
-                    // Write config to EEPROM
-                    writeEEPROM();
-
-                    // Send over the accel calibration data
-                    Serial.write(PSP_SYNC1); // sync char 1
-                    Serial.write(PSP_SYNC2); // sync char 2
-                    Serial.write(PSP_SET_ACCEL_CALIBRATION); // code
-                    Serial.write(0x00); // payload length MSB
-                    Serial.write(6);    // payload length LSB  
-                    
-                    uint8_t crc = PSP_SET_ACCEL_CALIBRATION ^ 0x00 ^ 6;
-                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        Serial.write(highByte(CONFIG.data.ACCEL_BIAS[axis]));
-                        Serial.write(lowByte(CONFIG.data.ACCEL_BIAS[axis]));
-                        
-                        crc ^= highByte(CONFIG.data.ACCEL_BIAS[axis]);
-                        crc ^= lowByte(CONFIG.data.ACCEL_BIAS[axis]);
-                    }
-                    
-                    Serial.write(crc); // crc
-                    }
-                    break;
-                case PSP_SET_EEPROM_REINIT:
-                    ACK();
-                    
-                    initializeEEPROM(); // initializes default values
-                    writeEEPROM(); // writes default values to eeprom
-
-                    // Send back configuration union
-                    send_UNION();                    
-                    break;
-                case PSP_SET_MOTOR_TEST_VALUE:
-                    // data_buffer should contain 2 bytes (byte 0 = motor number, byte 1 = value)
-                    if (data_buffer[0] < MOTORS) { // Check if motor number is within our setup
-                        MotorOut[data_buffer[0]] = 1000 + (data_buffer[1] * 10);
-                        updateMotors(); // Update ESCs
-                    } else { // Motor number is not in our setup
-                        REFUSED();
+                    Serial.write(crc);
                     }
                     break;
                 case PSP_REQ_MOTORS_COUNT:
-                    Serial.write(PSP_SYNC1); // sync char 1
-                    Serial.write(PSP_SYNC2); // sync char 2
-                    Serial.write(PSP_REQ_MOTORS_COUNT); // code 11
-                    Serial.write(0x00); // payload length MSB
-                    Serial.write(0x01); // payload length LSB  
+                    Serial.write(PSP_SYNC1);
+                    Serial.write(PSP_SYNC2);
+                    Serial.write(PSP_REQ_MOTORS_COUNT);
+                    Serial.write(0x00);
+                    Serial.write(0x01); 
                     
-                    Serial.write(MOTORS); // payload
+                    Serial.write(MOTORS);
                     
-                    Serial.write(PSP_REQ_MOTORS_COUNT ^ 0x00 ^ 0x01 ^ MOTORS); // crc
+                    Serial.write(PSP_REQ_MOTORS_COUNT ^ 0x00 ^ 0x01 ^ MOTORS);
                     break;
                 case PSP_REQ_SENSORS_ALIVE:
-                    Serial.write(PSP_SYNC1); // sync char 1
-                    Serial.write(PSP_SYNC2); // sync char 2
-                    Serial.write(PSP_REQ_SENSORS_ALIVE); // code
-                    Serial.write(0x00); // payload length MSB
-                    Serial.write(0x02); // payload length LSB  
+                    Serial.write(PSP_SYNC1);
+                    Serial.write(PSP_SYNC2);
+                    Serial.write(PSP_REQ_SENSORS_ALIVE);
+                    Serial.write(0x00);
+                    Serial.write(0x02);
                     
-                    Serial.write(highByte(sensors.sensors_detected)); // payload high byte
-                    Serial.write(lowByte(sensors.sensors_detected)); // payload low byte
+                    Serial.write(highByte(sensors.sensors_detected));
+                    Serial.write(lowByte(sensors.sensors_detected));
                     
-                    Serial.write(PSP_REQ_SENSORS_ALIVE ^ 0x00 ^ 0x02 ^ highByte(sensors.sensors_detected) ^ lowByte(sensors.sensors_detected)); // crc
+                    Serial.write(PSP_REQ_SENSORS_ALIVE ^ 0x00 ^ 0x02 ^ highByte(sensors.sensors_detected) ^ lowByte(sensors.sensors_detected));
                     break;
                     
                 // SET
@@ -269,7 +229,50 @@ class Configurator {
                         // Refuse (buffer size doesn't match struct memory size)
                         REFUSED();
                     }
-                    break;                
+                    break;
+                case PSP_SET_EEPROM_REINIT:
+                    ACK();
+                    
+                    initializeEEPROM(); // initializes default values
+                    writeEEPROM(); // writes default values to eeprom
+
+                    // Send back configuration union
+                    send_UNION();                    
+                    break;
+                case PSP_SET_ACCEL_CALIBRATION: {
+                    sensors.calibrateAccel();
+                    
+                    // Write config to EEPROM
+                    writeEEPROM();
+
+                    // Send over the accel calibration data
+                    Serial.write(PSP_SYNC1);
+                    Serial.write(PSP_SYNC2);
+                    Serial.write(PSP_SET_ACCEL_CALIBRATION);
+                    Serial.write(0x00);
+                    Serial.write(6);
+                    
+                    uint8_t crc = PSP_SET_ACCEL_CALIBRATION ^ 0x00 ^ 6;
+                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                        Serial.write(highByte(CONFIG.data.ACCEL_BIAS[axis]));
+                        Serial.write(lowByte(CONFIG.data.ACCEL_BIAS[axis]));
+                        
+                        crc ^= highByte(CONFIG.data.ACCEL_BIAS[axis]);
+                        crc ^= lowByte(CONFIG.data.ACCEL_BIAS[axis]);
+                    }
+                    
+                    Serial.write(crc);
+                    }
+                    break; 
+                case PSP_SET_MOTOR_TEST_VALUE:
+                    // data_buffer should contain 2 bytes (byte 0 = motor number, byte 1 = value)
+                    if (data_buffer[0] < MOTORS) { // Check if motor number is within our setup
+                        MotorOut[data_buffer[0]] = 1000 + (data_buffer[1] * 10);
+                        updateMotors(); // Update ESCs
+                    } else { // Motor number is not in our setup
+                        REFUSED();
+                    }
+                    break;                    
                 default: // Unrecognized code
                     REFUSED();
             }
