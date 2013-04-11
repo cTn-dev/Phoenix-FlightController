@@ -8,6 +8,32 @@ var motors = 0;
 
 var timers = new Array();
 
+var PSP = {
+    PSP_SYNC1:              0xB5,
+    PSP_SYNC2:              0x62,
+    
+    PSP_REQ_CONFIGURATION:  1,
+    PSP_REQ_GYRO_ACC:       2,
+    PSP_REQ_MAG:            3,
+    PSP_REQ_BARO:           4,
+    PSP_REQ_GPS:            5,
+    PSP_REQ_RC:             6,
+    PSP_REQ_KINEMATICS:     7,
+    PSP_REQ_MOTORS_OUTPUT:  8,
+    PSP_REQ_MOTORS_COUNT:   9, 
+    PSP_REQ_SENSORS_ALIVE:  10,
+    
+    PSP_SET_CONFIGURATION:     101,
+    PSP_SET_EEPROM_REINIT:     102,
+    PSP_SET_ACCEL_CALIBRATION: 103,
+    PSP_SET_MAG_CALIBRATION:   104,
+    PSP_SET_MOTOR_TEST_VALUE:  105,
+    
+    PSP_INF_ACK:      201,
+    PSP_INF_REFUSED:  202,
+    PSP_INF_CRC_FAIL: 203
+};
+
 $(document).ready(function() { 
     port_picker = $('div#port-picker .port select');
     baud_picker = $('div#port-picker #baud');
@@ -159,10 +185,9 @@ function onOpen(openInfo) {
             var bufferOut = new ArrayBuffer(7);
             var bufView = new Uint8Array(bufferOut);
             
-            // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
-            bufView[0] = 0xB5; // sync char 1
-            bufView[1] = 0x62; // sync char 2
-            bufView[2] = 0x0B; // command 11
+            bufView[0] = PSP.PSP_SYNC1; // sync char 1
+            bufView[1] = PSP.PSP_SYNC2; // sync char 2
+            bufView[2] = PSP.PSP_REQ_MOTORS_COUNT; // code
             bufView[3] = 0x00; // payload length MSB
             bufView[4] = 0x01; // payload length LSB
             bufView[5] = 0x01; // payload
@@ -176,10 +201,9 @@ function onOpen(openInfo) {
             var bufferOut = new ArrayBuffer(7);
             var bufView = new Uint8Array(bufferOut);
             
-            // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
-            bufView[0] = 0xB5; // sync char 1
-            bufView[1] = 0x62; // sync char 2
-            bufView[2] = 0x0C; // command // 12
+            bufView[0] = PSP.PSP_SYNC1; // sync char 1
+            bufView[1] = PSP.PSP_SYNC2; // sync char 2
+            bufView[2] = PSP.PSP_REQ_SENSORS_ALIVE; // code
             bufView[3] = 0x00; // payload length MSB
             bufView[4] = 0x01; // payload length LSB
             bufView[5] = 0x01; // payload
@@ -237,29 +261,29 @@ function onCharRead(readInfo) {
         for (var i = 0; i < data.length; i++) {
             switch (packet_state) {
                 case 0:
-                    if (data[i] == 0xB5) { // sync char 1                 
+                    if (data[i] == PSP.PSP_SYNC1) {               
                         packet_state++;
                     }
-                break;
+                    break;
                 case 1:
-                    if (data[i] == 0x62) { // sync char 2                 
+                    if (data[i] == PSP.PSP_SYNC2) {             
                         packet_state++;
                     } else {
                         packet_state = 0; // Restart and try again
                     }                    
-                break;
+                    break;
                 case 2: // command
                     command = data[i];
                     message_crc = data[i];
                     
                     packet_state++;
-                break;
+                    break;
                 case 3: // payload length MSB
                     message_length_expected = data[i] << 8;
                     message_crc ^= data[i];
                     
                     packet_state++;
-                break;
+                    break;
                 case 4: // payload length LSB
                     message_length_expected |= data[i];
                     message_crc ^= data[i];
@@ -269,7 +293,7 @@ function onCharRead(readInfo) {
                     message_buffer_uint8_view = new Uint8Array(message_buffer);
                     
                     packet_state++;
-                break;
+                    break;
                 case 5: // payload
                     message_buffer_uint8_view[message_length_received] = data[i];
                     message_crc ^= data[i];
@@ -292,7 +316,7 @@ function onCharRead(readInfo) {
                     message_length_received = 0;
                     
                     packet_state = 0;
-                break;
+                    break;
             }
             
             char_counter++;
@@ -302,7 +326,7 @@ function onCharRead(readInfo) {
 
 function process_data() {
     switch (command) {
-        case 1: // configuration data
+        case PSP.PSP_REQ_CONFIGURATION:
             console.log('Expected UNION size: ' + message_length_expected + ', Received UNION size: ' + message_buffer_uint8_view.length);
             // Store UNION size for later usage
             eepromConfigSize = message_length_expected;
@@ -323,43 +347,38 @@ function process_data() {
             
             $('#tabs li a:first').click();
             command_log('Configuration UNION received -- <span style="color: green">OK</span>');
-        break;
-        case 3: // sensor data
+            break;
+        case PSP.PSP_REQ_GYRO_ACC:
             process_data_sensors();
-        break;
-        case 4: // receiver data
+            break;
+        case PSP.PSP_REQ_RC:
             process_data_receiver();
-        break;
-        case 5: // vehicle view
+            break;
+        case PSP.PSP_REQ_KINEMATICS:
             process_vehicle_view();
-        break;
-        case 6:
+            break;
+        case PSP.PSP_REQ_MOTORS_OUTPUT:
             process_motor_output();
-        break;
-        case 8: // accel calibration data
+            break;
+        case PSP.PSP_SET_ACCEL_CALIBRATION:
             process_accel_calibration();
-        break;
-        case 9: // ACK
-            var message = parseInt(message_buffer_uint8_view[0]);
-            
-            if (message == 1) {
-                console.log("ACK");
-                command_log('Flight Controller responds with -- <span style="color: green">ACK</span>');
-            } else {
-                console.log("REFUSED");
-                command_log('Flight Controller responds with -- <span style="color: red">REFUSED</span>');
-            }
-        break;
-        case 11: // Motor amount / count
+            break;
+        case PSP.PSP_REQ_MOTORS_COUNT:
             motors = parseInt(message_buffer_uint8_view[0]);
-        break;
-        case 12:
+            break;
+        case PSP.PSP_REQ_SENSORS_ALIVE:
             sensors_detected = parseInt((message_buffer_uint8_view[0] << 8) | message_buffer_uint8_view[1]);
             sensor_status(sensors_detected);            
-        break;
-        case 21:
-            console.log('crc check failed: ' + message_buffer_uint8_view[0]);
-        break;
+            break;
+        case PSP.PSP_INF_ACK:
+            command_log('Flight Controller responds with -- <span style="color: green">ACK</span>');
+            break;
+        case PSP.PSP_INF_REFUSED:
+            command_log('Flight Controller responds with -- <span style="color: red">REFUSED</span>');  
+            break;
+        case PSP.PSP_INF_CRC_FAIL:
+            console.log('crc check failed, code: ' + message_buffer_uint8_view[0] + ' crc value: ' + message_buffer_uint8_view[1]);
+            break;
     }
 }
 
