@@ -279,42 +279,42 @@ class Configurator {
         };
         
         void ACK() {
-            Serial.write(PSP_SYNC1); // sync char 1
-            Serial.write(PSP_SYNC2); // sync char 2
-            Serial.write(PSP_INF_ACK); // code
-            Serial.write(0x00); // payload length MSB
-            Serial.write(0x01); // payload length LSB  
-            Serial.write(0x01); // payload
-            Serial.write(PSP_INF_ACK ^ 0x00 ^ 0x01 ^ 0x01); // crc
+            Serial.write(PSP_SYNC1);
+            Serial.write(PSP_SYNC2);
+            Serial.write(PSP_INF_ACK);
+            Serial.write(0x00);
+            Serial.write(0x01);
+            Serial.write(0x01);
+            Serial.write(PSP_INF_ACK ^ 0x00 ^ 0x01 ^ 0x01);
         };
         
         void REFUSED() {
-            Serial.write(PSP_SYNC1); // sync char 1
-            Serial.write(PSP_SYNC2); // sync char 2
-            Serial.write(PSP_INF_REFUSED); // code
-            Serial.write(0x00); // payload length MSB
-            Serial.write(0x01); // payload length LSB  
-            Serial.write(0x00); // payload
-            Serial.write(PSP_INF_REFUSED ^ 0x00 ^ 0x01 ^ 0x00); // crc
+            Serial.write(PSP_SYNC1);
+            Serial.write(PSP_SYNC2);
+            Serial.write(PSP_INF_REFUSED);
+            Serial.write(0x00);
+            Serial.write(0x01);
+            Serial.write(0x00);
+            Serial.write(PSP_INF_REFUSED ^ 0x00 ^ 0x01 ^ 0x00);
         };
         
         void CRC_FAILED(uint8_t crc) {
-            Serial.write(PSP_SYNC1); // sync char 1
-            Serial.write(PSP_SYNC2); // sync char 2
-            Serial.write(PSP_INF_CRC_FAIL); // code
-            Serial.write(0x00); // payload length MSB
-            Serial.write(0x02); // payload length LSB  
-            Serial.write(code); // payload 1
-            Serial.write(crc);  // payload 2
-            Serial.write(PSP_INF_CRC_FAIL ^ 0x00 ^ 0x02 ^ code ^ crc); // crc
+            Serial.write(PSP_SYNC1);
+            Serial.write(PSP_SYNC2);
+            Serial.write(PSP_INF_CRC_FAIL);
+            Serial.write(0x00);
+            Serial.write(0x02); 
+            Serial.write(code);
+            Serial.write(crc);
+            Serial.write(PSP_INF_CRC_FAIL ^ 0x00 ^ 0x02 ^ code ^ crc);
         };
         
         void send_UNION() {
-            Serial.write(PSP_SYNC1); // sync char 1
-            Serial.write(PSP_SYNC2); // sync char 2
-            Serial.write(PSP_REQ_CONFIGURATION); // code
-            Serial.write(highByte(sizeof(CONFIG))); // payload length MSB
-            Serial.write(lowByte(sizeof(CONFIG))); // payload length LSB  
+            Serial.write(PSP_SYNC1);
+            Serial.write(PSP_SYNC2);
+            Serial.write(PSP_REQ_CONFIGURATION);
+            Serial.write(highByte(sizeof(CONFIG)));
+            Serial.write(lowByte(sizeof(CONFIG))); 
     
             uint8_t crc = PSP_REQ_CONFIGURATION ^ highByte(sizeof(CONFIG)) ^ lowByte(sizeof(CONFIG));
             for (uint16_t i = 0; i < sizeof(CONFIG); i++) {
@@ -322,7 +322,7 @@ class Configurator {
                 crc ^= CONFIG.raw[i];
             }
             
-            Serial.write(crc); // crc
+            Serial.write(crc);
         };
         
         uint8_t send_float(float f, uint8_t crc) {
