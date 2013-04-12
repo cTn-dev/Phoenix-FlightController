@@ -187,7 +187,7 @@ function onClosed(result) {
 };
 
 function readPoll() {
-    chrome.serial.read(connectionId, 24, onCharRead);
+    chrome.serial.read(connectionId, 64, onCharRead);
 }
 
 function sensor_status(sensors_detected) {

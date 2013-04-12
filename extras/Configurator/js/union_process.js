@@ -120,35 +120,12 @@ function requestUNION() {
 }
 
 function sendUNION() {
-    var bufferOut = new ArrayBuffer(5);
-    var bufView = new Uint8Array(bufferOut);
+    command_log('Sending Configuration UNION to Flight Controller ...');
     
-    bufView[0] = PSP.PSP_SYNC1;
-    bufView[1] = PSP.PSP_SYNC2;
-    bufView[2] = PSP.PSP_SET_CONFIGURATION; // code
-    bufView[3] = highByte(eepromConfigSize); // payload length MSB
-    bufView[4] = lowByte(eepromConfigSize); // payload length LSB    
-    
-    chrome.serial.write(connectionId, bufferOut, function(writeInfo) {});
-
-    var eepromConfigBytes = new ArrayBuffer(eepromConfigSize + 1);
+    var eepromConfigBytes = new ArrayBuffer(eepromConfigSize);
     var view = new DataView(eepromConfigBytes, 0);
     view.setUNION(eepromConfig);
     
-    var crc = (bufView[2] ^ bufView[3] ^ bufView[4]);
-    var crc_check_view = new Uint8Array(eepromConfigBytes);
-    
-    for (var i = 0; i < eepromConfigSize; i++) {
-        crc ^= crc_check_view[i];
-    }
-    
-    view.setUint8(eepromConfigSize, crc);
-    
-    // payload
-    chrome.serial.write(connectionId, eepromConfigBytes, function(writeInfo) {
-        if (writeInfo.bytesWritten > 0) {
-            // console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
-            command_log('Sending Configuration UNION to Flight Controller ...');
-        }    
-    });
+    var data = new Uint8Array(eepromConfigBytes);
+    send_message(PSP.PSP_SET_CONFIGURATION, data);
 }

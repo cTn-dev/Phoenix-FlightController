@@ -14,29 +14,14 @@ function tab_initialize_motor_command() {
     });
 
     $('ul.sliders input').change(function() {
-        var motor_n = parseInt($(this).parent().index());
-        var motor_v = parseInt($(this).val());
+        var motor_n = parseInt($(this).parent().index()); // motor number
+        var motor_v = parseInt($(this).val()); // motor value
         
         // Update UI
         $('ul.values li').eq(motor_n).html(motor_v + ' %');
         
         // Send data to flight controller
-        var bufferOut = new ArrayBuffer(8);
-        var bufView = new Uint8Array(bufferOut);
-        
-        // sync char 1, sync char 2, command, payload length MSB, payload length LSB, payload
-        bufView[0] = PSP.PSP_SYNC1; // sync char 1
-        bufView[1] = PSP.PSP_SYNC2; // sync char 2
-        bufView[2] = PSP.PSP_SET_MOTOR_TEST_VALUE; // code
-        bufView[3] = 0x00; // payload length MSB
-        bufView[4] = 0x02; // payload length LSB
-        bufView[5] = motor_n; // motor number
-        bufView[6] = motor_v; // motor value
-        bufView[7] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5] ^ bufView[6]; // crc
-        
-        chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
-            //console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
-        });
+        send_message(PSP.PSP_SET_MOTOR_TEST_VALUE, [motor_n, motor_v]);
     });
     
     $('.tab-motor_command .stop').click(function() {
