@@ -115,21 +115,8 @@ DataView.prototype.setUNION = function (structure) {
 }
 
 function requestUNION() {
-    var bufferOut = new ArrayBuffer(7);
-    var bufView = new Uint8Array(bufferOut);        
-
-    bufView[0] = PSP.PSP_SYNC1;
-    bufView[1] = PSP.PSP_SYNC2;
-    bufView[2] = PSP.PSP_REQ_CONFIGURATION; // code
-    bufView[3] = 0x00; // payload length MSB
-    bufView[4] = 0x01; // payload length LSB
-    bufView[5] = 0x01; // payload
-    bufView[6] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5]; // crc
-    
-    chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
-        // console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
-        command_log('Requesting configuration UNION from Flight Controller');
-    }); 
+    command_log('Requesting configuration UNION from Flight Controller');
+    send_message(PSP.PSP_REQ_CONFIGURATION, 1);
 }
 
 function sendUNION() {

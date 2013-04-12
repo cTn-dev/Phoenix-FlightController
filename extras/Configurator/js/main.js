@@ -8,32 +8,6 @@ var motors = 0;
 
 var timers = new Array();
 
-var PSP = {
-    PSP_SYNC1:              0xB5,
-    PSP_SYNC2:              0x62,
-    
-    PSP_REQ_CONFIGURATION:  1,
-    PSP_REQ_GYRO_ACC:       2,
-    PSP_REQ_MAG:            3,
-    PSP_REQ_BARO:           4,
-    PSP_REQ_GPS:            5,
-    PSP_REQ_RC:             6,
-    PSP_REQ_KINEMATICS:     7,
-    PSP_REQ_MOTORS_OUTPUT:  8,
-    PSP_REQ_MOTORS_COUNT:   9, 
-    PSP_REQ_SENSORS_ALIVE:  10,
-    
-    PSP_SET_CONFIGURATION:     101,
-    PSP_SET_EEPROM_REINIT:     102,
-    PSP_SET_ACCEL_CALIBRATION: 103,
-    PSP_SET_MAG_CALIBRATION:   104,
-    PSP_SET_MOTOR_TEST_VALUE:  105,
-    
-    PSP_INF_ACK:      201,
-    PSP_INF_REFUSED:  202,
-    PSP_INF_CRC_FAIL: 203
-};
-
 $(document).ready(function() { 
     port_picker = $('div#port-picker .port select');
     baud_picker = $('div#port-picker #baud');
@@ -182,36 +156,10 @@ function onOpen(openInfo) {
             requestUNION();
             
             // request number of motors used in this setup
-            var bufferOut = new ArrayBuffer(7);
-            var bufView = new Uint8Array(bufferOut);
-            
-            bufView[0] = PSP.PSP_SYNC1; // sync char 1
-            bufView[1] = PSP.PSP_SYNC2; // sync char 2
-            bufView[2] = PSP.PSP_REQ_MOTORS_COUNT; // code
-            bufView[3] = 0x00; // payload length MSB
-            bufView[4] = 0x01; // payload length LSB
-            bufView[5] = 0x01; // payload
-            bufView[6] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5]; // crc
-
-            chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
-                // console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
-            });
+            send_message(PSP.PSP_REQ_MOTORS_COUNT, 1);
 
             // requesting sensors detected
-            var bufferOut = new ArrayBuffer(7);
-            var bufView = new Uint8Array(bufferOut);
-            
-            bufView[0] = PSP.PSP_SYNC1; // sync char 1
-            bufView[1] = PSP.PSP_SYNC2; // sync char 2
-            bufView[2] = PSP.PSP_REQ_SENSORS_ALIVE; // code
-            bufView[3] = 0x00; // payload length MSB
-            bufView[4] = 0x01; // payload length LSB
-            bufView[5] = 0x01; // payload
-            bufView[6] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5]; // crc
-
-            chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
-                // console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
-            });
+            send_message(PSP.PSP_REQ_SENSORS_ALIVE, 1);
         }, connection_delay * 1000);            
         
     } else {
@@ -240,146 +188,6 @@ function onClosed(result) {
 
 function readPoll() {
     chrome.serial.read(connectionId, 24, onCharRead);
-};
-
-
-var packet_state = 0;
-var command_buffer = new Array();
-var command;
-
-var message_length_expected = 0;
-var message_length_received = 0;
-var message_buffer;
-var message_buffer_uint8_view;
-var message_crc = 0;
-var char_counter = 0;
-
-function onCharRead(readInfo) {
-    if (readInfo && readInfo.bytesRead > 0 && readInfo.data) {
-        var data = new Uint8Array(readInfo.data);
-        
-        for (var i = 0; i < data.length; i++) {
-            switch (packet_state) {
-                case 0:
-                    if (data[i] == PSP.PSP_SYNC1) {               
-                        packet_state++;
-                    }
-                    break;
-                case 1:
-                    if (data[i] == PSP.PSP_SYNC2) {             
-                        packet_state++;
-                    } else {
-                        packet_state = 0; // Restart and try again
-                    }                    
-                    break;
-                case 2: // command
-                    command = data[i];
-                    message_crc = data[i];
-                    
-                    packet_state++;
-                    break;
-                case 3: // payload length MSB
-                    message_length_expected = data[i] << 8;
-                    message_crc ^= data[i];
-                    
-                    packet_state++;
-                    break;
-                case 4: // payload length LSB
-                    message_length_expected |= data[i];
-                    message_crc ^= data[i];
-                    
-                    // setup arraybuffer
-                    message_buffer = new ArrayBuffer(message_length_expected);
-                    message_buffer_uint8_view = new Uint8Array(message_buffer);
-                    
-                    packet_state++;
-                    break;
-                case 5: // payload
-                    message_buffer_uint8_view[message_length_received] = data[i];
-                    message_crc ^= data[i];
-                    message_length_received++;
-                    
-                    if (message_length_received >= message_length_expected) {
-                        packet_state++;
-                    }
-                break;
-                case 6:
-                    if (message_crc == data[i]) {
-                        // message received, process
-                        process_data();
-                    } else {
-                        // crc failed
-                        console.log('crc failed');
-                    }   
-                    
-                    // Reset variables
-                    message_length_received = 0;
-                    
-                    packet_state = 0;
-                    break;
-            }
-            
-            char_counter++;
-        }
-    }
-}
-
-function process_data() {
-    switch (command) {
-        case PSP.PSP_REQ_CONFIGURATION:
-            console.log('Expected UNION size: ' + message_length_expected + ', Received UNION size: ' + message_buffer_uint8_view.length);
-            // Store UNION size for later usage
-            eepromConfigSize = message_length_expected;
-            
-            var view = new DataView(message_buffer, 0);
-            view.parseUNION(eepromConfig); 
-            
-            if (version != eepromConfig.version) {
-                command_log('Configurator version doesn\'t match the Flight software version');
-                command_log('Configurator version: <strong>' + version + '</strong> - Flight software version: <strong>' + eepromConfig.version + '</strong>');
-                command_log('<span style="color: red">Please upgrade your flight software and configurator to the lastest version.</span>');
-                
-                // Disconnect
-                $('div#port-picker a.connect').click();
-                
-                break;
-            }
-            
-            $('#tabs li a:first').click();
-            command_log('Configuration UNION received -- <span style="color: green">OK</span>');
-            break;
-        case PSP.PSP_REQ_GYRO_ACC:
-            process_data_sensors();
-            break;
-        case PSP.PSP_REQ_RC:
-            process_data_receiver();
-            break;
-        case PSP.PSP_REQ_KINEMATICS:
-            process_vehicle_view();
-            break;
-        case PSP.PSP_REQ_MOTORS_OUTPUT:
-            process_motor_output();
-            break;
-        case PSP.PSP_SET_ACCEL_CALIBRATION:
-            process_accel_calibration();
-            break;
-        case PSP.PSP_REQ_MOTORS_COUNT:
-            motors = parseInt(message_buffer_uint8_view[0]);
-            break;
-        case PSP.PSP_REQ_SENSORS_ALIVE:
-            sensors_detected = parseInt((message_buffer_uint8_view[0] << 8) | message_buffer_uint8_view[1]);
-            sensor_status(sensors_detected);            
-            break;
-        case PSP.PSP_INF_ACK:
-            command_log('Flight Controller responds with -- <span style="color: green">ACK</span>');
-            break;
-        case PSP.PSP_INF_REFUSED:
-            command_log('Flight Controller responds with -- <span style="color: red">REFUSED</span>');  
-            break;
-        case PSP.PSP_INF_CRC_FAIL:
-            console.log('crc check failed, code: ' + message_buffer_uint8_view[0] + ' crc value: ' + message_buffer_uint8_view[1]);
-            break;
-    }
 }
 
 function sensor_status(sensors_detected) {

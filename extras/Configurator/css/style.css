@@ -130,7 +130,7 @@ a:hover {
     border: 1px solid silver;
     background-color: white;
     
-    overflow: auto;
+    overflow-y: hidden;
 } 
     #command-log .wrapper {
         padding: 5px;
