@@ -105,7 +105,7 @@ function onCharRead(readInfo) {
     }
 }
 
-function send_message(code, data) {
+function send_message(code, data, callback) {
     // always reserve 6 bytes for protocol overhead !
     if (typeof data === 'object') {
         var size = 6 + data.length;
@@ -142,6 +142,13 @@ function send_message(code, data) {
     }
     
     chrome.serial.write(connectionId, bufferOut, function(writeInfo) {
+        if (writeInfo.bytesWritten > 0) {
+            if (typeof callback !== 'undefined') {
+                callback();
+            }
+        }
+        
+        // for debugging purposes
         // console.log("Wrote: " + writeInfo.bytesWritten + " bytes");
     });    
 }
@@ -180,7 +187,11 @@ function process_data() {
             process_vehicle_view();
             break;
         case PSP.PSP_REQ_MOTORS_OUTPUT:
-            process_motor_output();
+            if ($('#tabs > ul .active').hasClass('tab_motor_command')) {
+                update_motor_command();
+            } else { // standard behaviour
+                process_motor_output();
+            }
             break;
         case PSP.PSP_SET_ACCEL_CALIBRATION:
             process_accel_calibration();

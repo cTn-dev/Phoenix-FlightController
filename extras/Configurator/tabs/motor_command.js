@@ -1,4 +1,7 @@
 function tab_initialize_motor_command() { 
+    // Request current state of motors
+    send_message(PSP.PSP_REQ_MOTORS_OUTPUT, 1);    
+    
     // Enable specific titles
     for (var i = 0; i < motors; i++) {
         $('div.tab-motor_command .names li:eq(' + i + ')').addClass('active');
@@ -12,17 +15,6 @@ function tab_initialize_motor_command() {
             $(this).attr('disabled', 'disabled');
         }
     });
-
-    $('ul.sliders input').change(function() {
-        var motor_n = parseInt($(this).parent().index()); // motor number
-        var motor_v = parseInt($(this).val()); // motor value
-        
-        // Update UI
-        $('ul.values li').eq(motor_n).html(motor_v + ' %');
-        
-        // Send data to flight controller
-        send_message(PSP.PSP_SET_MOTOR_TEST_VALUE, [motor_n, motor_v]);
-    });
     
     $('.tab-motor_command .stop').click(function() {
         // reset all to 0
@@ -35,5 +27,34 @@ function tab_initialize_motor_command() {
             }
         });
         
-    });
+    });     
+}
+
+function update_motor_command() {
+    var view = new DataView(message_buffer, 0); // DataView (allowing is to view arrayBuffer as struct/union)
+    
+    var data = new Array(); // array used to hold/store read values
+
+    var needle = 0;
+    for (var i = 0; i < (message_buffer_uint8_view.length / 2); i++) {
+        data[i] = parseInt((view.getInt16(needle, 0) - 1000) / 10);
+        needle += 2;
+    }
+    
+    for (var i = 0; i < motors; i++) {
+        $('ul.sliders input').eq(i).val(data[i]);
+    }
+
+    // Change handler is "hooked up" after all the data is processed (to avoid double sending of the values)
+    
+    $('ul.sliders input').change(function() {
+        var motor_n = parseInt($(this).parent().index()); // motor number
+        var motor_v = parseInt($(this).val()); // motor value
+        
+        // Update UI
+        $('ul.values li').eq(motor_n).html(motor_v + ' %');
+        
+        // Send data to flight controller
+        send_message(PSP.PSP_SET_MOTOR_TEST_VALUE, [motor_n, motor_v]);
+    });   
 }
