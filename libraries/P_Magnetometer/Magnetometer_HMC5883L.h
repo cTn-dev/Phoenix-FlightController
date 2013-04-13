@@ -27,6 +27,7 @@
 #define HMC5883L_GAIN_45            0xC0 // +- 4.5 Ga
 #define HMC5883L_GAIN_65            0xE0 // +- 6.5 Ga
 
+int16_t magRaw[3];
 float magHeadingX, magHeadingY;
 float magHeadingAbsolute = 0.0;
 
@@ -95,7 +96,6 @@ class HMC5883L {
         };
         
     private:
-        int16_t magRaw[3];
         float magX, magY;
 };
 

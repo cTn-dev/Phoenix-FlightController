@@ -136,6 +136,54 @@ class Configurator {
                     Serial.write(crc);
                     }
                     break;
+#ifdef Magnetometer                    
+                case PSP_REQ_MAG: {
+                    Serial.write(PSP_SYNC1);
+                    Serial.write(PSP_SYNC2); 
+                    Serial.write(PSP_REQ_MAG);
+                    Serial.write(0x00);
+                    Serial.write(12);
+                    
+                    uint8_t crc = PSP_REQ_MAG ^ 0x00 ^ 12;
+                    
+                    for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
+                        crc = send_float(magRaw[axis], crc);
+                    }
+                    
+                    Serial.write(crc);
+                    }
+                    break;
+#endif
+#ifdef AltitudeHoldBaro
+                case PSP_REQ_BARO: {
+                    Serial.write(PSP_SYNC1);
+                    Serial.write(PSP_SYNC2);
+                    Serial.write(PSP_REQ_BARO);
+                    Serial.write(0x00);
+                    Serial.write(8);
+                    
+                    uint8_t crc = PSP_REQ_BARO ^ 0x00 ^ 12;
+                    
+                    crc = send_float(baroRawAltitude, crc);
+                    crc = send_float(baroAltitudeRunning, crc);
+                    
+                    Serial.write(crc);
+                    }
+                    break;
+#endif
+#ifdef GPS
+                // TODO
+                /*
+                case PSP_REQ_GPS: {
+                    Serial.write(PSP_SYNC1);
+                    Serial.write(PSP_SYNC2);
+                    Serial.write(PSP_REQ_GPS);
+                    Serial.write(0x00);
+                    
+                    }
+                    break;
+                */
+#endif                    
                 case PSP_REQ_RC: {
                     Serial.write(PSP_SYNC1);
                     Serial.write(PSP_SYNC2);
