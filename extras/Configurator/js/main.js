@@ -6,6 +6,14 @@ var eepromConfigSize;
 
 var motors = 0;
 
+var sensors_alive = {
+    gyro:  0,
+    accel: 0,
+    mag:   0,
+    baro:  0,
+    gps:   0
+};
+
 var timers = new Array();
 
 $(document).ready(function() { 
@@ -195,26 +203,34 @@ function sensor_status(sensors_detected) {
     
     if (bit_check(sensors_detected, 0)) { // Gyroscope detected
         $('.gyro', e_sensor_status).addClass('on');
+        sensors_alive.gyro = 1;
     } else {
         $('.gyro', e_sensor_status).removeClass('on');
+        sensors_alive.gyro = 0;
     }
     
     if (bit_check(sensors_detected, 1)) { // Accelerometer detected
         $('.accel', e_sensor_status).addClass('on');
+        sensors_alive.accel = 1;
     } else {
         $('.accel', e_sensor_status).removeClass('on');
+        sensors_alive.accel = 0;
     }
 
     if (bit_check(sensors_detected, 2)) { // Magnetometer detected
         $('.mag', e_sensor_status).addClass('on');
+        sensors_alive.mag = 1;
     } else {
         $('.mag', e_sensor_status).removeClass('on');
+        sensors_alive.mag = 0;
     }  
 
     if (bit_check(sensors_detected, 3)) { // Barometer detected
         $('.baro', e_sensor_status).addClass('on');
+        sensors_alive.baro = 1;
     } else {
         $('.baro', e_sensor_status).removeClass('on');
+        sensors_alive.baro = 0;
     }  
 }
 

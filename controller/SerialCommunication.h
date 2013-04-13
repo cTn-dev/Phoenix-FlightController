@@ -162,7 +162,7 @@ class Configurator {
                     Serial.write(0x00);
                     Serial.write(8);
                     
-                    uint8_t crc = PSP_REQ_BARO ^ 0x00 ^ 12;
+                    uint8_t crc = PSP_REQ_BARO ^ 0x00 ^ 8;
                     
                     crc = send_float(baroRawAltitude, crc);
                     crc = send_float(baroAltitudeRunning, crc);

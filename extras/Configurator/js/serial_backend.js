@@ -200,7 +200,7 @@ function process_data() {
             motors = parseInt(message_buffer_uint8_view[0]);
             break;
         case PSP.PSP_REQ_SENSORS_ALIVE:
-            sensors_detected = parseInt((message_buffer_uint8_view[0] << 8) | message_buffer_uint8_view[1]);
+            var sensors_detected = parseInt((message_buffer_uint8_view[0] << 8) | message_buffer_uint8_view[1]);
             sensor_status(sensors_detected);            
             break;
         case PSP.PSP_INF_ACK:

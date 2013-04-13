@@ -203,9 +203,12 @@ a:hover {
     padding: 10px;
     
     background-color: white;
-    min-height: 355px;
+    height: 355px;
     
     border: 1px solid #848484;
+    
+    overflow-y: auto;
+    overflow-x: hidden;
 }  
 /* Flotr related styles */
 .flotr-legend {
@@ -452,7 +455,15 @@ table.channel_assigner {
 .sensor_data #graph_accel {
     width: 900px;
     height: 175px;
-} 
+}
+.sensor_data #graph_mag {
+    width: 900px;
+    height: 175px;
+}
+.sensor_data #graph_baro {
+    width: 900px;
+    height: 175px;
+}   
 #graph_receiver {
     width: 900px;
     height: 355px;

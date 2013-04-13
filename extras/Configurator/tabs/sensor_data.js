@@ -32,7 +32,9 @@ function tab_initialize_sensor_data() {
 
     // Graph definitions
     e_graph_gyro = document.getElementById("graph_gyro");
-    e_graph_accel = document.getElementById("graph_accel");  
+    e_graph_accel = document.getElementById("graph_accel");
+    e_graph_mag = document.getElementById("graph_mag"); 
+    e_graph_baro = document.getElementById("graph_baro");     
     
     gyro_options = {
         title: "Gyroscope (deg/s)",
@@ -71,13 +73,40 @@ function tab_initialize_sensor_data() {
             backgroundOpacity: 0
         }
     } 
+    
+    // disable plots for sensors that wasn't detected
+    if (sensors_alive.gyro == 0) {
+        $(e_graph_gyro).hide();
+    }
+    
+    if (sensors_alive.accel == 0) {
+        $(e_graph_accel).hide();
+    }
 
+    if (sensors_alive.mag == 0) {
+        $(e_graph_mag).hide();
+    }    
+
+    if (sensors_alive.baro == 0) {
+        $(e_graph_baro).hide();
+    }
+    
     // request sensor data from flight controller
     timers.push(setInterval(sensor_pull, 50));
 }
 
 function sensor_pull() {
-    send_message(PSP.PSP_REQ_GYRO_ACC, 1);   
+    if (sensors_alive.gyro == 1 || sensors_alive.accel == 1) {
+        send_message(PSP.PSP_REQ_GYRO_ACC, 1);
+    }
+    
+    if (sensors_alive.mag == 1) {
+        send_message(PSP.PSP_REQ_MAG, 1);
+    }
+    
+    if (sensors_alive.baro == 1) {
+        send_message(PSP.PSP_REQ_BARO, 1);
+    }
 }
 
 function process_data_sensors() {
