@@ -211,6 +211,9 @@ function process_data(command, message_buffer) {
             var sensors_detected = parseInt((message_buffer_uint8_view[0] << 8) | message_buffer_uint8_view[1]);
             sensor_status(sensors_detected);            
             break;
+        case PSP.PSP_SET_MOTOR_TEST_VALUE:
+            // acknowledged valid motor value
+            break;
         case PSP.PSP_INF_ACK:
             command_log('Flight Controller responds with -- <span style="color: green">ACK</span>');
             break;

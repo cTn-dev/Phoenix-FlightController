@@ -109,13 +109,14 @@ class Configurator {
         };
         
         void process_data() {
+            Serial.write(PSP_SYNC1);
+            Serial.write(PSP_SYNC2);
+            
             switch (code) {
                 case PSP_REQ_CONFIGURATION:
                     send_UNION();
                     break;              
                 case PSP_REQ_GYRO_ACC: {
-                    Serial.write(PSP_SYNC1);
-                    Serial.write(PSP_SYNC2);
                     Serial.write(PSP_REQ_GYRO_ACC);
                     Serial.write(0x00);
                     Serial.write(24);
@@ -138,8 +139,6 @@ class Configurator {
                     break;
 #ifdef Magnetometer                    
                 case PSP_REQ_MAG: {
-                    Serial.write(PSP_SYNC1);
-                    Serial.write(PSP_SYNC2); 
                     Serial.write(PSP_REQ_MAG);
                     Serial.write(0x00);
                     Serial.write(6);
@@ -160,8 +159,6 @@ class Configurator {
 #endif
 #ifdef AltitudeHoldBaro
                 case PSP_REQ_BARO: {
-                    Serial.write(PSP_SYNC1);
-                    Serial.write(PSP_SYNC2);
                     Serial.write(PSP_REQ_BARO);
                     Serial.write(0x00);
                     Serial.write(8);
@@ -179,8 +176,6 @@ class Configurator {
                 // TODO
                 /*
                 case PSP_REQ_GPS: {
-                    Serial.write(PSP_SYNC1);
-                    Serial.write(PSP_SYNC2);
                     Serial.write(PSP_REQ_GPS);
                     Serial.write(0x00);
                     
@@ -189,8 +184,6 @@ class Configurator {
                 */
 #endif                    
                 case PSP_REQ_RC: {
-                    Serial.write(PSP_SYNC1);
-                    Serial.write(PSP_SYNC2);
                     Serial.write(PSP_REQ_RC);
                     Serial.write(0x00);
                     Serial.write(CHANNELS * 2);
@@ -208,8 +201,6 @@ class Configurator {
                     }
                     break;
                 case PSP_REQ_KINEMATICS: {
-                    Serial.write(PSP_SYNC1);
-                    Serial.write(PSP_SYNC2);
                     Serial.write(PSP_REQ_KINEMATICS);
                     Serial.write(0x00);
                     Serial.write(12);
@@ -223,8 +214,6 @@ class Configurator {
                     }
                     break;
                 case PSP_REQ_MOTORS_OUTPUT: {
-                    Serial.write(PSP_SYNC1);
-                    Serial.write(PSP_SYNC2);
                     Serial.write(PSP_REQ_MOTORS_OUTPUT);
                     Serial.write(0x00);
                     Serial.write(MOTORS * 2); // payload length LSB (* 2 because of 2 bytes for each motor) 
@@ -242,8 +231,6 @@ class Configurator {
                     }
                     break;
                 case PSP_REQ_MOTORS_COUNT:
-                    Serial.write(PSP_SYNC1);
-                    Serial.write(PSP_SYNC2);
                     Serial.write(PSP_REQ_MOTORS_COUNT);
                     Serial.write(0x00);
                     Serial.write(0x01); 
@@ -253,8 +240,6 @@ class Configurator {
                     Serial.write(PSP_REQ_MOTORS_COUNT ^ 0x00 ^ 0x01 ^ MOTORS);
                     break;
                 case PSP_REQ_SENSORS_ALIVE:
-                    Serial.write(PSP_SYNC1);
-                    Serial.write(PSP_SYNC2);
                     Serial.write(PSP_REQ_SENSORS_ALIVE);
                     Serial.write(0x00);
                     Serial.write(0x02);
@@ -289,6 +274,9 @@ class Configurator {
                     writeEEPROM(); // writes default values to eeprom
 
                     // Send back configuration union
+                    Serial.write(PSP_SYNC1); // ACK already "ate" the sync chars, thats why we send new ones for union
+                    Serial.write(PSP_SYNC2);
+                    
                     send_UNION();                    
                     break;
                 case PSP_SET_ACCEL_CALIBRATION: {
@@ -298,8 +286,6 @@ class Configurator {
                     writeEEPROM();
 
                     // Send over the accel calibration data
-                    Serial.write(PSP_SYNC1);
-                    Serial.write(PSP_SYNC2);
                     Serial.write(PSP_SET_ACCEL_CALIBRATION);
                     Serial.write(0x00);
                     Serial.write(6);
@@ -321,6 +307,13 @@ class Configurator {
                     if (data_buffer[0] < MOTORS) { // Check if motor number is within our setup
                         MotorOut[data_buffer[0]] = 1000 + (data_buffer[1] * 10);
                         updateMotors(); // Update ESCs
+                        
+                        // reply
+                        Serial.write(PSP_SET_MOTOR_TEST_VALUE);
+                        Serial.write(0x00);
+                        Serial.write(0x01);
+                        Serial.write(0x01);
+                        Serial.write(PSP_SET_MOTOR_TEST_VALUE ^ 0x00 ^ 0x01 ^ 0x01);
                     } else { // Motor number is not in our setup
                         REFUSED();
                     }
@@ -331,8 +324,6 @@ class Configurator {
         };
         
         void ACK() {
-            Serial.write(PSP_SYNC1);
-            Serial.write(PSP_SYNC2);
             Serial.write(PSP_INF_ACK);
             Serial.write(0x00);
             Serial.write(0x01);
@@ -341,8 +332,6 @@ class Configurator {
         };
         
         void REFUSED() {
-            Serial.write(PSP_SYNC1);
-            Serial.write(PSP_SYNC2);
             Serial.write(PSP_INF_REFUSED);
             Serial.write(0x00);
             Serial.write(0x01);
@@ -351,8 +340,6 @@ class Configurator {
         };
         
         void CRC_FAILED(uint8_t crc) {
-            Serial.write(PSP_SYNC1);
-            Serial.write(PSP_SYNC2);
             Serial.write(PSP_INF_CRC_FAIL);
             Serial.write(0x00);
             Serial.write(0x02); 
@@ -362,8 +349,6 @@ class Configurator {
         };
         
         void send_UNION() {
-            Serial.write(PSP_SYNC1);
-            Serial.write(PSP_SYNC2);
             Serial.write(PSP_REQ_CONFIGURATION);
             Serial.write(highByte(sizeof(CONFIG)));
             Serial.write(lowByte(sizeof(CONFIG))); 
