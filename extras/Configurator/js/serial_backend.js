@@ -201,7 +201,12 @@ function process_data(command, message_buffer) {
             process_data_receiver();
             break;
         case PSP.PSP_REQ_KINEMATICS:
-            process_vehicle_view();
+            // 57.2957795 = rad to deg scale factor
+            sensor_data.kinematics[0] = data.getFloat32(0, 1) * 57.2957795; // roll
+            sensor_data.kinematics[1] = data.getFloat32(4, 1) * 57.2957795; // pitch
+            sensor_data.kinematics[2] = data.getFloat32(8, 1) * 57.2957795; // yaw
+            
+            sensor_data.kinematics[1] *= -1.0; // Reverse Pitch
             break;
         case PSP.PSP_REQ_MOTORS_OUTPUT:
             if ($('#tabs > ul .active').hasClass('tab_motor_command')) {

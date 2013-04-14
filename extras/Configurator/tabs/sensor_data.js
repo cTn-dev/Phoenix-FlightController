@@ -160,7 +160,6 @@ function sensor_pull() {
             {data: sensor_data.mag_plot[1], label: "Y - Ga [" + sensor_data.mag[1].toFixed(2) + "]"}, 
             {data: sensor_data.mag_plot[2], label: "Z - Ga [" + sensor_data.mag[2].toFixed(2) + "]"} ], mag_options);  
 
-    
         // request new data
         send_message(PSP.PSP_REQ_MAG, 1);
     }
