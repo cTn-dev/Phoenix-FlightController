@@ -198,7 +198,14 @@ function process_data(command, message_buffer) {
             sensor_data.baro[1] = data.getFloat32(4, 1); // baroAltitude
             break;
         case PSP.PSP_REQ_RC:
-            process_data_receiver();
+            receiver_data.raw[0] = data.getInt16(0, 0);
+            receiver_data.raw[1] = data.getInt16(2, 0);
+            receiver_data.raw[2] = data.getInt16(4, 0);
+            receiver_data.raw[3] = data.getInt16(6, 0);
+            receiver_data.raw[4] = data.getInt16(8, 0);
+            receiver_data.raw[5] = data.getInt16(10, 0);
+            receiver_data.raw[6] = data.getInt16(12, 0);
+            receiver_data.raw[7] = data.getInt16(14, 0);
             break;
         case PSP.PSP_REQ_KINEMATICS:
             // 57.2957795 = rad to deg scale factor
