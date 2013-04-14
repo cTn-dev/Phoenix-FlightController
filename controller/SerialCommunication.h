@@ -146,11 +146,11 @@ class Configurator {
                     uint8_t crc = PSP_REQ_MAG ^ 0x00 ^ 6;
                     
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        Serial.write(highByte(magRaw[axis]));
                         Serial.write(lowByte(magRaw[axis]));
+                        Serial.write(highByte(magRaw[axis]));
                         
-                        crc ^= highByte(magRaw[axis]);
                         crc ^= lowByte(magRaw[axis]);
+                        crc ^= highByte(magRaw[axis]);
                     }
                     
                     Serial.write(crc);

@@ -180,13 +180,22 @@ function process_data(command, message_buffer) {
             command_log('Configuration UNION received -- <span style="color: green">OK</span>');
             break;
         case PSP.PSP_REQ_GYRO_ACC:
-            process_data_gyro_acc(data);
+            sensor_data.gyro[0] = data.getFloat32(0, 1); // X
+            sensor_data.gyro[1] = data.getFloat32(4, 1); // Y
+            sensor_data.gyro[2] = data.getFloat32(8, 1); // Z
+
+            sensor_data.accel[0] = data.getFloat32(12, 1); // X
+            sensor_data.accel[1] = data.getFloat32(16, 1); // Y
+            sensor_data.accel[2] = data.getFloat32(20, 1); // Z
             break;
         case PSP.PSP_REQ_MAG:
-            process_data_mag(data);
+            sensor_data.mag[0] = data.getInt16(0, 1); // X
+            sensor_data.mag[1] = data.getInt16(2, 1); // Y
+            sensor_data.mag[2] = data.getInt16(4, 1); // Z
             break;
         case PSP.PSP_REQ_BARO:
-            process_data_baro(data);
+            sensor_data.baro[0] = data.getFloat32(0, 1); // baroRawAltitude
+            sensor_data.baro[1] = data.getFloat32(4, 1); // baroAltitude
             break;
         case PSP.PSP_REQ_RC:
             process_data_receiver();

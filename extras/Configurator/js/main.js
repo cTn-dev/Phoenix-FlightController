@@ -6,14 +6,6 @@ var eepromConfigSize;
 
 var motors = 0;
 
-var sensors_alive = {
-    gyro:  0,
-    accel: 0,
-    mag:   0,
-    baro:  0,
-    gps:   0
-};
-
 var timers = new Array();
 
 $(document).ready(function() { 
