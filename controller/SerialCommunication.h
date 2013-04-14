@@ -142,12 +142,16 @@ class Configurator {
                     Serial.write(PSP_SYNC2); 
                     Serial.write(PSP_REQ_MAG);
                     Serial.write(0x00);
-                    Serial.write(12);
+                    Serial.write(6);
                     
-                    uint8_t crc = PSP_REQ_MAG ^ 0x00 ^ 12;
+                    uint8_t crc = PSP_REQ_MAG ^ 0x00 ^ 6;
                     
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        crc = send_float(magRaw[axis], crc);
+                        Serial.write(highByte(magRaw[axis]));
+                        Serial.write(lowByte(magRaw[axis]));
+                        
+                        crc ^= highByte(magRaw[axis]);
+                        crc ^= lowByte(magRaw[axis]);
                     }
                     
                     Serial.write(crc);
@@ -165,7 +169,7 @@ class Configurator {
                     uint8_t crc = PSP_REQ_BARO ^ 0x00 ^ 8;
                     
                     crc = send_float(baroRawAltitude, crc);
-                    crc = send_float(baroAltitudeRunning, crc);
+                    crc = send_float(baroAltitude, crc);
                     
                     Serial.write(crc);
                     }

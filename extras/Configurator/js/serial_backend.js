@@ -87,7 +87,7 @@ function onCharRead(readInfo) {
                 case 6:
                     if (message_crc == data[i]) {
                         // message received, process
-                        process_data();
+                        process_data(command, message_buffer);
                     } else {
                         // crc failed
                         console.log('crc failed');
@@ -153,7 +153,9 @@ function send_message(code, data, callback) {
     });    
 }
 
-function process_data() {
+function process_data(command, message_buffer) {
+    var data = new DataView(message_buffer, 0); // DataView (allowing is to view arrayBuffer as struct/union)
+    
     switch (command) {
         case PSP.PSP_REQ_CONFIGURATION:
             console.log('Expected UNION size: ' + message_length_expected + ', Received UNION size: ' + message_buffer_uint8_view.length);
@@ -178,7 +180,13 @@ function process_data() {
             command_log('Configuration UNION received -- <span style="color: green">OK</span>');
             break;
         case PSP.PSP_REQ_GYRO_ACC:
-            process_data_sensors();
+            process_data_gyro_acc(data);
+            break;
+        case PSP.PSP_REQ_MAG:
+            process_data_mag(data);
+            break;
+        case PSP.PSP_REQ_BARO:
+            process_data_baro(data);
             break;
         case PSP.PSP_REQ_RC:
             process_data_receiver();
@@ -212,5 +220,7 @@ function process_data() {
         case PSP.PSP_INF_CRC_FAIL:
             console.log('crc check failed, code: ' + message_buffer_uint8_view[0] + ' crc value: ' + message_buffer_uint8_view[1]);
             break;
+        default:
+            console.log('Unknown command: ' + command);
     }
 }
