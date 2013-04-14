@@ -1,12 +1,30 @@
-var samples_i;
-
-var mag_data = new Array(3);
-var baro_data = new Array(1);
-
 function tab_initialize_sensor_data() {
     // Setup variables
     samples_i = 300;
 
+    for (var i = 0; i < sensor_data.gyro_plot.length; i++) {
+        sensor_data.gyro_plot[i] = [];
+        sensor_data.accel_plot[i] = [];
+        sensor_data.mag_plot[i] = [];
+    }
+    sensor_data.baro_plot = [];
+    
+    for (var i = 0; i <= 300; i++) { 
+        sensor_data.gyro_plot[0].push([i, 0]);
+        sensor_data.gyro_plot[1].push([i, 0]);
+        sensor_data.gyro_plot[2].push([i, 0]); 
+        
+        sensor_data.accel_plot[0].push([i, 0]);
+        sensor_data.accel_plot[1].push([i, 0]);
+        sensor_data.accel_plot[2].push([i, 0]);  
+
+        sensor_data.mag_plot[0].push([i, 0]);
+        sensor_data.mag_plot[1].push([i, 0]);
+        sensor_data.mag_plot[2].push([i, 0]);   
+
+        sensor_data.baro_plot.push([i, 0]); 
+    }    
+    
     // Graph definitions
     e_graph_gyro = document.getElementById("graph_gyro");
     e_graph_accel = document.getElementById("graph_accel");

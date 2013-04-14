@@ -1,4 +1,45 @@
-var samples_i;
+function tab_initialize_rx() {
+    // Setup variables
+    samples_i = 300;
+    
+    for (var i = 0; i < receiver_data.plot.length; i++) {
+        receiver_data.plot[i] = [];
+    }
+    
+    for (var i = 0; i <= 300; i++) { 
+        receiver_data.plot[0].push([i, 0]);
+        receiver_data.plot[1].push([i, 0]);
+        receiver_data.plot[2].push([i, 0]);
+        receiver_data.plot[3].push([i, 0]);
+        receiver_data.plot[4].push([i, 0]); 
+        receiver_data.plot[5].push([i, 0]); 
+        receiver_data.plot[6].push([i, 0]); 
+        receiver_data.plot[7].push([i, 0]);  
+    }
+    
+    // Graph definitions
+    e_graph_receiver = document.getElementById("graph_receiver");
+    
+    receiver_options = {
+        shadowSize: 0,
+        yaxis : {
+            max: 2200,
+            min: 800
+        },
+        xaxis : {
+            //noTicks = 0
+        },
+        grid : {
+            backgroundColor: "#FFFFFF"
+        },
+        legend : {
+            backgroundOpacity: 0
+        }        
+    }
+
+    // request receiver data from flight controller
+    timers.push(setInterval(rx_poll, 50));
+}
 
 function RX_channel_name(num) {
     var name;
@@ -31,34 +72,6 @@ function RX_channel_name(num) {
     }
     
     return name;
-}
-
-function tab_initialize_rx() {
-    // Setup variables
-    samples_i = 300;
-
-    // Graph definitions
-    e_graph_receiver = document.getElementById("graph_receiver");
-    
-    receiver_options = {
-        shadowSize: 0,
-        yaxis : {
-            max: 2200,
-            min: 800
-        },
-        xaxis : {
-            //noTicks = 0
-        },
-        grid : {
-            backgroundColor: "#FFFFFF"
-        },
-        legend : {
-            backgroundOpacity: 0
-        }        
-    }
-
-    // request receiver data from flight controller
-    timers.push(setInterval(rx_poll, 50));
 }
 
 function rx_poll() {
