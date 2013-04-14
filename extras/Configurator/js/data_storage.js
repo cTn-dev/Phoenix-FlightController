@@ -51,4 +51,4 @@ for (var i = 0; i <= 300; i++) {
     receiver_data.plot[7].push([i, 0]);     
 } 
 
-var motors_output = new Array();
+var motors_output = [0, 0, 0, 0, 0, 0, 0, 0];

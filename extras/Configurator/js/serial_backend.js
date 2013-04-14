@@ -216,10 +216,16 @@ function process_data(command, message_buffer) {
             sensor_data.kinematics[1] *= -1.0; // Reverse Pitch
             break;
         case PSP.PSP_REQ_MOTORS_OUTPUT:
+            var needle = 0;
+            for (var i = 0; i < motors; i++) {
+                motors_output[i] = data.getInt16(needle, 0);
+                needle += 2;
+            }
+            
+            // TODO
             if ($('#tabs > ul .active').hasClass('tab_motor_command')) {
                 update_motor_command();
             } else { // standard behaviour
-                process_motor_output();
             }
             break;
         case PSP.PSP_SET_ACCEL_CALIBRATION:
