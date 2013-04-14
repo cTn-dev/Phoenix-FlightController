@@ -47,20 +47,7 @@ function tab_initialize_initial_setup() {
 }
 
 function process_accel_calibration() {
-    var view = new DataView(message_buffer, 0); // DataView (allowing is to view arrayBuffer as struct/union)
-    
-    var data = new Array(); // array used to hold/store read values
-    
-    data[0] = view.getInt16(0, 0);
-    data[1] = view.getInt16(2, 0);
-    data[2] = view.getInt16(4, 0);
-    
-    // Update the current eepromConfig object with latest data
-    eepromConfig.ACCEL_BIAS[0] = data[0];
-    eepromConfig.ACCEL_BIAS[1] = data[1];
-    eepromConfig.ACCEL_BIAS[2] = data[2];
-    
-    command_log('Accel Calibration received, data: ' + data);
+    command_log('Accel Calibration data received: ' + eepromConfig.ACCEL_BIAS);
     
     // Update the manual calibration inputs with latest data
     var i = 0;

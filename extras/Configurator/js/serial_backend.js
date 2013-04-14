@@ -221,14 +221,12 @@ function process_data(command, message_buffer) {
                 motors_output[i] = data.getInt16(needle, 0);
                 needle += 2;
             }
-            
-            // TODO
-            if ($('#tabs > ul .active').hasClass('tab_motor_command')) {
-                update_motor_command();
-            } else { // standard behaviour
-            }
             break;
         case PSP.PSP_SET_ACCEL_CALIBRATION:
+            eepromConfig.ACCEL_BIAS[0] = data.getInt16(0, 0); // x
+            eepromConfig.ACCEL_BIAS[1] = data.getInt16(2, 0); // y
+            eepromConfig.ACCEL_BIAS[2] = data.getInt16(4, 0); // z
+            
             process_accel_calibration();
             break;
         case PSP.PSP_REQ_MOTORS_COUNT:
