@@ -91,11 +91,11 @@ class Configurator {
                         break;
                     case 6:
                         if (message_crc == data) {
-                            // CRC is ok, proecss data
+                            // CRC is ok, process data
                             process_data();
                         } else {
                             // respond that CRC failed
-                            CRC_FAILED(message_crc);
+                            CRC_FAILED(code, message_crc);
                         }
                         
                         // reset variables
@@ -108,146 +108,86 @@ class Configurator {
             }        
         };
         
-        void process_data() {
-            Serial.write(PSP_SYNC1);
-            Serial.write(PSP_SYNC2);
-            
+        void process_data() {            
             switch (code) {
                 case PSP_REQ_CONFIGURATION:
                     send_UNION();
                     break;              
                 case PSP_REQ_GYRO_ACC: {
-                    Serial.write(PSP_REQ_GYRO_ACC);
-                    Serial.write(0x00);
-                    Serial.write(24);
+                    protocol_head(PSP_REQ_GYRO_ACC, 24);
                     
-                    uint8_t crc = PSP_REQ_GYRO_ACC ^ 0x00 ^ 24;
                     // gyro
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        crc = send_float(gyro[axis], crc);
+                        serialize_float32(gyro[axis]);
                     }
 
                     // accel
                     float norm = sqrt(accel[XAXIS] * accel[XAXIS] + accel[YAXIS] * accel[YAXIS] + accel[ZAXIS] * accel[ZAXIS]);
                     
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        crc = send_float((float)(accel[axis] / norm), crc);
+                        serialize_float32((float)(accel[axis] / norm));
                     } 
                     
-                    Serial.write(crc);
                     }
                     break;
 #ifdef Magnetometer                    
-                case PSP_REQ_MAG: {
-                    Serial.write(PSP_REQ_MAG);
-                    Serial.write(0x00);
-                    Serial.write(6);
-                    
-                    uint8_t crc = PSP_REQ_MAG ^ 0x00 ^ 6;
+                case PSP_REQ_MAG:
+                    protocol_head(PSP_REQ_MAG, 6);
                     
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        Serial.write(lowByte(magRaw[axis]));
-                        Serial.write(highByte(magRaw[axis]));
-                        
-                        crc ^= lowByte(magRaw[axis]);
-                        crc ^= highByte(magRaw[axis]);
-                    }
-                    
-                    Serial.write(crc);
+                        serialize_uint8(lowByte(magRaw[axis]));
+                        serialize_uint8(highByte(magRaw[axis]));
                     }
                     break;
 #endif
 #ifdef AltitudeHoldBaro
-                case PSP_REQ_BARO: {
-                    Serial.write(PSP_REQ_BARO);
-                    Serial.write(0x00);
-                    Serial.write(8);
-                    
-                    uint8_t crc = PSP_REQ_BARO ^ 0x00 ^ 8;
-                    
-                    crc = send_float(baroRawAltitude, crc);
-                    crc = send_float(baroAltitude, crc);
-                    
-                    Serial.write(crc);
-                    }
+                case PSP_REQ_BARO:
+                    protocol_head(PSP_REQ_BARO, 8);
+                    serialize_float32(baroRawAltitude);
+                    serialize_float32(baroAltitude);
                     break;
 #endif
 #ifdef GPS
                 // TODO
                 /*
                 case PSP_REQ_GPS: {
-                    Serial.write(PSP_REQ_GPS);
-                    Serial.write(0x00);
-                    
                     }
                     break;
                 */
 #endif                    
-                case PSP_REQ_RC: {
-                    Serial.write(PSP_REQ_RC);
-                    Serial.write(0x00);
-                    Serial.write(CHANNELS * 2);
+                case PSP_REQ_RC:
+                    protocol_head(PSP_REQ_RC, CHANNELS * 2);
                     
-                    uint8_t crc = PSP_REQ_RC ^ 0x00 ^ (CHANNELS * 2);
                     for (uint8_t channel = 0; channel < CHANNELS; channel++) {
-                        Serial.write(highByte(RX[channel]));
-                        Serial.write(lowByte(RX[channel]));
-                        
-                        crc ^= highByte(RX[channel]);
-                        crc ^= lowByte(RX[channel]);
-                    }
-                    
-                    Serial.write(crc);
+                        serialize_uint8(highByte(RX[channel]));
+                        serialize_uint8(lowByte(RX[channel]));
                     }
                     break;
-                case PSP_REQ_KINEMATICS: {
-                    Serial.write(PSP_REQ_KINEMATICS);
-                    Serial.write(0x00);
-                    Serial.write(12);
+                case PSP_REQ_KINEMATICS:
+                    protocol_head(PSP_REQ_KINEMATICS, 12);
 
-                    uint8_t crc = PSP_REQ_KINEMATICS ^ 0x00 ^ 12;
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        crc = send_float(kinematicsAngle[axis], crc);
-                    }
-
-                    Serial.write(crc);
+                        serialize_float32(kinematicsAngle[axis]);
                     }
                     break;
-                case PSP_REQ_MOTORS_OUTPUT: {
-                    Serial.write(PSP_REQ_MOTORS_OUTPUT);
-                    Serial.write(0x00);
-                    Serial.write(MOTORS * 2); // payload length LSB (* 2 because of 2 bytes for each motor) 
-                    
-                    uint8_t crc = PSP_REQ_MOTORS_OUTPUT ^ 0x00 ^ (MOTORS * 2);
+                case PSP_REQ_MOTORS_OUTPUT:
+                    protocol_head(PSP_REQ_MOTORS_OUTPUT, MOTORS * 2);
+
                     for (uint8_t motor = 0; motor < MOTORS; motor++) {
-                        Serial.write(highByte(MotorOut[motor]));
-                        Serial.write(lowByte(MotorOut[motor]));
-                        
-                        crc ^= highByte(MotorOut[motor]);
-                        crc ^= lowByte(MotorOut[motor]);
-                    }
-                    
-                    Serial.write(crc);
+                        serialize_uint8(highByte(MotorOut[motor]));
+                        serialize_uint8(lowByte(MotorOut[motor]));
                     }
                     break;
                 case PSP_REQ_MOTORS_COUNT:
-                    Serial.write(PSP_REQ_MOTORS_COUNT);
-                    Serial.write(0x00);
-                    Serial.write(0x01); 
+                    protocol_head(PSP_REQ_MOTORS_COUNT, 1);
                     
-                    Serial.write(MOTORS);
-                    
-                    Serial.write(PSP_REQ_MOTORS_COUNT ^ 0x00 ^ 0x01 ^ MOTORS);
+                    serialize_uint8(MOTORS);
                     break;
                 case PSP_REQ_SENSORS_ALIVE:
-                    Serial.write(PSP_REQ_SENSORS_ALIVE);
-                    Serial.write(0x00);
-                    Serial.write(0x02);
+                    protocol_head(PSP_REQ_SENSORS_ALIVE, 2);
                     
-                    Serial.write(highByte(sensors.sensors_detected));
-                    Serial.write(lowByte(sensors.sensors_detected));
-                    
-                    Serial.write(PSP_REQ_SENSORS_ALIVE ^ 0x00 ^ 0x02 ^ highByte(sensors.sensors_detected) ^ lowByte(sensors.sensors_detected));
+                    serialize_uint8(highByte(sensors.sensors_detected));
+                    serialize_uint8(lowByte(sensors.sensors_detected));
                     break;
                     
                 // SET
@@ -273,33 +213,21 @@ class Configurator {
                     initializeEEPROM(); // initializes default values
                     writeEEPROM(); // writes default values to eeprom
 
-                    // Send back configuration union
-                    Serial.write(PSP_SYNC1); // ACK already "ate" the sync chars, thats why we send new ones for union
-                    Serial.write(PSP_SYNC2);
-                    
+                    // Send back configuration union                    
                     send_UNION();                    
                     break;
-                case PSP_SET_ACCEL_CALIBRATION: {
+                case PSP_SET_ACCEL_CALIBRATION:
                     sensors.calibrateAccel();
                     
                     // Write config to EEPROM
                     writeEEPROM();
 
                     // Send over the accel calibration data
-                    Serial.write(PSP_SET_ACCEL_CALIBRATION);
-                    Serial.write(0x00);
-                    Serial.write(6);
+                    protocol_head(PSP_SET_ACCEL_CALIBRATION, 6);
                     
-                    uint8_t crc = PSP_SET_ACCEL_CALIBRATION ^ 0x00 ^ 6;
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        Serial.write(highByte(CONFIG.data.ACCEL_BIAS[axis]));
-                        Serial.write(lowByte(CONFIG.data.ACCEL_BIAS[axis]));
-                        
-                        crc ^= highByte(CONFIG.data.ACCEL_BIAS[axis]);
-                        crc ^= lowByte(CONFIG.data.ACCEL_BIAS[axis]);
-                    }
-                    
-                    Serial.write(crc);
+                        serialize_uint8(highByte(CONFIG.data.ACCEL_BIAS[axis]));
+                        serialize_uint8(lowByte(CONFIG.data.ACCEL_BIAS[axis]));
                     }
                     break; 
                 case PSP_SET_MOTOR_TEST_VALUE:
@@ -307,13 +235,6 @@ class Configurator {
                     if (data_buffer[0] < MOTORS) { // Check if motor number is within our setup
                         MotorOut[data_buffer[0]] = 1000 + (data_buffer[1] * 10);
                         updateMotors(); // Update ESCs
-                        
-                        // reply
-                        Serial.write(PSP_SET_MOTOR_TEST_VALUE);
-                        Serial.write(0x00);
-                        Serial.write(0x01);
-                        Serial.write(0x01);
-                        Serial.write(PSP_SET_MOTOR_TEST_VALUE ^ 0x00 ^ 0x01 ^ 0x01);
                     } else { // Motor number is not in our setup
                         REFUSED();
                     }
@@ -321,56 +242,61 @@ class Configurator {
                 default: // Unrecognized code
                     REFUSED();
             }
-        };
-        
-        void ACK() {
-            Serial.write(PSP_INF_ACK);
-            Serial.write(0x00);
-            Serial.write(0x01);
-            Serial.write(0x01);
-            Serial.write(PSP_INF_ACK ^ 0x00 ^ 0x01 ^ 0x01);
-        };
-        
-        void REFUSED() {
-            Serial.write(PSP_INF_REFUSED);
-            Serial.write(0x00);
-            Serial.write(0x01);
-            Serial.write(0x00);
-            Serial.write(PSP_INF_REFUSED ^ 0x00 ^ 0x01 ^ 0x00);
-        };
-        
-        void CRC_FAILED(uint8_t crc) {
-            Serial.write(PSP_INF_CRC_FAIL);
-            Serial.write(0x00);
-            Serial.write(0x02); 
-            Serial.write(code);
-            Serial.write(crc);
-            Serial.write(PSP_INF_CRC_FAIL ^ 0x00 ^ 0x02 ^ code ^ crc);
-        };
-        
-        void send_UNION() {
-            Serial.write(PSP_REQ_CONFIGURATION);
-            Serial.write(highByte(sizeof(CONFIG)));
-            Serial.write(lowByte(sizeof(CONFIG))); 
-    
-            uint8_t crc = PSP_REQ_CONFIGURATION ^ highByte(sizeof(CONFIG)) ^ lowByte(sizeof(CONFIG));
-            for (uint16_t i = 0; i < sizeof(CONFIG); i++) {
-                Serial.write(CONFIG.raw[i]);
-                crc ^= CONFIG.raw[i];
-            }
             
+            // send over crc
+            protocol_tail();
+        };
+        
+        void protocol_head(uint8_t code, uint16_t length) {
+            Serial.write(PSP_SYNC1);
+            Serial.write(PSP_SYNC2);
+        
+            crc = 0; // reset crc
+            
+            serialize_uint8(code);
+            serialize_uint8(highByte(length));
+            serialize_uint8(lowByte(length));
+        };
+        
+        void protocol_tail() {
             Serial.write(crc);
         };
         
-        uint8_t send_float(float f, uint8_t crc) {
+        void serialize_uint8(uint8_t data) {
+            Serial.write(data);
+            crc ^= data;
+        };
+        
+        void serialize_float32(float f) {
             uint8_t *b = (uint8_t*) & f;
             
             for (uint8_t i = 0; i < sizeof(f); i++) {
-                Serial.write(b[i]);
-                crc ^= b[i];
+                serialize_uint8(b[i]);
             }
-            
-            return crc;
+        };
+        
+        void ACK() {
+            protocol_head(PSP_INF_ACK, 1);
+            serialize_uint8(0x01);
+        };
+        
+        void REFUSED() {
+            protocol_head(PSP_INF_REFUSED, 1);
+            serialize_uint8(0x00);
+        };
+        
+        void CRC_FAILED(uint8_t code, uint8_t failed_crc) {
+            protocol_head(PSP_INF_CRC_FAIL, 2);
+            serialize_uint8(code);
+            serialize_uint8(failed_crc);
+        };
+        
+        void send_UNION() {
+            protocol_head(PSP_REQ_CONFIGURATION, sizeof(CONFIG));
+
+            for (uint16_t i = 0; i < sizeof(CONFIG); i++) {
+                serialize_uint8(CONFIG.raw[i]);
+            }
         };
     
     private:
@@ -379,6 +305,7 @@ class Configurator {
         uint8_t state;
         uint8_t code;
         uint8_t message_crc;
+        uint8_t crc;
         
         uint16_t payload_length_expected;
         uint16_t payload_length_received;
