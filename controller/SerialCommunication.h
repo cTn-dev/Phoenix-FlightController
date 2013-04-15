@@ -143,6 +143,7 @@ class Configurator {
 #ifdef AltitudeHoldBaro
                 case PSP_REQ_BARO:
                     protocol_head(PSP_REQ_BARO, 8);
+
                     serialize_float32(baroRawAltitude);
                     serialize_float32(baroAltitude);
                     break;
@@ -277,16 +278,19 @@ class Configurator {
         
         void ACK() {
             protocol_head(PSP_INF_ACK, 1);
+            
             serialize_uint8(0x01);
         };
         
         void REFUSED() {
             protocol_head(PSP_INF_REFUSED, 1);
+            
             serialize_uint8(0x00);
         };
         
         void CRC_FAILED(uint8_t code, uint8_t failed_crc) {
             protocol_head(PSP_INF_CRC_FAIL, 2);
+            
             serialize_uint8(code);
             serialize_uint8(failed_crc);
         };
