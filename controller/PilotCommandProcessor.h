@@ -1,4 +1,5 @@
 int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_AUX1, TX_AUX2, TX_AUX3, TX_AUX4;
+uint16_t AUX_chan_mask;
 bool throttlePanic = false;
 
 void processPilotCommands() {
@@ -21,7 +22,7 @@ void processPilotCommands() {
     sei(); // enable interrupts
     
     // Set the mask
-    uint16_t AUX_chan_mask = 0x00;
+    AUX_chan_mask = 0x00; // reset the mask
     
     if (TX_AUX1 < 1250) { // LOW
         AUX_chan_mask |= 1 << 0;

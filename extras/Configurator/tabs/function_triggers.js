@@ -1,4 +1,7 @@
-function tab_initialize_function_triggers() {
+var AUX_triggered_mask = 0;
+
+function tab_initialize_function_triggers() {    
+    // AUX names manually defined
     var AUX_names = [
         'Stable mode (gyro + acc)',
         'Altitude hold (barometer)',
@@ -53,6 +56,31 @@ function tab_initialize_function_triggers() {
         // Send updated UNION to the flight controller
         sendUNION();   
     });    
+    
+    // request AUX mask from flight controller
+    timers.push(setInterval(AUX_pull, 250));    
+}
+
+function AUX_pull() {
+    // Update the classes
+    var needle = 0;
+    $('.tab-function_triggers .functions input').each(function() {
+        if (bit_check(AUX_triggered_mask, needle)) { // 1
+            $(this).parent().addClass('on');
+        } else { // 0
+            $(this).parent().removeClass('on');
+        }
+        
+        needle++;
+        
+        if (needle >= 12) { // 4 aux * 3 checkboxes = 12 bits per line
+            needle = 0;
+        }
+    });
+    
+    
+    // request new data
+    send_message(PSP.PSP_REQ_AUX_TRIGGERED, 1);
 }
 
 function box_check(num, pos) {

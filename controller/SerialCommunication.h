@@ -21,6 +21,7 @@
 #define PSP_REQ_MOTORS_OUTPUT 8
 #define PSP_REQ_MOTORS_COUNT  9
 #define PSP_REQ_SENSORS_ALIVE 10
+#define PSP_REQ_AUX_TRIGGERED 11
 
 
 #define PSP_SET_CONFIGURATION     101
@@ -190,7 +191,13 @@ class Configurator {
                     serialize_uint8(highByte(sensors.sensors_detected));
                     serialize_uint8(lowByte(sensors.sensors_detected));
                     break;
+                case PSP_REQ_AUX_TRIGGERED:
+                    protocol_head(PSP_REQ_AUX_TRIGGERED, 2);
                     
+                    serialize_uint8(highByte(AUX_chan_mask));
+                    serialize_uint8(lowByte(AUX_chan_mask));
+                    break;
+                 
                 // SET
                 case PSP_SET_CONFIGURATION:
                     if (payload_length_received == sizeof(CONFIG)) {

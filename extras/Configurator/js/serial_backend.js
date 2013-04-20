@@ -12,6 +12,7 @@ var PSP = {
     PSP_REQ_MOTORS_OUTPUT:  8,
     PSP_REQ_MOTORS_COUNT:   9, 
     PSP_REQ_SENSORS_ALIVE:  10,
+    PSP_REQ_AUX_TRIGGERED:  11,
     
     PSP_SET_CONFIGURATION:     101,
     PSP_SET_EEPROM_REINIT:     102,
@@ -235,6 +236,9 @@ function process_data(command, message_buffer) {
         case PSP.PSP_REQ_SENSORS_ALIVE:
             var sensors_detected = parseInt((message_buffer_uint8_view[0] << 8) | message_buffer_uint8_view[1]);
             sensor_status(sensors_detected);            
+            break;
+        case PSP.PSP_REQ_AUX_TRIGGERED:
+            AUX_triggered_mask = parseInt((message_buffer_uint8_view[0] << 8) | message_buffer_uint8_view[1]);
             break;
         case PSP.PSP_SET_MOTOR_TEST_VALUE:
             // acknowledged valid motor value
