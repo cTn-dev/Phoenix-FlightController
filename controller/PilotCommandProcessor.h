@@ -1,4 +1,4 @@
-int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_mode, TX_altitude, TX_pos_hold, TX_last;
+int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_AUX1, TX_AUX2, TX_AUX3, TX_AUX4;
 bool throttlePanic = false;
 
 void processPilotCommands() {
@@ -13,12 +13,47 @@ void processPilotCommands() {
     TX_pitch    = RX[CONFIG.data.CHANNEL_ASSIGNMENT[1]];
     TX_throttle = RX[CONFIG.data.CHANNEL_ASSIGNMENT[2]];
     TX_yaw      = RX[CONFIG.data.CHANNEL_ASSIGNMENT[3]];
-    TX_mode     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[4]];
-    TX_altitude = RX[CONFIG.data.CHANNEL_ASSIGNMENT[5]];
-    TX_pos_hold = RX[CONFIG.data.CHANNEL_ASSIGNMENT[6]];
-    TX_last     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[7]];
+    TX_AUX1     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[4]];
+    TX_AUX2     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[5]];
+    TX_AUX3     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[6]];
+    TX_AUX4     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[7]];
     
     sei(); // enable interrupts
+    
+    // Set the mask
+    uint16_t AUX_chan_mask = 0x00;
+    
+    if (TX_AUX1 < 1250) { // LOW
+        AUX_chan_mask |= 1 << 0;
+    } else if (TX_AUX1 < 1750) { // MID
+        AUX_chan_mask |= 1 << 1;
+    } else { //HIGH
+        AUX_chan_mask |= 1 << 2;
+    }
+
+    if (TX_AUX2 < 1250) { // LOW
+        AUX_chan_mask |= 1 << 3;
+    } else if (TX_AUX2 < 1750) { // MID
+        AUX_chan_mask |= 1 << 4;
+    } else { //HIGH
+        AUX_chan_mask |= 1 << 5;
+    }
+
+    if (TX_AUX3 < 1250) { // LOW
+        AUX_chan_mask |= 1 << 6;
+    } else if (TX_AUX3 < 1750) { // MID
+        AUX_chan_mask |= 1 << 7;
+    } else { //HIGH
+        AUX_chan_mask |= 1 << 8;
+    }
+    
+    if (TX_AUX4 < 1250) { // LOW
+        AUX_chan_mask |= 1 << 9;
+    } else if (TX_AUX4 < 1750) { // MID
+        AUX_chan_mask |= 1 << 10;
+    } else { //HIGH
+        AUX_chan_mask |= 1 << 11;
+    }
     
     // Arming-Disarming sequence
     if (TX_throttle < 1100 && TX_yaw > 1850) {
@@ -52,15 +87,7 @@ void processPilotCommands() {
     }
     
     // Rate-Attitude mode
-    if (TX_mode < 1100) {
-        if (flightMode == ATTITUDE_MODE) {
-            // We just switched from attitude to rate mode
-            // That means commandYaw reset
-            commandYaw = 0.0;
-        }
-        
-        flightMode = RATE_MODE;
-    } else if (TX_mode > 1900) {
+    if (CONFIG.data.CHANNEL_FUNCTIONS[0] & AUX_chan_mask) {
         if (flightMode == RATE_MODE) {
             // We just switched from rate to attitude mode
             // That means YAW correction should be applied to avoid YAW angle "jump"
@@ -68,11 +95,19 @@ void processPilotCommands() {
         }
         
         flightMode = ATTITUDE_MODE;
+    } else {
+        if (flightMode == ATTITUDE_MODE) {
+            // We just switched from attitude to rate mode
+            // That means commandYaw reset
+            commandYaw = 0.0;
+        }
+        
+        flightMode = RATE_MODE;
     }
-    
+
 #if defined(AltitudeHoldBaro) || defined(AltitudeHoldSonar)
     // Altitude hold ON/OFF
-    if (TX_altitude < 1100) {
+    if ((CONFIG.data.CHANNEL_FUNCTIONS[1] & AUX_chan_mask) == false) {
         // throttle controlled by stick
         altitudeHoldBaro = false;
         altitudeHoldSonar = false;
@@ -83,7 +118,7 @@ void processPilotCommands() {
 #endif
 
 #ifdef AltitudeHoldBaro
-    else if (TX_altitude > 1400 && TX_altitude < 1600 && throttlePanic == false) {
+    else if ((CONFIG.data.CHANNEL_FUNCTIONS[1] & AUX_chan_mask) && throttlePanic == false) {
         // throttle controlled by baro
         if (altitudeHoldBaro == false) { // We just switched on the altitudeHoldBaro
             // save the current altitude and throttle
@@ -105,7 +140,7 @@ void processPilotCommands() {
 #endif
     
 #ifdef AltitudeHoldSonar
-    else if (TX_altitude > 1900 && throttlePanic == false) {
+    else if ((CONFIG.data.CHANNEL_FUNCTIONS[2] & AUX_chan_mask) && throttlePanic == false) {
         // throttle controlled by sonar
         if (altitudeHoldSonar == false) { // We just switched on the altitudeHoldSonar
             sonarAltitudeToHoldTarget = sonarAltitude;
@@ -126,14 +161,7 @@ void processPilotCommands() {
 #endif
     
 #ifdef GPS
-    // GPS Position Hold
-    if (TX_pos_hold < 1100) {
-        // Position hold disabled
-        if (positionHoldGPS == true) { // We just switched off the position hold
-        }
-        
-        positionHoldGPS = false;
-    } else if (TX_pos_hold > 1900) {
+    if (CONFIG.data.CHANNEL_FUNCTIONS[3] & AUX_chan_mask) {
         // Position hold enabled
         if (positionHoldGPS == false) { // We just switched on the position hold
             // current heading (from magnetometer should be saved here)
@@ -141,6 +169,12 @@ void processPilotCommands() {
         }
         
         positionHoldGPS = true;
+    } else {
+        // Position hold disabled
+        if (positionHoldGPS == true) { // We just switched off the position hold
+        }
+        
+        positionHoldGPS = false;
     }
 #endif
     

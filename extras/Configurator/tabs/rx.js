@@ -27,7 +27,6 @@ function tab_initialize_rx() {
             min: 800
         },
         xaxis : {
-            //noTicks = 0
         },
         grid : {
             backgroundColor: "#FFFFFF"
@@ -58,16 +57,16 @@ function RX_channel_name(num) {
             name = 'YAW/RUDDER';
         break;
         case 4:
-            name = 'MODE (rate/attitude)';
+            name = 'AUX 1';
         break;
         case 5:
-            name = 'Altitude Hold (off/sonar/baro)';
+            name = 'AUX 2';
         break;
         case 6:
-            name = 'Position Hold (off/GPS)';
+            name = 'AUX 3';
         break;
         case 7:
-            name = 'Undefined';
+            name = 'AUX 4';
         break;        
     }
     

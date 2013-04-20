@@ -77,6 +77,8 @@ void initializeEEPROM() {
 
     CONFIG.data.CHANNEL_FUNCTIONS[0] = 0; // mode select
     CONFIG.data.CHANNEL_FUNCTIONS[1] = 0; // baro select
+    CONFIG.data.CHANNEL_FUNCTIONS[2] = 0; // sonar select
+    CONFIG.data.CHANNEL_FUNCTIONS[3] = 0; // GPS select
     
     // Altitude
     CONFIG.data.PID_YAW_c[P]  = 4.0;

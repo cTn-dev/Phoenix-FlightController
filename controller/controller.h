@@ -21,7 +21,7 @@ bool positionHoldGPS = false;
 #define PITCH       1
 #define THROTTLE    2
 #define YAW         3
-#define FLIGHT_MODE 4
+#define FLIGHT_MODE 4 // TODO: this needs to be traced back and optimized for the new dynamic function structure
 
 // PID pseudo definitions
 #define P  0 // Proportional
