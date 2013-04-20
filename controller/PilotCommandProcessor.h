@@ -87,7 +87,7 @@ void processPilotCommands() {
     }
     
     // Rate-Attitude mode
-    if (CONFIG.data.CHANNEL_FUNCTIONS[0] & AUX_chan_mask) {
+    if (CONFIG.data.CHANNEL_FUNCTIONS[0] & AUX_chan_mask || failsafeEnabled) {
         if (flightMode == RATE_MODE) {
             // We just switched from rate to attitude mode
             // That means YAW correction should be applied to avoid YAW angle "jump"

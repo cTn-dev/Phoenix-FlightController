@@ -23,6 +23,8 @@ volatile uint32_t PWM_time[CHANNELS] = {0, 0, 0, 0, 0, 0, 0, 0};
 volatile uint16_t RX_failsafeStatus;
 volatile uint8_t RX_signalReceived = 0;
 
+bool failsafeEnabled = false;
+
 void readPWM(uint8_t channel) {
     uint32_t now = PIT_CVAL0; // Current counter value
     uint32_t delta = PWM_time[channel] - now; // Delta (calculated in reverse, because PIT is downcounting timer)
@@ -100,6 +102,7 @@ void RX_failSafe() {
     
     if (RX_signalReceived > 10) {
         RX_signalReceived = 10; // don't let the variable overflow
+        failsafeEnabled = true; // this ensures that failsafe will operate in attitude mode
         
         // Bear in mind that this is here just to "slow" the fall, if you have lets say 500m altitude,
         // this probably won't help you much (sorry).
@@ -108,7 +111,6 @@ void RX_failSafe() {
         // Descending from FULL throttle 2000 (most unlikely) would take about 1 minute and 40 seconds
         // Descending from HALF throttle 1500 (more likely) would take about 50 seconds
         RX[CONFIG.data.CHANNEL_ASSIGNMENT[THROTTLE]] -= 2;
-        RX[CONFIG.data.CHANNEL_ASSIGNMENT[FLIGHT_MODE]] = 2000; // force attitude mode
         
         if (RX[CONFIG.data.CHANNEL_ASSIGNMENT[THROTTLE]] < 1000) {
             RX[CONFIG.data.CHANNEL_ASSIGNMENT[THROTTLE]] = 1000; // don't let the value fall below 1000
@@ -116,5 +118,7 @@ void RX_failSafe() {
             // at this point, we will also disarm
             armed = false;
         }    
+    } else {
+        failsafeEnabled = false;
     }
 }
