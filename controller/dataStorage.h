@@ -75,10 +75,10 @@ void initializeEEPROM() {
     CONFIG.data.CHANNEL_ASSIGNMENT[6] = 6;
     CONFIG.data.CHANNEL_ASSIGNMENT[7] = 7;
 
-    CONFIG.data.CHANNEL_FUNCTIONS[0] = 0; // mode select
-    CONFIG.data.CHANNEL_FUNCTIONS[1] = 0; // baro select
-    CONFIG.data.CHANNEL_FUNCTIONS[2] = 0; // sonar select
-    CONFIG.data.CHANNEL_FUNCTIONS[3] = 0; // GPS select
+    CONFIG.data.CHANNEL_FUNCTIONS[0] = 0x04; // mode select ("stable mode" is set to trigger on AUX1-HIGH by default)
+    CONFIG.data.CHANNEL_FUNCTIONS[1] = 0x00; // baro select
+    CONFIG.data.CHANNEL_FUNCTIONS[2] = 0x00; // sonar select
+    CONFIG.data.CHANNEL_FUNCTIONS[3] = 0x00; // GPS select
     
     // Altitude
     CONFIG.data.PID_YAW_c[P]  = 4.0;

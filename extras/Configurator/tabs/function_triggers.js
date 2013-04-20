@@ -85,7 +85,7 @@ function AUX_pull() {
 
 function box_check(num, pos) {
     if (bit_check(num, pos)) { // 1
-        return '<td class="on"><input type="checkbox" checked="checked" /></td>';
+        return '<td><input type="checkbox" checked="checked" /></td>';
     } else { // 0
         return '<td><input type="checkbox" /></td>';
     }
