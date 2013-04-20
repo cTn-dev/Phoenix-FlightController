@@ -64,18 +64,14 @@ function tab_initialize_function_triggers() {
 function AUX_pull() {
     // Update the classes
     var needle = 0;
-    $('.tab-function_triggers .functions input').each(function() {
+    $('.tab-function_triggers .functions th:not(.name)').each(function() {
         if (bit_check(AUX_triggered_mask, needle)) { // 1
-            $(this).parent().addClass('on');
+            $(this).addClass('on');
         } else { // 0
-            $(this).parent().removeClass('on');
+            $(this).removeClass('on');
         }
         
         needle++;
-        
-        if (needle >= 12) { // 4 aux * 3 checkboxes = 12 bits per line
-            needle = 0;
-        }
     });
     
     
