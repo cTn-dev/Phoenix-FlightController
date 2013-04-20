@@ -16,7 +16,7 @@
     #define EEPROM_SIZE 512
 #endif    
 
-#define EEPROM_VERSION 2
+#define EEPROM_VERSION 3
 
 struct __attribute__((packed)) CONFIG_struct {
     uint8_t version;
@@ -26,8 +26,9 @@ struct __attribute__((packed)) CONFIG_struct {
     // Accelerometer
     int16_t ACCEL_BIAS[3];    
     
-    // RX channel assignment
+    // RX
     uint8_t CHANNEL_ASSIGNMENT[8];
+    uint16_t CHANNEL_FUNCTIONS[2];
     
     // Attitude
     float PID_YAW_c[4];
@@ -64,7 +65,7 @@ void initializeEEPROM() {
     CONFIG.data.ACCEL_BIAS[YAXIS] = 0;
     CONFIG.data.ACCEL_BIAS[ZAXIS] = 0;
     
-    // RX channel assignment
+    // RX
     CONFIG.data.CHANNEL_ASSIGNMENT[0] = 0;
     CONFIG.data.CHANNEL_ASSIGNMENT[1] = 1;
     CONFIG.data.CHANNEL_ASSIGNMENT[2] = 2;
@@ -73,6 +74,9 @@ void initializeEEPROM() {
     CONFIG.data.CHANNEL_ASSIGNMENT[5] = 5;
     CONFIG.data.CHANNEL_ASSIGNMENT[6] = 6;
     CONFIG.data.CHANNEL_ASSIGNMENT[7] = 7;
+
+    CONFIG.data.CHANNEL_FUNCTIONS[0] = 0; // mode select
+    CONFIG.data.CHANNEL_FUNCTIONS[1] = 0; // baro select
     
     // Altitude
     CONFIG.data.PID_YAW_c[P]  = 4.0;

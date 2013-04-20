@@ -9,13 +9,14 @@
 */
 
 var eepromConfig = {
-    version:      0,
-    calibrateESC: 0,
+    version:              0,
+    calibrateESC:         0,
     minimumArmedThrottle: 0,
     
     ACCEL_BIAS:  [0, 0, 0],
     
     CHANNEL_ASSIGNMENT: [0, 0, 0, 0, 0, 0, 0, 0],
+    CHANNEL_FUNCTIONS:  [0, 0],
     
     PID_YAW_c:   [0.0, 0.0, 0.0, 0],
     PID_PITCH_c: [0.0, 0.0, 0.0, 0],
@@ -60,7 +61,12 @@ DataView.prototype.parseUNION = function (structure) {
     for (var i = 0; i < structure.CHANNEL_ASSIGNMENT.length; i++) {
         structure.CHANNEL_ASSIGNMENT[i] = this.getUint8(needle, 1);
         needle += 1;
-    }    
+    } 
+
+    for (var i = 0; i < structure.CHANNEL_FUNCTIONS.length; i++) {
+        structure.CHANNEL_FUNCTIONS[i] = this.getUint16(needle, 1);
+        needle += 2;
+    }      
     
     for (var i = 0; i < 4; i++) {
         structure.PID_YAW_c[i]   = this.getFloat32(needle,       1);
@@ -96,6 +102,11 @@ DataView.prototype.setUNION = function (structure) {
         this.setUint8(needle, structure.CHANNEL_ASSIGNMENT[i], 1);
         needle += 1;
     }  
+
+    for (var i = 0; i < structure.CHANNEL_FUNCTIONS.length; i++) {
+        this.setUint16(needle, structure.CHANNEL_FUNCTIONS[i], 1);
+        needle += 2;
+    }
     
     for (var i = 0; i < 4; i++) {
         this.setFloat32(needle, structure.PID_YAW_c[i],        1);
