@@ -71,7 +71,7 @@ void processPilotCommands() {
         } 
         
         armed = true;
-    } else if (TX_throttle < 1100 && TX_yaw < 1250 || TX_throttle < 1100 && failsafeEnabled) {
+    } else if (TX_throttle < 1100 && TX_yaw < 1250 || TX_throttle <= CONFIG.data.minimumArmedThrottle && failsafeEnabled) {
         if (armed == true) {
             // We just dis-armed the controller
             

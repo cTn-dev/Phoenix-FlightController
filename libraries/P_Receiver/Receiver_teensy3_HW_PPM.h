@@ -117,9 +117,6 @@ void RX_failSafe() {
         
         if (RX[CONFIG.data.CHANNEL_ASSIGNMENT[THROTTLE]] < 1000) {
             RX[CONFIG.data.CHANNEL_ASSIGNMENT[THROTTLE]] = 1000; // don't let the value fall below 1000
-            
-            // at this point, we will also disarm
-            armed = false;
         }    
     } else {
         failsafeEnabled = false;
