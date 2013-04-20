@@ -16,7 +16,7 @@ var eepromConfig = {
     ACCEL_BIAS:  [0, 0, 0],
     
     CHANNEL_ASSIGNMENT: [0, 0, 0, 0, 0, 0, 0, 0],
-    CHANNEL_FUNCTIONS:  [0, 0],
+    CHANNEL_FUNCTIONS:  [0, 0, 0, 0],
     
     PID_YAW_c:   [0.0, 0.0, 0.0, 0],
     PID_PITCH_c: [0.0, 0.0, 0.0, 0],

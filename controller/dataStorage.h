@@ -28,7 +28,7 @@ struct __attribute__((packed)) CONFIG_struct {
     
     // RX
     uint8_t CHANNEL_ASSIGNMENT[8];
-    uint16_t CHANNEL_FUNCTIONS[2];
+    uint16_t CHANNEL_FUNCTIONS[4];
     
     // Attitude
     float PID_YAW_c[4];
