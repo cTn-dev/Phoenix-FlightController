@@ -1,3 +1,16 @@
+/*  Pilot / Receiver command handling routine
+
+    Featuring dynamic channel assignment and dynamic auxiliary funtion assignment
+    with "side" support for automatic receiver failsafe routines.
+    
+    Dynamic channel assignment was initially requested by Politt @aeroquad hangout.
+    
+    Dynamic auxiliary funtion assignment was inspired by very similar feature originally found
+    in multiwii flight control software.
+    
+    Channel handling is currently limited to 8 channels (will probably get extended in the future)
+*/
+
 int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_AUX1, TX_AUX2, TX_AUX3, TX_AUX4;
 uint16_t AUX_chan_mask;
 bool throttlePanic = false;
