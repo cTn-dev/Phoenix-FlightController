@@ -448,6 +448,75 @@ table.channel_assigner {
         text-decoration: none;
         background-color: #13b723;
     }
+.tab-function_triggers {
+}
+    .tab-function_triggers .heads li {
+        float: left;
+        
+        width: 182px;
+        height: 22px;
+        line-height: 22px;
+        
+        text-align: center;
+        font-weight: bold;
+        
+        border: 1px solid #8b8b8b;
+        border-bottom: 0;
+        border-left: 0;
+        
+        background-color: #ececec;
+    }
+        .tab-function_triggers .heads li:first-child {
+            margin-left: 181px;
+            border-left: 1px solid #8b8b8b;
+        }
+        .tab-function_triggers .heads li:nth-child(3) {
+            width: 183px;
+        }
+        .tab-function_triggers .heads li:nth-child(4) {
+            width: 185px;
+        }
+    .tab-function_triggers .functions {
+        width: 100%;
+        border-collapse: collapse;    
+    }
+        .tab-function_triggers .functions th, .tab-function_triggers .functions td {
+            line-height: 22px;
+            text-align: center;
+            
+            border: 1px solid #8b8b8b;
+        }
+        .tab-function_triggers .functions .name {
+            text-align: center;
+        }
+        .tab-function_triggers .functions td input {
+            position: absolute;
+            
+            margin-top: -6px;
+            margin-left: -6px;            
+        }
+    .tab-function_triggers .update {
+        display: block;
+        float: right;
+        
+        margin-top: 10px;
+        
+        width: 120px;
+        height: 30px;
+        line-height: 30px;
+        
+        font-size: 14px;
+        color: white;
+        text-align: center;
+        
+        border: 1px solid silver;
+        
+        background-color: #078814;
+    }
+    .tab-function_triggers .update:hover {
+        background-color: #13b723;
+        text-decoration: none;
+    }
 .sensor_data #graph_gyro {
     width: 900px;
     height: 175px;
