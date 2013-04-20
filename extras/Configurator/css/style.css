@@ -496,8 +496,8 @@ table.channel_assigner {
             margin-left: -6px;            
         }
         .tab-function_triggers .functions .on {
-            background-color: #ffdcc5;
-        }
+            background-color: #fc944f;
+        } 
     .tab-function_triggers .update {
         display: block;
         float: right;
@@ -520,6 +520,14 @@ table.channel_assigner {
         background-color: #13b723;
         text-decoration: none;
     }
+    .tab-function_triggers p {
+        margin-top: 10px;
+        padding: 5px;
+        
+        line-height: 16px;
+        
+        border: 1px dotted silver;
+    }       
 .sensor_data #graph_gyro {
     width: 900px;
     height: 175px;
