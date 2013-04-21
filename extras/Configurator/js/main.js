@@ -114,6 +114,8 @@ $(document).ready(function() {
                 $('#content').load("./tabs/motor_output.html", tab_initialize_motor_output);
             } else if ($(this).parent().hasClass('tab_motor_command')) {
                 $('#content').load("./tabs/motor_command.html", tab_initialize_motor_command);
+            } else if ($(this).parent().hasClass('tab_gps')) {
+                $('#content').load("./tabs/gps.html", tab_initialize_gps);
             } else if ($(this).parent().hasClass('tab_about')) {
                 $('#content').load("./tabs/about.html");
             }            

@@ -150,12 +150,16 @@ class Configurator {
                     break;
 #endif
 #ifdef GPS
-                // TODO
-                /*
-                case PSP_REQ_GPS: {
-                    }
+                case PSP_REQ_GPS:
+                    protocol_head(PSP_REQ_GPS, 18);
+                    
+                    serialize_uint32(gpsData.lat);
+                    serialize_uint32(gpsData.lon);
+                    serialize_uint32(gpsData.speed);
+                    serialize_uint32(gpsData.accuracy);
+                    serialize_uint8(gpsData.state);
+                    serialize_uint8(gpsData.sats);
                     break;
-                */
 #endif                    
                 case PSP_REQ_RC:
                     protocol_head(PSP_REQ_RC, CHANNELS * 2);
@@ -273,6 +277,13 @@ class Configurator {
         void serialize_uint8(uint8_t data) {
             Serial.write(data);
             crc ^= data;
+        };
+        
+        void serialize_uint32(uint32_t data) {
+            for (uint8_t i = 0; i < 4; i++) {
+                Serial.write((uint8_t) (data >> (i * 8)));
+                crc ^= (uint8_t) (data >> (i * 8));
+            }
         };
         
         void serialize_float32(float f) {

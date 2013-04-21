@@ -198,6 +198,9 @@ function process_data(command, message_buffer) {
             sensor_data.baro[0] = data.getFloat32(0, 1); // baroRawAltitude
             sensor_data.baro[1] = data.getFloat32(4, 1); // baroAltitude
             break;
+        case PSP.PSP_REQ_GPS:
+            console.log(data);
+            break;
         case PSP.PSP_REQ_RC:
             receiver_data.raw[0] = data.getInt16(0, 0);
             receiver_data.raw[1] = data.getInt16(2, 0);
