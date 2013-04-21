@@ -232,3 +232,21 @@ class UBLOX {
 void SensorArray::readGPS() {
     ublox.read_packet();
 }
+
+void SensorArray::initializeGPS() {
+    uint32_t gps_detection_start = millis() + 5000; // loop will run for 5 seconds max
+    
+    while (millis() < gps_detection_start) {
+        ublox.read_packet();
+        
+        if (gpsData.state > 0) {
+            break;
+        }    
+    }
+    
+    if (gpsData.state > 0) { // gps module present
+        sensors.sensors_detected |= GPS_DETECTED;
+    } else {
+        return;
+    }
+}

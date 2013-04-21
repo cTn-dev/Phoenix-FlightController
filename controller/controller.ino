@@ -246,6 +246,7 @@ void setup() {
 #endif    
     
 #ifdef GPS
+    sensors.initializeGPS();
     gps.initializeBaseStation();
 #endif
     

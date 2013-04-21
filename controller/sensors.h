@@ -2,6 +2,7 @@
 #define ACCELEROMETER_DETECTED  0x02
 #define MAGNETOMETER_DETECTED   0x04
 #define BAROMETER_DETECTED      0x08
+#define GPS_DETECTED            0x10
 
 class SensorArray {
     public:
