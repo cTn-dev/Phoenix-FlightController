@@ -203,7 +203,7 @@ void processPilotCommands() {
     
     // Channel center = 1500
     TX_roll = TX_roll - 1500;
-    TX_pitch = TX_pitch - 1500;
+    TX_pitch = -(TX_pitch - 1500);
     TX_yaw = TX_yaw - 1500;
     
     // Reverse YAW
