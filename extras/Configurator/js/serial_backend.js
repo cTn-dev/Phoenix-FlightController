@@ -203,8 +203,8 @@ function process_data(command, message_buffer) {
             GPS_data.lon = data.getInt32(4, 1) / 10000000; // +- 180 deg - degrees multiplied by 10000000
             GPS_data.course = data.getInt32(8, 1); // 10E-5 to millidegrees
             GPS_data.speed = data.getUint32(12, 1); // cm/s
-            GPS_data.height = data.getInt32(16, 1) / 1000;
-            GPS_data.accuracy = data.getUint32(20, 1);
+            GPS_data.height = data.getInt32(16, 1) / 1000; // mm
+            GPS_data.accuracy = data.getUint32(20, 1) / 1000; // mm
             GPS_data.fixtime = data.getUint32(24, 1);
             GPS_data.sentences = data.getUint32(28, 1);
             GPS_data.state = data.getUint8(32);

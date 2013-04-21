@@ -753,4 +753,33 @@ table.channel_assigner {
     line-height: 18px;
     text-align: center;
     font-weight: bold;
-}    
+}
+.tab-gps {
+}
+    .tab-gps .gps-info {
+        float: left;
+        
+        width: 160px;
+        
+        border: 1px solid #8b8b8b;
+    }
+        .tab-gps .gps-info .head {
+            height: 25px;
+            line-height: 25px;
+            
+            text-align: center;
+            font-weight: bold;
+            
+            background-color: #ececec;
+            border-bottom: 1px solid #8b8b8b;
+        }
+        .tab-gps .gps-info dl {
+            padding: 5px;
+        }
+        .tab-gps .gps-info dt {
+            float: left;
+            width: 65px;
+        }
+        .tab-gps .gps-info dd {
+            margin-left: 65px;
+        }
