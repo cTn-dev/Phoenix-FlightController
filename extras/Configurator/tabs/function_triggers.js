@@ -58,7 +58,7 @@ function tab_initialize_function_triggers() {
     });    
     
     // request AUX mask from flight controller
-    timers.push(setInterval(AUX_pull, 250));    
+    timers.push(setInterval(AUX_pull, 50));    
 }
 
 function AUX_pull() {

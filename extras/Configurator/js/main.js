@@ -231,6 +231,14 @@ function sensor_status(sensors_detected) {
         $('.baro', e_sensor_status).removeClass('on');
         sensors_alive.baro = 0;
     }  
+    
+    if (bit_check(sensors_detected, 4)) { // GPS detected
+        $('.gps', e_sensor_status).addClass('on');
+        sensors_alive.gps = 1;
+    } else {
+        $('.gps', e_sensor_status).removeClass('on');
+        sensors_alive.gps = 0;
+    }     
 }
 
 function port_usage() {
