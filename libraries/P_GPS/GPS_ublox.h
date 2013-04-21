@@ -12,16 +12,16 @@
 */
 
 struct gpsData {
-    int32_t  lat,lon;  // position as degrees (*10E7)
-    int32_t  course;   // degrees (*10E5)
-    uint32_t speed;    // cm/s
-    int32_t  height;   // mm (from ellipsoid)
-    uint32_t accuracy; // mm
-    uint32_t fixage;   // fix 
-    uint32_t fixtime;  // fix 
+    int32_t  lat,lon;   // position as degrees (*10E7)
+    int32_t  course;    // degrees (*10E5)
+    uint32_t speed;     // cm/s
+    int32_t  height;    // mm (from ellipsoid)
+    uint32_t accuracy;  // mm
+    uint32_t fixage;    // fix 
+    uint32_t fixtime;   // fix 
     uint32_t sentences; // sentences/packets processed from gps (just statistics)
-    uint8_t  state;    // gps state
-    uint8_t  sats;     // number of satellites active
+    uint8_t  state;     // gps state
+    uint8_t  sats;      // number of satellites active
 } gpsData;    
 
 class UBLOX {
@@ -33,8 +33,8 @@ class UBLOX {
         
         // reads "RAW" packet from serial buffer
         void read_packet() {
-            while (Serial2.available()) {
-                data = Serial2.read(); // store single byte from serial buffer into data variable
+            while (Serial3.available()) {
+                data = Serial3.read(); // store single byte from serial buffer into data variable
                 
                 switch (UBX_step) {
                     case 0:
@@ -227,9 +227,7 @@ class UBLOX {
         uint16_t UBX_data_length;
         uint8_t UBX_CK_A;
         uint8_t UBX_CK_B;        
-};
-
-UBLOX ublox;
+} ublox;
 
 void SensorArray::readGPS() {
     ublox.read_packet();
