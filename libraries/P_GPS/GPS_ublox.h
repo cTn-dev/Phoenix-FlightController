@@ -17,7 +17,6 @@ struct gpsData {
     uint32_t speed;     // cm/s
     int32_t  height;    // mm (from ellipsoid)
     uint32_t accuracy;  // mm
-    uint32_t fixage;    // fix 
     uint32_t fixtime;   // fix 
     uint32_t sentences; // sentences/packets processed from gps (just statistics)
     uint8_t  state;     // gps state
