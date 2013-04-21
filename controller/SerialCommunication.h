@@ -151,12 +151,17 @@ class Configurator {
 #endif
 #ifdef GPS
                 case PSP_REQ_GPS:
-                    protocol_head(PSP_REQ_GPS, 18);
+                    protocol_head(PSP_REQ_GPS, 38);
                     
                     serialize_uint32(gpsData.lat);
                     serialize_uint32(gpsData.lon);
+                    serialize_uint32(gpsData.course);
                     serialize_uint32(gpsData.speed);
+                    serialize_uint32(gpsData.height);
                     serialize_uint32(gpsData.accuracy);
+                    serialize_uint32(gpsData.fixage);
+                    serialize_uint32(gpsData.fixtime);
+                    serialize_uint32(gpsData.sentences);
                     serialize_uint8(gpsData.state);
                     serialize_uint8(gpsData.sats);
                     break;
