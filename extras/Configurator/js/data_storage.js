@@ -6,6 +6,8 @@ var sensors_alive = {
     gps:   0
 }
 
+var AUX_triggered_mask = 0;
+
 var sensor_data = {
     gyro:       [0, 0, 0],
     accel:      [0, 0, 0],

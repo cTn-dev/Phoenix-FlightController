@@ -1,5 +1,3 @@
-var AUX_triggered_mask = 0;
-
 function tab_initialize_function_triggers() {    
     // AUX names manually defined
     var AUX_names = [

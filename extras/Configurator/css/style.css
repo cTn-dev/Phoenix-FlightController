@@ -756,14 +756,15 @@ table.channel_assigner {
 }
 .tab-gps {
 }
-    .tab-gps .gps-info {
+    .tab-gps .gps-info, .tab-gps .gps-compass {
         float: left;
         
         width: 160px;
+        height: 160px;
         
         border: 1px solid #8b8b8b;
     }
-        .tab-gps .gps-info .head {
+        .tab-gps .gps-info .head, .tab-gps .gps-compass .head {
             height: 25px;
             line-height: 25px;
             
@@ -783,3 +784,72 @@ table.channel_assigner {
         .tab-gps .gps-info dd {
             margin-left: 65px;
         }
+    .tab-gps .gps-compass {
+        margin-left: 10px;
+    }
+        .tab-gps .gps-compass .compass {
+            margin: auto;
+            margin-top: 2px;
+            
+            width: 128px;
+            height: 128px;
+            
+            border: 1px dashed silver;
+            border-radius: 50%;
+        }
+            .tab-gps .gps-compass .compass span {
+                position: relative;
+                font-weight: bold;
+            }
+            .tab-gps .gps-compass .compass span:nth-child(1) {
+                top: 5px;            
+                left: 60px; 
+            } 
+            .tab-gps .gps-compass .compass span:nth-child(2) {
+                top: 60px;
+                left: 105px;
+            }
+            .tab-gps .gps-compass .compass span:nth-child(3) {
+                top: 110px;
+                left: 40px; 
+            }
+            .tab-gps .gps-compass .compass span:nth-child(4) {
+                top: 60px;
+                left: -25px;
+            }
+                .tab-gps .gps-compass .compass .pointer {
+                    position: absolute;
+                    
+                    margin-top: -14px;
+                    
+                    width: 128px;
+                    height: 128px;
+                    
+                    -webkit-transform: rotate(0deg); 
+                }
+                    .tab-gps .gps-compass .compass .pointer .tip {
+                        position: absolute;
+                        
+                        margin-top: 15px;
+                        margin-left: -6px;
+                        
+                        width: 0; 
+                        height: 0; 
+                        
+                        border-left: 10px solid transparent;
+                        border-right: 10px solid transparent;
+                        
+                        border-bottom: 30px solid red;  
+                    }
+                    .tab-gps .gps-compass .compass .pointer .stick {
+                        display: block;
+                        position: absolute;
+                        
+                        left: 62px;
+                        top: 49px;
+                        
+                        width: 4px;
+                        height: 20px;
+                        
+                        background-color: black;
+                    }
