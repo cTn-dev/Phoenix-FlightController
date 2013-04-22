@@ -23,6 +23,34 @@ struct gpsData {
     uint8_t  sats;      // number of satellites active
 } gpsData;    
 
+
+#define UBX_CLASS_ACK 0x05 // Ack/Nack Messages
+#define UBX_CLASS_AID 0x0B // AssistNow Aiding Messages
+#define UBX_CLASS_CFG 0x06 // Configuration Input Messages
+#define UBX_CLASS_ESF 0x10 // External Sensor Fusion Messages
+#define UBX_CLASS_INF 0x04 // Information Messages
+#define UBX_CLASS_MON 0x0A // Monitoring Messages
+
+#define UBX_CLASS_NAV 0x01 // Navigation Results
+#define UBX_ID_AOPSTATUS 0x60
+#define UBX_ID_CLOCK     0x22
+#define UBX_ID_DGPS      0x31
+#define UBX_ID_DOP       0x04
+#define UBX_ID_EKFSTATUS 0x40
+#define UBX_ID_POSECEF   0x01
+#define UBX_ID_POSLLH    0x02
+#define UBX_ID_SBAS      0x32
+#define UBX_ID_SOL       0x06
+#define UBX_ID_STATUS    0x03
+#define UBX_ID_SVINFO    0x30
+#define UBX_ID_TIMEGPS   0x20
+#define UBX_ID_TIMEUTC   0x21
+#define UBX_ID_VELECEF   0x11
+#define UBX_ID_VELNED    0x12
+
+#define UBX_CLASS_RXM 0x02 // Receiver Manager Messages
+#define UBX_CLASS_TIM 0x0D // Timing Messages
+
 class UBLOX {
     public:
         // Constructor
@@ -121,14 +149,14 @@ class UBLOX {
         
         // use union to read the binary message
         void process_data() {
-            if (UBX_class == 0x01) { // NAV
-                if (UBX_id == 0x02) { // NAV:POSLLH
+            if (UBX_class == UBX_CLASS_NAV) {
+                if (UBX_id == UBX_ID_POSLLH) {
                     gpsData.lat = ubloxMessage.nav_posllh.lat; // +- 90 deg  - degrees multiplied by 10000000
                     gpsData.lon = ubloxMessage.nav_posllh.lon; // +- 180 deg - degrees multiplied by 10000000
                     gpsData.height = ubloxMessage.nav_posllh.height;
                     gpsData.accuracy = ubloxMessage.nav_posllh.hAcc;
                     gpsData.fixtime = ubloxMessage.nav_posllh.iTow;
-                } else if (UBX_id == 0x03) { // NAV:STATUS
+                } else if (UBX_id == UBX_ID_STATUS) {
                     switch (ubloxMessage.nav_status.gpsFix) {
                         case 2: // 2D FIX
                             gpsData.state = 2;
@@ -140,15 +168,20 @@ class UBLOX {
                             gpsData.state = 1;
                         break;
                     }
-                } else if (UBX_id == 0x06) { // NAV:SOL
+                } else if (UBX_id == UBX_ID_SOL) {
                     gpsData.sats = ubloxMessage.nav_sol.numSV;
-                } else if (UBX_id == 0x12) { // NAV:VELNED
+                } else if (UBX_id == UBX_ID_VELNED) {
                     gpsData.course = ubloxMessage.nav_velned.heading / 100; // 10E-5 to millidegrees
                     gpsData.speed = ubloxMessage.nav_velned.gSpeed;
                 } else {
-                    // Used for debugging
+                    // ID wasn't defined above, print out ID for debugging purposes
                     // Serial.println(UBX_id, HEX);
                 }
+            }
+            
+            // if GPS wasn't detected, flip the bit
+            if ((sensors.sensors_detected & GPS_DETECTED) == false) {
+                sensors.sensors_detected |= GPS_DETECTED;
             }
         };
         
@@ -230,22 +263,4 @@ class UBLOX {
 
 void SensorArray::readGPS() {
     ublox.read_packet();
-}
-
-void SensorArray::initializeGPS() {
-    uint32_t gps_detection_start = millis() + 5000; // loop will run for 5 seconds max
-    
-    while (millis() < gps_detection_start) {
-        ublox.read_packet();
-        
-        if (gpsData.state > 0) {
-            break;
-        }    
-    }
-    
-    if (gpsData.state > 0) { // gps module present
-        sensors.sensors_detected |= GPS_DETECTED;
-    } else {
-        return;
-    }
 }
