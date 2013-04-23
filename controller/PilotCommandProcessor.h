@@ -14,6 +14,7 @@
 int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_AUX1, TX_AUX2, TX_AUX3, TX_AUX4;
 uint16_t AUX_chan_mask;
 bool throttlePanic = false;
+bool yawCommanded = false;
 
 void processPilotCommands() {
     // read data into variables
@@ -217,10 +218,23 @@ void processPilotCommands() {
             // YAW angle build up over time
             commandYawAttitude += (TX_yaw * 0.0015) / 8; // division by 8 is used to slow down YAW build up 
             NORMALIZE(commandYawAttitude); // +- PI
+            
+            yawCommanded = true; // FLAG indicating that we are changing/commanding YAW in attitude mode
         } else if (flightMode == RATE_MODE) {
             // raw stick input
             commandYaw = (TX_yaw * 0.0015);
         }      
+    } else { // YAW stick is in the center (+- 5us)
+        if (yawCommanded == true) {
+            // Setting current YAW angle seen by sensors/kinematics to commandYawAttitude, resulting in immediat stop of the rotation.
+            // This approach will fix scenarions when force required to rorate the UAV (YAW PID) isn't strong/fast enough to keep up with
+            // the commandYawAttitude build up. 
+            // Without this fix UAV would continue to rorate even when YAW stick is already in middle/0.
+            commandYawAttitude = kinematicsAngle[ZAXIS];
+            
+            // reset FLAG
+            yawCommanded = false;
+        }
     }
  
     commandRoll = TX_roll * 0.0015;

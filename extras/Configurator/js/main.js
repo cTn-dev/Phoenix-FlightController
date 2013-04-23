@@ -123,7 +123,7 @@ $(document).ready(function() {
     });
     
     // used for development only
-    $('#content').load("./tabs/gps.html", tab_initialize_gps);
+    //$('#content').load("./tabs/gps.html", tab_initialize_gps);
 });
 
 function command_log(message) {
