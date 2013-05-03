@@ -49,12 +49,12 @@ struct __attribute__((packed)) CONFIG_struct {
 
 union CONFIG_union {
     struct CONFIG_struct data;
-    uint8_t raw[sizeof(CONFIG_struct)];
+    uint8_t raw[sizeof(struct CONFIG_struct)];
 };
 
 CONFIG_union CONFIG;
 
-void initializeEEPROM() {
+void initializeEEPROM(void) {
     // Default settings should be initialized here
     CONFIG.data.version = EEPROM_VERSION;
     CONFIG.data.calibrateESC = 0;
@@ -134,8 +134,8 @@ void initializeEEPROM() {
     // writeEEPROM() needs to be called manually to store this data in EEPROM
 }
 
-void writeEEPROM() {
-    for (uint16_t i = 0; i < sizeof(CONFIG_struct); i++) {
+void writeEEPROM(void) {
+    for (uint16_t i = 0; i < sizeof(struct CONFIG_struct); i++) {
         if (CONFIG.raw[i] != EEPROM.read(i)) {
             // Only re-write new data
             // blocks containing the same value will be left alone
@@ -144,13 +144,13 @@ void writeEEPROM() {
     }
 }
 
-void readEEPROM() {
+void readEEPROM(void) {
     if (EEPROM.read(0) == 255) {
         // No EEPROM values detected, re-initialize
         initializeEEPROM();
     } else {
         // There "is" data in the EEPROM, read it all
-        for (uint16_t i = 0; i < sizeof(CONFIG_struct); i++) {
+        for (uint16_t i = 0; i < sizeof(struct CONFIG_struct); i++) {
             CONFIG.raw[i] = EEPROM.read(i);
         }
         
