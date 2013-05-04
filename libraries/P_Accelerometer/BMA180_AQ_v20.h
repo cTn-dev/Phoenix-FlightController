@@ -39,11 +39,7 @@ class BMA180 {
             accelSamples = 0;
         };
 
-        void initialize(int bias0, int bias1, int bias2) {
-            accel_bias[XAXIS] = bias0;
-            accel_bias[YAXIS] = bias1;
-            accel_bias[ZAXIS] = bias2;
-
+        void initialize() {
             // Check if sensor is alive
             Wire.beginTransmission(BMA180_ADDRESS);
             Wire.write(0x00);
@@ -101,19 +97,14 @@ class BMA180 {
                 delay(10);
             }
 
-            accel_bias[XAXIS] = xSum / count;
-            accel_bias[YAXIS] = ySum / count;
-            accel_bias[ZAXIS] = (zSum / count) - 2048; // - 1G
+            CONFIG.data.ACCEL_BIAS[XAXIS] = xSum / count;
+            CONFIG.data.ACCEL_BIAS[YAXIS] = ySum / count;
+            CONFIG.data.ACCEL_BIAS[ZAXIS] = (zSum / count) - 2048; // - 1G
 
             // Reverse calibration forces
-            accel_bias[XAXIS] *= -1;
-            accel_bias[YAXIS] *= -1;
-            accel_bias[ZAXIS] *= -1;
-            
-            // Write calibration data to config
-            CONFIG.data.ACCEL_BIAS[XAXIS] = accel_bias[XAXIS];
-            CONFIG.data.ACCEL_BIAS[YAXIS] = accel_bias[YAXIS];
-            CONFIG.data.ACCEL_BIAS[ZAXIS] = accel_bias[ZAXIS];
+            CONFIG.data.ACCEL_BIAS[XAXIS] *= -1;
+            CONFIG.data.ACCEL_BIAS[YAXIS] *= -1;
+            CONFIG.data.ACCEL_BIAS[ZAXIS] *= -1;
         };
         
         void readAccelRaw() {
@@ -145,9 +136,9 @@ class BMA180 {
             accel[ZAXIS] = accelSum[ZAXIS] / accelSamples;
 
             // Apply offsets
-            accel[XAXIS] += accel_bias[XAXIS];
-            accel[YAXIS] += accel_bias[YAXIS];
-            accel[ZAXIS] += accel_bias[ZAXIS];
+            accel[XAXIS] += CONFIG.data.ACCEL_BIAS[XAXIS];
+            accel[YAXIS] += CONFIG.data.ACCEL_BIAS[YAXIS];
+            accel[ZAXIS] += CONFIG.data.ACCEL_BIAS[ZAXIS];
 
             // Apply correct scaling (at this point accelNsumAvr reprensents +- 1g = 9.81 m/s^2)
             accel[XAXIS] *= accelScaleFactor;
@@ -162,7 +153,6 @@ class BMA180 {
         };
     
     private:
-        int16_t accel_bias[3];
         float accelScaleFactor; 
         
         int16_t accelRaw[3];
@@ -174,7 +164,7 @@ class BMA180 {
 BMA180 bma;
 
 void SensorArray::initializeAccel() {
-    bma.initialize(CONFIG.data.ACCEL_BIAS[XAXIS], CONFIG.data.ACCEL_BIAS[YAXIS], CONFIG.data.ACCEL_BIAS[ZAXIS]);
+    bma.initialize();
 }
 
 void SensorArray::calibrateAccel() {

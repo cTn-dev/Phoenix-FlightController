@@ -89,12 +89,7 @@ class MPU6050 {
             accelSamples = 0;
         };
 
-        void initialize(int16_t bias0, int16_t bias1, int16_t bias2) {
-            // Setup accel bias from EEPROM
-            accel_bias[XAXIS] = bias0;
-            accel_bias[YAXIS] = bias1;
-            accel_bias[ZAXIS] = bias2;       
-        
+        void initialize() {
             // Chip reset
             sensors.i2c_write8(MPU6050_ADDRESS, MPUREG_PWR_MGMT_1, BIT_H_RESET);
             
@@ -187,19 +182,14 @@ class MPU6050 {
                 delay(10);
             }
             
-            accel_bias[XAXIS] = xSum / count;
-            accel_bias[YAXIS] = ySum / count;
-            accel_bias[ZAXIS] = (zSum / count) - 8192; // - 1G;
+            CONFIG.data.ACCEL_BIAS[XAXIS] = xSum / count;
+            CONFIG.data.ACCEL_BIAS[YAXIS] = ySum / count;
+            CONFIG.data.ACCEL_BIAS[ZAXIS] = (zSum / count) - 8192; // - 1G;
 
             // Reverse calibration forces
-            accel_bias[XAXIS] *= -1;
-            accel_bias[YAXIS] *= -1;
-            accel_bias[ZAXIS] *= -1;
-            
-            // Write calibration data to config
-            CONFIG.data.ACCEL_BIAS[XAXIS] = accel_bias[XAXIS];
-            CONFIG.data.ACCEL_BIAS[YAXIS] = accel_bias[YAXIS];
-            CONFIG.data.ACCEL_BIAS[ZAXIS] = accel_bias[ZAXIS];
+            CONFIG.data.ACCEL_BIAS[XAXIS] *= -1;
+            CONFIG.data.ACCEL_BIAS[YAXIS] *= -1;
+            CONFIG.data.ACCEL_BIAS[ZAXIS] *= -1;
         };
 
         // Order and +- signs of each axis depends on the chip orientation.
@@ -280,9 +270,9 @@ class MPU6050 {
             accel[ZAXIS] = accelSum[ZAXIS] / accelSamples;  
             
             // Apply offsets
-            accel[XAXIS] += accel_bias[XAXIS];
-            accel[YAXIS] += accel_bias[YAXIS];
-            accel[ZAXIS] += accel_bias[ZAXIS];
+            accel[XAXIS] += CONFIG.data.ACCEL_BIAS[XAXIS];
+            accel[YAXIS] += CONFIG.data.ACCEL_BIAS[YAXIS];
+            accel[ZAXIS] += CONFIG.data.ACCEL_BIAS[ZAXIS];
             
             // Apply correct scaling (at this point accel reprensents +- 1g = 9.81 m/s^2)
             accel[XAXIS] *= accelScaleFactor;
@@ -307,7 +297,6 @@ class MPU6050 {
         };
     private:
         int16_t gyro_offset[3];
-        int16_t accel_bias[3];
         
         float gyroScaleFactor;
         float accelScaleFactor; 
@@ -325,7 +314,7 @@ class MPU6050 {
 MPU6050 mpu;
 
 void SensorArray::initializeGyro() {
-    mpu.initialize(CONFIG.data.ACCEL_BIAS[XAXIS], CONFIG.data.ACCEL_BIAS[YAXIS], CONFIG.data.ACCEL_BIAS[ZAXIS]);
+    mpu.initialize();
     mpu.calibrate_gyro();
 }
 

@@ -19,12 +19,7 @@ class ADXL345 {
             accelSamples = 0;
         };
     
-        void initialize(int16_t bias0, int16_t bias1, int16_t bias2) {
-            // Setup accel bias from EEPROM
-            accel_bias[XAXIS] = bias0;
-            accel_bias[YAXIS] = bias1;
-            accel_bias[ZAXIS] = bias2;  
-
+        void initialize() {
             // Check if sensor is alive
             Wire.beginTransmission(ADXL345_ADDRESS);
             Wire.write(0x00);
@@ -57,20 +52,15 @@ class ADXL345 {
                 zSum += accelRaw[ZAXIS];
                 delay(10);
             }
-            
-            accel_bias[XAXIS] = xSum / count;
-            accel_bias[YAXIS] = ySum / count;
-            accel_bias[ZAXIS] = (zSum / count) - 256; // - 1G
 
-            // Reverse calibration forces
-            accel_bias[XAXIS] *= -1;
-            accel_bias[YAXIS] *= -1;
-            accel_bias[ZAXIS] *= -1;
+            CONFIG.data.ACCEL_BIAS[XAXIS] = xSum / count;
+            CONFIG.data.ACCEL_BIAS[YAXIS] = ySum / count;
+            CONFIG.data.ACCEL_BIAS[ZAXIS] = (zSum / count) - 256; // - 1G
             
-            // Write calibration data to config
-            CONFIG.data.ACCEL_BIAS[XAXIS] = accel_bias[XAXIS];
-            CONFIG.data.ACCEL_BIAS[YAXIS] = accel_bias[YAXIS];
-            CONFIG.data.ACCEL_BIAS[ZAXIS] = accel_bias[ZAXIS];
+            // Reverse calibration forces
+            CONFIG.data.ACCEL_BIAS[XAXIS] *= -1;
+            CONFIG.data.ACCEL_BIAS[YAXIS] *= -1;
+            CONFIG.data.ACCEL_BIAS[ZAXIS] *= -1;            
         };
 
         void readAccelRaw() {
@@ -102,9 +92,9 @@ class ADXL345 {
             accel[ZAXIS] = accelSum[ZAXIS] / accelSamples;
 
             // Apply offsets
-            accel[XAXIS] += accel_bias[XAXIS];
-            accel[YAXIS] += accel_bias[YAXIS];
-            accel[ZAXIS] += accel_bias[ZAXIS];
+            accel[XAXIS] += CONFIG.data.ACCEL_BIAS[XAXIS];
+            accel[YAXIS] += CONFIG.data.ACCEL_BIAS[YAXIS];
+            accel[ZAXIS] += CONFIG.data.ACCEL_BIAS[ZAXIS];
 
             // Apply correct scaling (at this point accel reprensents +- 1g = 9.81 m/s^2)
             accel[XAXIS] *= accelScaleFactor;
@@ -119,7 +109,6 @@ class ADXL345 {
         };
     
     private:
-        int16_t accel_bias[3];
         float accelScaleFactor; 
         
         int16_t accelRaw[3];
@@ -131,7 +120,7 @@ class ADXL345 {
 ADXL345 adxl;
 
 void SensorArray::initializeAccel() {
-    adxl.initialize(CONFIG.data.ACCEL_BIAS[XAXIS], CONFIG.data.ACCEL_BIAS[YAXIS], CONFIG.data.ACCEL_BIAS[ZAXIS]);
+    adxl.initialize();
 }
 
 void SensorArray::calibrateAccel() {
