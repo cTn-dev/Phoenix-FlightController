@@ -103,6 +103,7 @@ void processPilotCommands() {
     // TX accelerometer trimming
     if (armed == false && TX_throttle > 1750) {
         // We jest enter trimming mode
+        static bool changed = false;
         
         // We will "lock" the user in here untill trimming is done
         while (TX_throttle > 1750) {
@@ -110,6 +111,12 @@ void processPilotCommands() {
             TX_roll     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[0]];
             TX_pitch    = RX[CONFIG.data.CHANNEL_ASSIGNMENT[1]];
             TX_throttle = RX[CONFIG.data.CHANNEL_ASSIGNMENT[2]];
+            TX_yaw      = RX[CONFIG.data.CHANNEL_ASSIGNMENT[3]];
+            
+            // Flip the flag if anything will be changed
+            if (TX_roll > 1750 || TX_roll < 1250 || TX_pitch > 1750 || TX_pitch < 1250) {
+                changed = true;
+            }
             
             // Check the sticks
             if (TX_roll > 1750) {
@@ -124,15 +131,20 @@ void processPilotCommands() {
                 CONFIG.data.ACCEL_BIAS[XAXIS] += 5;
             }
 
+            if (TX_yaw > 1750 && changed) {
+                // save data
+                writeEEPROM();
+                
+                // reset flag
+                changed = false;
+            }
+            
             // Blink LED to indicate activity
             Arduino_LED_state = !Arduino_LED_state;
             digitalWrite(LED_ARDUINO, Arduino_LED_state); 
             
             delay(500); // 0.5s loop delay to allow precise trimming
         }
-        
-        // save data
-        writeEEPROM();
     }
     
     // Rate-Attitude mode
