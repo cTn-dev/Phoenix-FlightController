@@ -211,14 +211,14 @@ function process_data(command, message_buffer) {
             GPS_data.sats = data.getUint8(33);
             break;
         case PSP.PSP_REQ_RC:
-            receiver_data.raw[0] = data.getInt16(0, 0);
-            receiver_data.raw[1] = data.getInt16(2, 0);
-            receiver_data.raw[2] = data.getInt16(4, 0);
-            receiver_data.raw[3] = data.getInt16(6, 0);
-            receiver_data.raw[4] = data.getInt16(8, 0);
-            receiver_data.raw[5] = data.getInt16(10, 0);
-            receiver_data.raw[6] = data.getInt16(12, 0);
-            receiver_data.raw[7] = data.getInt16(14, 0);
+            receiver_data.raw[0] = data.getInt16(0, 1);
+            receiver_data.raw[1] = data.getInt16(2, 1);
+            receiver_data.raw[2] = data.getInt16(4, 1);
+            receiver_data.raw[3] = data.getInt16(6, 1);
+            receiver_data.raw[4] = data.getInt16(8, 1);
+            receiver_data.raw[5] = data.getInt16(10, 1);
+            receiver_data.raw[6] = data.getInt16(12, 1);
+            receiver_data.raw[7] = data.getInt16(14, 1);
             break;
         case PSP.PSP_REQ_KINEMATICS:
             // 57.2957795 = rad to deg scale factor
@@ -231,14 +231,14 @@ function process_data(command, message_buffer) {
         case PSP.PSP_REQ_MOTORS_OUTPUT:
             var needle = 0;
             for (var i = 0; i < motors; i++) {
-                motors_output[i] = data.getInt16(needle, 0);
+                motors_output[i] = data.getInt16(needle, 1);
                 needle += 2;
             }
             break;
         case PSP.PSP_SET_ACCEL_CALIBRATION:
-            eepromConfig.ACCEL_BIAS[0] = data.getInt16(0, 0); // x
-            eepromConfig.ACCEL_BIAS[1] = data.getInt16(2, 0); // y
-            eepromConfig.ACCEL_BIAS[2] = data.getInt16(4, 0); // z
+            eepromConfig.ACCEL_BIAS[0] = data.getInt16(0, 1); // x
+            eepromConfig.ACCEL_BIAS[1] = data.getInt16(2, 1); // y
+            eepromConfig.ACCEL_BIAS[2] = data.getInt16(4, 1); // z
             
             process_accel_calibration();
             break;
@@ -246,11 +246,11 @@ function process_data(command, message_buffer) {
             motors = parseInt(message_buffer_uint8_view[0]);
             break;
         case PSP.PSP_REQ_SENSORS_ALIVE:
-            var sensors_detected = parseInt((message_buffer_uint8_view[0] << 8) | message_buffer_uint8_view[1]);
+            var sensors_detected = parseInt((message_buffer_uint8_view[1] << 8) | message_buffer_uint8_view[0]);
             sensor_status(sensors_detected);            
             break;
         case PSP.PSP_REQ_AUX_TRIGGERED:
-            AUX_triggered_mask = parseInt((message_buffer_uint8_view[0] << 8) | message_buffer_uint8_view[1]);
+            AUX_triggered_mask = parseInt((message_buffer_uint8_view[1] << 8) | message_buffer_uint8_view[0]);
             break;
         case PSP.PSP_SET_MOTOR_TEST_VALUE:
             // acknowledged valid motor value

@@ -88,7 +88,7 @@ function tab_initialize_sensor_data() {
         title: "Barometer (meters above sea level)",
         shadowSize: 0,
         yaxis: {
-            tickDecimals: 2,
+            tickDecimals: 0,
         },
         xaxis: {
         },
