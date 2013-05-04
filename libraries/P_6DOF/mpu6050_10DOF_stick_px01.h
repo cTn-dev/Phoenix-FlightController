@@ -145,6 +145,7 @@ class MPU6050 {
         
         // ~1280ms (in case of error ~ms = calibration sanity passed)
         void calibrate_gyro() {
+            static uint8_t retry = 0;
             uint8_t i, count = 128;
             int16_t xSum = 0, ySum = 0, zSum = 0;
 
@@ -161,11 +162,13 @@ class MPU6050 {
             gyro_offset[ZAXIS] = -zSum / count; 
             
             // Calibration sanity check
-            if (abs(gyro_offset[XAXIS]) > 300 || abs(gyro_offset[YAXIS]) > 300 || abs(gyro_offset[ZAXIS]) > 300) {
-                // gyro calibration failed, run again   
+            // if suitable offset couldn't be established, break out of the loop after 10 retries
+            if ((abs(gyro_offset[XAXIS]) > 300 || abs(gyro_offset[YAXIS]) > 300 || abs(gyro_offset[ZAXIS]) > 300) && retry < 10) {
+                // gyro calibration failed, run again
+                retry++;
                 
                 // small delay before next gyro calibration
-                delay(1000);
+                delay(500);
                 
                 calibrate_gyro();
             }

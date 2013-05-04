@@ -60,6 +60,7 @@ class ITG3200 {
         
         // ~1280ms
         void calibrate_gyro() {
+            static uint8_t retry = 0;
             uint8_t i, count = 128;
             int16_t xSum = 0, ySum = 0, zSum = 0;
 
@@ -76,10 +77,14 @@ class ITG3200 {
             gyro_offset[ZAXIS] = -zSum / count; 
             
             // Calibration sanity check
-            if (abs(gyro_offset[XAXIS]) > 140 || abs(gyro_offset[YAXIS]) > 140 || abs(gyro_offset[ZAXIS]) > 140) {
+            // if suitable offset couldn't be established, break out of the loop after 10 retries
+            if ((abs(gyro_offset[XAXIS]) > 140 || abs(gyro_offset[YAXIS]) > 140 || abs(gyro_offset[ZAXIS]) > 140) && retry < 10) {
                 // gyro calibration failed, run again   
+                retry++;
                 
-                delay(1000); // small delay before next gyro calibration
+                // small delay before next gyro calibration
+                delay(500);
+                
                 calibrate_gyro();
             }          
         };
