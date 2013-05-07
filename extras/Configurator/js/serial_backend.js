@@ -60,14 +60,14 @@ function onCharRead(readInfo) {
                     
                     packet_state++;
                     break;
-                case 3: // payload length MSB
-                    message_length_expected = data[i] << 8;
+                case 3: // payload length LSB
+                    message_length_expected = data[i];
                     message_crc ^= data[i];
                     
                     packet_state++;
                     break;
-                case 4: // payload length LSB
-                    message_length_expected |= data[i];
+                case 4: // payload length MSB
+                    message_length_expected |= data[i] << 8;
                     message_crc ^= data[i];
                     
                     // setup arraybuffer
@@ -118,8 +118,8 @@ function send_message(code, data, callback) {
         bufView[0] = PSP.PSP_SYNC1;
         bufView[1] = PSP.PSP_SYNC2;
         bufView[2] = code;
-        bufView[3] = highByte(data.length);
-        bufView[4] = lowByte(data.length);
+        bufView[3] = lowByte(data.length);
+        bufView[4] = highByte(data.length);
         
         checksum = bufView[2] ^ bufView[3] ^ bufView[4];
         
@@ -136,8 +136,8 @@ function send_message(code, data, callback) {
         bufView[0] = PSP.PSP_SYNC1;
         bufView[1] = PSP.PSP_SYNC2;
         bufView[2] = code;
-        bufView[3] = 0x00; // payload length MSB
-        bufView[4] = 0x01; // payload length LSB
+        bufView[3] = 0x01; // payload length LSB
+        bufView[4] = 0x00; // payload length MSB
         bufView[5] = data; // payload
         bufView[6] = bufView[2] ^ bufView[3] ^ bufView[4] ^ bufView[5]; // crc        
     }

@@ -5,7 +5,7 @@
     Data structure is subject to change without further notice.  
 
     Protocol data structure:
-    [SYNC1][SYNC2][CODE][LENGTH_H][LENGTH_L][DATA/DATA ARRAY][CRC]
+    [SYNC1][SYNC2][CODE][LENGTH_L][LENGTH_H][DATA/DATA ARRAY][CRC]
 */
 
 #define PSP_SYNC1 0xB5
@@ -68,15 +68,14 @@ class Configurator {
                         
                         state++;
                         break;
-                    case 3:
-                        payload_length_expected = 0; // reset
-                        payload_length_expected = data << 8;
+                    case 3: // LSB
+                        payload_length_expected = data;
                         message_crc ^= data;
                         
                         state++;
                         break;
-                    case 4:
-                        payload_length_expected |= data;
+                    case 4: // MSB
+                        payload_length_expected |= data << 8;
                         message_crc ^= data;
                         
                         state++;
@@ -264,8 +263,7 @@ class Configurator {
             crc = 0; // reset crc
             
             serialize_uint8(code);
-            serialize_uint8(highByte(length));
-            serialize_uint8(lowByte(length));
+            serliaze_uint16(length);
         };
         
         void protocol_tail() {
