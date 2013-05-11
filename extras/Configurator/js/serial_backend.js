@@ -258,16 +258,15 @@ function process_data(command, message_buffer) {
             sensor_status(sensors_detected);            
             break;
         case PSP.PSP_REQ_AUX_TRIGGERED:
-            AUX_triggered_mask = message_buffer_uint8_view[0];
-            AUX_triggered_mask |= (message_buffer_uint8_view[1] << 8);
-            AUX_triggered_mask |= (message_buffer_uint8_view[2] << 16);
-            AUX_triggered_mask |= (message_buffer_uint8_view[3] << 24);
-            AUX_triggered_mask |= (message_buffer_uint8_view[4] << 32);
-            AUX_triggered_mask |= (message_buffer_uint8_view[5] << 40);
-            AUX_triggered_mask |= (message_buffer_uint8_view[6] << 48);
-            AUX_triggered_mask |= (message_buffer_uint8_view[7] << 56);
+            AUX_triggered_mask[0] = message_buffer_uint8_view[0];
+            AUX_triggered_mask[0] |= (message_buffer_uint8_view[1] << 8);
+            AUX_triggered_mask[0] |= (message_buffer_uint8_view[2] << 16);
+            AUX_triggered_mask[0] |= (message_buffer_uint8_view[3] << 24);
             
-            AUX_triggered_mask = parseInt(AUX_triggered_mask);
+            AUX_triggered_mask[1] = message_buffer_uint8_view[4];
+            AUX_triggered_mask[1] |= (message_buffer_uint8_view[5] << 8);
+            AUX_triggered_mask[1] |= (message_buffer_uint8_view[6] << 16);
+            AUX_triggered_mask[1] |= (message_buffer_uint8_view[7] << 24);
             break;
         case PSP.PSP_SET_MOTOR_TEST_VALUE:
             // acknowledged valid motor value

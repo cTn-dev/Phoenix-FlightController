@@ -453,7 +453,7 @@ table.channel_assigner {
     .tab-function_triggers .heads li {
         float: left;
         
-        width: 182px;
+        width: 62px;
         height: 22px;
         line-height: 22px;
         
@@ -467,20 +467,15 @@ table.channel_assigner {
         background-color: #ececec;
     }
         .tab-function_triggers .heads li:first-child {
-            margin-left: 181px;
+            margin-left: 162px;
             border-left: 1px solid #8b8b8b;
-        }
-        .tab-function_triggers .heads li:nth-child(3) {
-            width: 183px;
-        }
-        .tab-function_triggers .heads li:nth-child(4) {
-            width: 185px;
         }
     .tab-function_triggers .functions {
         width: 100%;
         border-collapse: collapse;    
     }
         .tab-function_triggers .functions th, .tab-function_triggers .functions td {
+            width: 20px;
             line-height: 22px;
             text-align: center;
             
@@ -493,7 +488,7 @@ table.channel_assigner {
             position: absolute;
             
             margin-top: -6px;
-            margin-left: -6px;            
+            margin-left: -6px;          
         }
         .tab-function_triggers .functions .on {
             background-color: #fc944f;

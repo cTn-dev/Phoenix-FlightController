@@ -16,7 +16,7 @@ var eepromConfig = {
     ACCEL_BIAS:  [0, 0, 0],
     
     CHANNEL_ASSIGNMENT: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    CHANNEL_FUNCTIONS:  [0, 0, 0, 0],
+    CHANNEL_FUNCTIONS:  [[0, 0], [0, 0], [0, 0], [0, 0]],
     
     PID_YAW_c:   [0.0, 0.0, 0.0, 0],
     PID_PITCH_c: [0.0, 0.0, 0.0, 0],
@@ -64,8 +64,8 @@ DataView.prototype.parseUNION = function (structure) {
     } 
 
     for (var i = 0; i < structure.CHANNEL_FUNCTIONS.length; i++) {
-        structure.CHANNEL_FUNCTIONS[i] = this.getUint32(needle, 1);
-        structure.CHANNEL_FUNCTIONS[i] |= (this.getUint32(needle + 4, 1) << 32);
+        structure.CHANNEL_FUNCTIONS[i][0] = this.getUint32(needle, 1);
+        structure.CHANNEL_FUNCTIONS[i][1] = this.getUint32(needle + 4, 1);
         needle += 8;
     }      
     
@@ -105,8 +105,8 @@ DataView.prototype.setUNION = function (structure) {
     }  
 
     for (var i = 0; i < structure.CHANNEL_FUNCTIONS.length; i++) {
-        this.setUint32(needle, structure.CHANNEL_FUNCTIONS[i], 1);
-        this.setUint32(needle + 4, (structure.CHANNEL_FUNCTIONS[i] << 32), 1);
+        this.setUint32(needle, structure.CHANNEL_FUNCTIONS[i][0], 1);
+        this.setUint32(needle + 4, structure.CHANNEL_FUNCTIONS[i][1], 1);
         needle += 8;
     }
     

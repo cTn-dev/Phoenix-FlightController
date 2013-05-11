@@ -123,7 +123,7 @@ $(document).ready(function() {
     });
     
     // used for development only
-    //$('#content').load("./tabs/gps.html", tab_initialize_gps);
+    //$('#content').load("./tabs/function_triggers.html", tab_initialize_function_triggers);
 });
 
 function command_log(message) {
@@ -258,7 +258,7 @@ function lowByte(num) {
 }
 
 function bit_check(num, bit) {
-    return ((num >> bit) % 2 != 0)
+    return ((num) & (1 << (bit)));
 }
 
 function bit_set(num, bit) {

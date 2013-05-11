@@ -76,6 +76,65 @@ void processPilotCommands() {
         AUX_chan_mask |= 1 << 11;
     }
     
+    if (TX_AUX5 < 1250) {
+        AUX_chan_mask |= 1 << 12;
+    } else if (TX_AUX5 < 1750) {
+        AUX_chan_mask |= 1 << 13;
+    } else {
+        AUX_chan_mask |= 1 << 14;
+    }
+    
+    if (TX_AUX6 < 1250) {
+        AUX_chan_mask |= 1 << 15;
+    } else if (TX_AUX6 < 1750) {
+        AUX_chan_mask |= 1 << 16;
+    } else {
+        AUX_chan_mask |= 1 << 17;
+    }
+ 
+    if (TX_AUX7 < 1250) {
+        AUX_chan_mask |= 1 << 18;
+    } else if (TX_AUX7 < 1750) {
+        AUX_chan_mask |= 1 << 19;
+    } else {
+        AUX_chan_mask |= 1 << 20;
+    }
+    if (TX_AUX8 < 1250) {
+        AUX_chan_mask |= 1 << 21;
+    } else if (TX_AUX8 < 1750) {
+        AUX_chan_mask |= 1 << 22;
+    } else {
+        AUX_chan_mask |= 1 << 23;
+    }
+    if (TX_AUX9 < 1250) {
+        AUX_chan_mask |= 1 << 24;
+    } else if (TX_AUX9 < 1750) {
+        AUX_chan_mask |= 1 << 25;
+    } else {
+        AUX_chan_mask |= 1 << 26;
+    }
+    if (TX_AUX10 < 1250) {
+        AUX_chan_mask |= 1 << 27;
+    } else if (TX_AUX10 < 1750) {
+        AUX_chan_mask |= 1 << 28;
+    } else {
+        AUX_chan_mask |= 1 << 29;
+    }
+    if (TX_AUX11 < 1250) {
+        AUX_chan_mask |= 1ULL << 30;
+    } else if (TX_AUX11 < 1750) {
+        AUX_chan_mask |= 1ULL << 31;
+    } else {
+        AUX_chan_mask |= 1ULL << 32;
+    }
+    if (TX_AUX12 < 1250) {
+        AUX_chan_mask |= 1ULL << 33;
+    } else if (TX_AUX12 < 1750) {
+        AUX_chan_mask |= 1ULL << 34;
+    } else {
+        AUX_chan_mask |= 1ULL << 35;
+    }
+   
     // Arming-Disarming sequence
     if (TX_throttle < 1100 && TX_yaw > 1850) {
         if (armed == false) {
