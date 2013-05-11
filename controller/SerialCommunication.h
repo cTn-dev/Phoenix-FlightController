@@ -282,15 +282,13 @@ class Configurator {
         
         void serialize_uint32(uint32_t data) {
             for (uint8_t i = 0; i < 4; i++) {
-                Serial.write((uint8_t) (data >> (i * 8)));
-                crc ^= (uint8_t) (data >> (i * 8));
+                serialize_uint8((uint8_t) (data >> (i * 8)));
             }
         };
         
         void serialize_uint64(uint64_t data) {
             for (uint8_t i = 0; i < 8; i++) {
-                Serial.write((uint8_t) (data >> (i * 8)));
-                crc ^= (uint8_t) (data >> (i * 8));
+                serialize_uint8((uint8_t) (data >> (i * 8)));
             }
         };
         
