@@ -20,10 +20,6 @@ void kinematics_update(float gyroX, float gyroY, float gyroZ, float accelX, floa
     accelY /= norm;
     accelZ /= norm;
     
-    // Determinate Sensor orientation
-    bool orientation = true; // up-side UP
-    if (accelZ < 0.00) orientation = false; // up-side DOWN    
-    
     float accelXangle = atan2(accelY, accelZ);
     float accelYangle = atan2(accelX, accelZ); 
     //float accelYangle = atan2(*accelX, sqrt(*accelY * *accelY + *accelZ * *accelZ));   

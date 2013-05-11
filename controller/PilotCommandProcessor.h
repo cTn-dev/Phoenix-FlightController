@@ -77,14 +77,14 @@ void processPilotCommands() {
             reset_PID_integrals(); // Reset all integrals inside PID controllers to 0
         }
         
-        if (flightMode = ATTITUDE_MODE) {
+        if (flightMode == ATTITUDE_MODE) {
             commandYawAttitude = kinematicsAngle[ZAXIS];
         } else if (flightMode == RATE_MODE)  {
             commandYaw = 0.0;
         } 
         
         armed = true;
-    } else if (TX_throttle < 1100 && TX_yaw < 1250 || TX_throttle <= CONFIG.data.minimumArmedThrottle && failsafeEnabled) {
+    } else if ((TX_throttle < 1100 && TX_yaw < 1250) || (TX_throttle <= CONFIG.data.minimumArmedThrottle && failsafeEnabled)) {
         if (armed == true) {
             // We just dis-armed the controller
             
