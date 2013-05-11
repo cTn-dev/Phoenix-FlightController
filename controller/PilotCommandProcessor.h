@@ -99,6 +99,7 @@ void processPilotCommands() {
     } else {
         AUX_chan_mask |= 1 << 20;
     }
+    
     if (TX_AUX8 < 1250) {
         AUX_chan_mask |= 1 << 21;
     } else if (TX_AUX8 < 1750) {
@@ -106,6 +107,7 @@ void processPilotCommands() {
     } else {
         AUX_chan_mask |= 1 << 23;
     }
+    
     if (TX_AUX9 < 1250) {
         AUX_chan_mask |= 1 << 24;
     } else if (TX_AUX9 < 1750) {
@@ -113,6 +115,7 @@ void processPilotCommands() {
     } else {
         AUX_chan_mask |= 1 << 26;
     }
+    
     if (TX_AUX10 < 1250) {
         AUX_chan_mask |= 1 << 27;
     } else if (TX_AUX10 < 1750) {
@@ -120,13 +123,15 @@ void processPilotCommands() {
     } else {
         AUX_chan_mask |= 1 << 29;
     }
+    
     if (TX_AUX11 < 1250) {
-        AUX_chan_mask |= 1ULL << 30;
+        AUX_chan_mask |= 1ULL << 30; // Starting to use ULL because we will go over the 32bit barier soon
     } else if (TX_AUX11 < 1750) {
         AUX_chan_mask |= 1ULL << 31;
     } else {
         AUX_chan_mask |= 1ULL << 32;
     }
+    
     if (TX_AUX12 < 1250) {
         AUX_chan_mask |= 1ULL << 33;
     } else if (TX_AUX12 < 1750) {
