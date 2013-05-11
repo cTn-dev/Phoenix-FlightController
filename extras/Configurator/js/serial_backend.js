@@ -219,6 +219,14 @@ function process_data(command, message_buffer) {
             receiver_data.raw[5] = data.getInt16(10, 1);
             receiver_data.raw[6] = data.getInt16(12, 1);
             receiver_data.raw[7] = data.getInt16(14, 1);
+            receiver_data.raw[8] = data.getInt16(16, 1);
+            receiver_data.raw[9] = data.getInt16(18, 1);
+            receiver_data.raw[10] = data.getInt16(20, 1);
+            receiver_data.raw[11] = data.getInt16(22, 1);
+            receiver_data.raw[12] = data.getInt16(24, 1);
+            receiver_data.raw[13] = data.getInt16(26, 1);
+            receiver_data.raw[14] = data.getInt16(28, 1);
+            receiver_data.raw[15] = data.getInt16(30, 1);
             break;
         case PSP.PSP_REQ_KINEMATICS:
             // 57.2957795 = rad to deg scale factor
@@ -250,7 +258,16 @@ function process_data(command, message_buffer) {
             sensor_status(sensors_detected);            
             break;
         case PSP.PSP_REQ_AUX_TRIGGERED:
-            AUX_triggered_mask = parseInt((message_buffer_uint8_view[1] << 8) | message_buffer_uint8_view[0]);
+            AUX_triggered_mask = message_buffer_uint8_view[0];
+            AUX_triggered_mask |= (message_buffer_uint8_view[1] << 8);
+            AUX_triggered_mask |= (message_buffer_uint8_view[2] << 16);
+            AUX_triggered_mask |= (message_buffer_uint8_view[3] << 24);
+            AUX_triggered_mask |= (message_buffer_uint8_view[4] << 32);
+            AUX_triggered_mask |= (message_buffer_uint8_view[5] << 40);
+            AUX_triggered_mask |= (message_buffer_uint8_view[6] << 48);
+            AUX_triggered_mask |= (message_buffer_uint8_view[7] << 56);
+            
+            AUX_triggered_mask = parseInt(AUX_triggered_mask);
             break;
         case PSP.PSP_SET_MOTOR_TEST_VALUE:
             // acknowledged valid motor value

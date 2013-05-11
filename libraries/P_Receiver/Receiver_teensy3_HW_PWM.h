@@ -14,11 +14,11 @@
     
 */
 
-#define CHANNELS 8
-uint8_t PWM_PINS[CHANNELS] = {2, 3, 4, 5, 6, 7, 8, 9};
+#define RX_CHANNELS 16 // dont change this
+uint8_t PWM_PINS[RX_CHANNELS] = {2, 3, 4, 5, 6, 7, 8, 9};
 
-volatile uint16_t RX[CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
-volatile uint32_t PWM_time[CHANNELS] = {0, 0, 0, 0, 0, 0, 0, 0};
+volatile uint16_t RX[RX_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+volatile uint32_t PWM_time[RX_CHANNELS] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 volatile uint16_t RX_failsafeStatus;
 volatile uint8_t RX_signalReceived = 0;
@@ -83,7 +83,7 @@ void initializeReceiver() {
     PIT_LDVAL0 = 0xFFFFFFFF; // Load initial value of 4294967295
     PIT_TCTRL0 = 0x01;       // Start the counter
     
-    for (uint8_t i = 0; i < CHANNELS; i++) {
+    for (uint8_t i = 0; i < RX_CHANNELS; i++) {
         pinMode(PWM_PINS[i], INPUT);
         attachInterrupt(PWM_PINS[i], PWM_Handlers[i], CHANGE);
     }
@@ -94,7 +94,7 @@ void RX_failSafe() {
         RX_signalReceived++; // if this flag reaches 10, an auto-descent routine will be triggered.
     } else {
         // Raise the FLAGS
-        RX_failsafeStatus |= (1 << CHANNELS) - 1;
+        RX_failsafeStatus |= (1 << RX_CHANNELS) - 1;
         
         // Reset the counter
         RX_signalReceived = 0;

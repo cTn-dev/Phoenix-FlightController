@@ -7,12 +7,11 @@
     
     Dynamic auxiliary funtion assignment was inspired by very similar feature originally found
     in multiwii flight control software.
-    
-    Channel handling is currently limited to 8 channels (will probably get extended in the future)
 */
 
 int16_t TX_roll, TX_pitch, TX_throttle, TX_yaw, TX_AUX1, TX_AUX2, TX_AUX3, TX_AUX4;
-uint16_t AUX_chan_mask;
+int16_t TX_AUX5, TX_AUX6, TX_AUX7, TX_AUX8, TX_AUX9, TX_AUX10, TX_AUX11, TX_AUX12;
+uint64_t AUX_chan_mask;
 bool throttlePanic = false;
 
 void processPilotCommands() {
@@ -31,6 +30,14 @@ void processPilotCommands() {
     TX_AUX2     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[5]];
     TX_AUX3     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[6]];
     TX_AUX4     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[7]];
+    TX_AUX5     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[8]];
+    TX_AUX6     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[9]];
+    TX_AUX7     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[10]];
+    TX_AUX8     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[11]];
+    TX_AUX9     = RX[CONFIG.data.CHANNEL_ASSIGNMENT[12]];
+    TX_AUX10    = RX[CONFIG.data.CHANNEL_ASSIGNMENT[13]];
+    TX_AUX11    = RX[CONFIG.data.CHANNEL_ASSIGNMENT[14]];
+    TX_AUX12    = RX[CONFIG.data.CHANNEL_ASSIGNMENT[15]];
     
     sei(); // enable interrupts
     
@@ -45,27 +52,27 @@ void processPilotCommands() {
         AUX_chan_mask |= 1 << 2;
     }
 
-    if (TX_AUX2 < 1250) { // LOW
+    if (TX_AUX2 < 1250) {
         AUX_chan_mask |= 1 << 3;
-    } else if (TX_AUX2 < 1750) { // MID
+    } else if (TX_AUX2 < 1750) {
         AUX_chan_mask |= 1 << 4;
-    } else { //HIGH
+    } else {
         AUX_chan_mask |= 1 << 5;
     }
 
-    if (TX_AUX3 < 1250) { // LOW
+    if (TX_AUX3 < 1250) {
         AUX_chan_mask |= 1 << 6;
-    } else if (TX_AUX3 < 1750) { // MID
+    } else if (TX_AUX3 < 1750) {
         AUX_chan_mask |= 1 << 7;
-    } else { //HIGH
+    } else {
         AUX_chan_mask |= 1 << 8;
     }
     
-    if (TX_AUX4 < 1250) { // LOW
+    if (TX_AUX4 < 1250) {
         AUX_chan_mask |= 1 << 9;
-    } else if (TX_AUX4 < 1750) { // MID
+    } else if (TX_AUX4 < 1750) {
         AUX_chan_mask |= 1 << 10;
-    } else { //HIGH
+    } else {
         AUX_chan_mask |= 1 << 11;
     }
     

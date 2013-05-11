@@ -16,7 +16,7 @@
     #define EEPROM_SIZE 512
 #endif    
 
-#define EEPROM_VERSION 3
+#define EEPROM_VERSION 4
 
 struct __attribute__((packed)) CONFIG_struct {
     uint8_t version;
@@ -27,8 +27,8 @@ struct __attribute__((packed)) CONFIG_struct {
     int16_t ACCEL_BIAS[3];    
     
     // RX
-    uint8_t CHANNEL_ASSIGNMENT[8];
-    uint16_t CHANNEL_FUNCTIONS[4];
+    uint8_t CHANNEL_ASSIGNMENT[16];
+    uint64_t CHANNEL_FUNCTIONS[4];
     
     // Attitude
     float PID_YAW_c[4];
@@ -74,6 +74,14 @@ void initializeEEPROM(void) {
     CONFIG.data.CHANNEL_ASSIGNMENT[5] = 5;
     CONFIG.data.CHANNEL_ASSIGNMENT[6] = 6;
     CONFIG.data.CHANNEL_ASSIGNMENT[7] = 7;
+    CONFIG.data.CHANNEL_ASSIGNMENT[8] = 8;
+    CONFIG.data.CHANNEL_ASSIGNMENT[9] = 9;
+    CONFIG.data.CHANNEL_ASSIGNMENT[10] = 10;
+    CONFIG.data.CHANNEL_ASSIGNMENT[11] = 11;
+    CONFIG.data.CHANNEL_ASSIGNMENT[12] = 12;
+    CONFIG.data.CHANNEL_ASSIGNMENT[13] = 13;
+    CONFIG.data.CHANNEL_ASSIGNMENT[14] = 14;
+    CONFIG.data.CHANNEL_ASSIGNMENT[15] = 15;
 
     CONFIG.data.CHANNEL_FUNCTIONS[0] = 0x04; // mode select ("stable mode" is set to trigger on AUX1-HIGH by default)
     CONFIG.data.CHANNEL_FUNCTIONS[1] = 0x00; // baro select

@@ -135,7 +135,7 @@ class Configurator {
                     protocol_head(PSP_REQ_MAG, 6);
                     
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        serliaze_uint16(magRaw[axis]);
+                        serialize_uint16(magRaw[axis]);
                     }
                     break;
 #endif
@@ -164,10 +164,10 @@ class Configurator {
                     break;
 #endif                    
                 case PSP_REQ_RC:
-                    protocol_head(PSP_REQ_RC, CHANNELS * 2);
+                    protocol_head(PSP_REQ_RC, RX_CHANNELS * 2);
                     
-                    for (uint8_t channel = 0; channel < CHANNELS; channel++) {
-                        serliaze_uint16(RX[channel]);
+                    for (uint8_t channel = 0; channel < RX_CHANNELS; channel++) {
+                        serialize_uint16(RX[channel]);
                     }
                     break;
                 case PSP_REQ_KINEMATICS:
@@ -181,7 +181,7 @@ class Configurator {
                     protocol_head(PSP_REQ_MOTORS_OUTPUT, MOTORS * 2);
 
                     for (uint8_t motor = 0; motor < MOTORS; motor++) {
-                        serliaze_uint16(MotorOut[motor]);
+                        serialize_uint16(MotorOut[motor]);
                     }
                     break;
                 case PSP_REQ_MOTORS_COUNT:
@@ -192,12 +192,12 @@ class Configurator {
                 case PSP_REQ_SENSORS_ALIVE:
                     protocol_head(PSP_REQ_SENSORS_ALIVE, 2);
                     
-                    serliaze_uint16(sensors.sensors_detected);
+                    serialize_uint16(sensors.sensors_detected);
                     break;
                 case PSP_REQ_AUX_TRIGGERED:
-                    protocol_head(PSP_REQ_AUX_TRIGGERED, 2);
+                    protocol_head(PSP_REQ_AUX_TRIGGERED, 8);
                     
-                    serliaze_uint16(AUX_chan_mask);
+                    serialize_uint64(AUX_chan_mask);
                     break;
                  
                 // SET
@@ -236,7 +236,7 @@ class Configurator {
                     protocol_head(PSP_SET_ACCEL_CALIBRATION, 6);
                     
                     for (uint8_t axis = 0; axis <= ZAXIS; axis++) {
-                        serliaze_uint16(CONFIG.data.ACCEL_BIAS[axis]);
+                        serialize_uint16(CONFIG.data.ACCEL_BIAS[axis]);
                     }
                     break; 
                 case PSP_SET_MOTOR_TEST_VALUE:
@@ -263,7 +263,7 @@ class Configurator {
             crc = 0; // reset crc
             
             serialize_uint8(code);
-            serliaze_uint16(length);
+            serialize_uint16(length);
         };
         
         void protocol_tail() {
@@ -275,13 +275,20 @@ class Configurator {
             crc ^= data;
         };
         
-        void serliaze_uint16(uint16_t data) {
+        void serialize_uint16(uint16_t data) {
             serialize_uint8(lowByte(data));
             serialize_uint8(highByte(data));
         };
         
         void serialize_uint32(uint32_t data) {
             for (uint8_t i = 0; i < 4; i++) {
+                Serial.write((uint8_t) (data >> (i * 8)));
+                crc ^= (uint8_t) (data >> (i * 8));
+            }
+        };
+        
+        void serialize_uint64(uint64_t data) {
+            for (uint8_t i = 0; i < 8; i++) {
                 Serial.write((uint8_t) (data >> (i * 8)));
                 crc ^= (uint8_t) (data >> (i * 8));
             }

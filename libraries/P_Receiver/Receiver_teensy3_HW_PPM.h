@@ -24,13 +24,21 @@
     someones head off with uncontrollable craft).
 
     Big thanks to kha from #aeroquad and Ragnorok from #arduino for helping me get this up and running.
+    
+    TODO: Sync pulse length varies among receivers, should probably provide a "define" style table for defining the
+    sync pulse length.
 */
 
-#define CHANNELS 8
+// Defined by the user, can vary from 4 to 16 channels
+#define RX_USER_CHANNELS_OPERATIONAL 8
+#define RX_PPM_SYNCPULSE 12000 // 4ms >
+
+#define RX_CHANNELS 16 // dont change this
+volatile uint16_t RX[RX_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+volatile uint16_t PPM_temp[RX_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000}; // Temporary buffer
+
 volatile uint16_t startPulse = 0;
-volatile uint16_t RX[CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
-volatile uint16_t PPM_temp[CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
-volatile uint8_t  ppmCounter = CHANNELS;
+volatile uint8_t  ppmCounter = RX_CHANNELS;
 volatile uint16_t PPM_error = 0;
 
 volatile uint8_t RX_signalReceived = 0;
@@ -48,29 +56,31 @@ extern "C" void ftm1_isr(void) {
 
     // Error / Sanity check
     // if pulseWidth < 900us or pulseWidth > 2100us and pulseWidth < 4000us
-    if (pulseWidth < 2700 || (pulseWidth > 6300 && pulseWidth < 12000)) {
+    if (pulseWidth < 2700 || (pulseWidth > 6300 && pulseWidth < RX_PPM_SYNCPULSE)) {
         PPM_error++;
         
         // set ppmCounter out of range so rest and (later on) whole frame is dropped
-        ppmCounter = CHANNELS + 1;
+        ppmCounter = RX_CHANNELS + 1;
     }
     
-    if (pulseWidth > 12000) {  // Verify if this is the sync pulse (4ms >)
-        if (ppmCounter == CHANNELS) {
+    if (pulseWidth > RX_PPM_SYNCPULSE) {  // Verify if this is the sync pulse
+        if (ppmCounter == RX_USER_CHANNELS_OPERATIONAL) {
             // This indicates that we received an correct frame = push to the "main" PPM array
             // if we received an broken frame, it will get ignored here and later get over-written
             // by new data, that will also be checked for sanity.
             
-            for (uint8_t i = 0; i < CHANNELS; i++) {
+            for (uint8_t i = 0; i < RX_CHANNELS; i++) {
                 RX[i] = PPM_temp[i];             
             }
             
             // Bring failsafe flag down every time we accept a valid signal / frame
             RX_signalReceived = 0;
         }
-        ppmCounter = 0; // restart the channel counter
+        
+        // restart the channel counter
+        ppmCounter = 0;
     } else {
-        if (ppmCounter < CHANNELS) {               // extra channels will get ignored here
+        if (ppmCounter < RX_CHANNELS) {            // extra channels will get ignored here
             PPM_temp[ppmCounter] = pulseWidth / 3; // Store measured pulse length in us
             ppmCounter++;                          // Advance to next channel
         }

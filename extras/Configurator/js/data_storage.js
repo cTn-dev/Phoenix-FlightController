@@ -23,8 +23,11 @@ var sensor_data = {
 }
 
 var receiver_data = {
-    raw:  [0, 0, 0, 0, 0, 0, 0, 0],
-    plot: [new Array(), new Array(), new Array(), new Array(), new Array(), new Array(), new Array(), new Array()]
+    raw:  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    plot: [
+        new Array(), new Array(), new Array(), new Array(), new Array(), new Array(), new Array(), new Array(), 
+        new Array(), new Array(), new Array(), new Array(), new Array(), new Array(), new Array(), new Array()
+    ]
 }
 
 var motors_output = [0, 0, 0, 0, 0, 0, 0, 0];
