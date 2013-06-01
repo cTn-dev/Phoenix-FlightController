@@ -32,7 +32,7 @@ Filters, kinematics, data handling
     - Rate (ACRO) | gyro only
     - Attitude | gyro with accel corrections
     - Altitute hold | barometer or sonar
-  - Pilot commands are being read by PPM sampling code via single PIN (with HW timer), this is the only pilot input supported for now
+  - Pilot commands are being read by PPM sampling code via single PIN (with HW timer), both PPM and PWM in is supported
   - Stabilization and pilot commands are mixed together by 2 separate PID controllers
     - First (only used in attitude mode) mixes pilot commands with kinematics output
     - Second (used in both attitude and rate mode) mixes output from first PID or raw stick input with gyroRate output
