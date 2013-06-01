@@ -1,5 +1,6 @@
 Flight Controller based on K20DX128 (Teensy 3.0)
-=================================================
+------------------------------------------------
+
 PIN setup (Teensy 3.0 pin numbering)
 ------------------------------------
   - I2C SCL 19
@@ -36,4 +37,13 @@ Filters, kinematics, data handling
     - First (only used in attitude mode) mixes pilot commands with kinematics output
     - Second (used in both attitude and rate mode) mixes output from first PID or raw stick input with gyroRate output
   - For ESC signal output i am using an build in 8 channel FLEX timer (yes you can controll octocopter with this)
-    - ESC PWM signal supports both 250Hz and 400Hz update rate (running at 400Hz by default)    
+    - ESC PWM signal supports both 250Hz and 400Hz update rate (running at 400Hz by default)
+
+Accelerometer offset trimming via TX
+------------------------------------
+  - While in dis-armed state
+  - To enter the trimming mode = Throttle stick UP & Rudder LEFT
+  - To adjust the values = PITCH UP & DOWN || ROLL LEFT & RIGHT
+  - To save the values in EEPROM = Throttle UP & Rudder RIGHT 
+    - (you dont have to save the values right away, you can test them, then return back to trimming mode and save them)
+  - To leave trimming mode = Throttle stick DOWN

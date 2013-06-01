@@ -172,7 +172,7 @@ void processPilotCommands() {
     }
     
     // TX accelerometer trimming
-    if (armed == false && TX_throttle > 1750) {
+    if (armed == false && TX_throttle > 1750 && TX_yaw < 1250) { // Throttle = UP, Rudder = LEFT
         // We jest enter trimming mode
         static bool changed = false;
         
@@ -202,8 +202,8 @@ void processPilotCommands() {
                 CONFIG.data.ACCEL_BIAS[XAXIS] += 5;
             }
 
-            if (TX_yaw > 1750 && changed) {
-                // save data
+            // Save trimmed calibration values to EEPROM (if there were any changes in the values)
+            if (TX_yaw > 1750 && changed) { // Rudder = RIGHT
                 writeEEPROM();
                 
                 // reset flag
