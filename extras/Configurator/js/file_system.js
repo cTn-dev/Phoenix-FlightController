@@ -5,8 +5,12 @@ function configuration_backup() {
         extensions: ['txt']
     }];
     
-    // load up the file
-    chrome.fileSystem.chooseEntry({type: 'saveFile', suggestedName: 'phoenix_config_backup', accepts: accepts}, function(fileEntry) {
+    // generate timestamp for the backup file
+    var d = new Date();
+    var now = d.getUTCFullYear() + '.' + d.getDate() + '.' + (d.getMonth() + 1) + '.' + d.getHours() + '.' + d.getMinutes();
+    
+    // create or load the file
+    chrome.fileSystem.chooseEntry({type: 'saveFile', suggestedName: 'phoenix_backup_' + now, accepts: accepts}, function(fileEntry) {
         if (!fileEntry) {
             command_log('<span style="color: red;">No</span> file selected');
             console.log('No file selected');
