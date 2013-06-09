@@ -12,6 +12,8 @@
     },
     
     "permissions": [
-        "serial"
+        "serial",
+        "fileSystem",
+        "fileSystem.write"
     ]
 }

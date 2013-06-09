@@ -374,6 +374,42 @@ a:hover {
         
         border: 1px dotted silver;
     }
+    .tab-initial_setup .backup {
+        display: block;
+        
+        width: 160px;
+        height: 23px;
+        line-height: 23px;
+        
+        text-align: center;
+        color: white;
+        
+        background-color: #5569d0;
+        border: 1px solid silver;
+    }
+    .tab-initial_setup .backup:hover {
+        text-decoration: none;
+        background-color: #424d84; 
+    }
+    .tab-initial_setup .restore {
+        display: block;
+        
+        margin-top: 5px;
+        
+        width: 160px;
+        height: 23px;
+        line-height: 23px;
+        
+        text-align: center;
+        color: white;
+        
+        background-color: #5569d0;
+        border: 1px solid silver;
+    }
+    .tab-initial_setup .restore:hover {
+        text-decoration: none;
+        background-color: #424d84;
+    }
 table.pid_tuning {
     width: 100%;
     border-collapse:collapse;    

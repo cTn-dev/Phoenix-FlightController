@@ -1,10 +1,7 @@
+var version = 4; // configurator version to check against version number stored in eeprom
+
 var connectionId = -1;
 var connection_delay = 0; // delay which defines "when" will the configurator request configurator data after connection was established
-
-var version = 4; // configurator version to check against version number stored in eeprom
-var eepromConfigSize;
-
-var motors = 0;
 
 var timers = new Array();
 
@@ -123,7 +120,7 @@ $(document).ready(function() {
     });
     
     // used for development only
-    //$('#content').load("./tabs/function_triggers.html", tab_initialize_function_triggers);
+    //$('#content').load("./tabs/initial_setup.html", tab_initialize_initial_setup);
 });
 
 function command_log(message) {

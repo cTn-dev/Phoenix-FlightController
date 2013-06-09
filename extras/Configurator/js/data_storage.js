@@ -30,6 +30,7 @@ var receiver_data = {
     ]
 }
 
+var motors = 0;
 var motors_output = [0, 0, 0, 0, 0, 0, 0, 0];
 
 var GPS_data = {

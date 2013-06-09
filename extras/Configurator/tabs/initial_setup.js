@@ -44,6 +44,10 @@ function tab_initialize_initial_setup() {
         command_log('Requesting EEPROM re-initialization.');
         send_message(PSP.PSP_SET_EEPROM_REINIT, 1);
     });
+    
+    $('#content .backup').click(configuration_backup);
+    
+    $('#content .restore').click(configuration_restore);
 }
 
 function process_accel_calibration() {

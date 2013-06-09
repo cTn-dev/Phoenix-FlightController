@@ -30,6 +30,7 @@ var eepromConfig = {
     PID_SONAR:   [0.0, 0.0, 0.0, 0],
     PID_GPS:     [0.0, 0.0, 0.0, 0],
 };
+var eepromConfigSize;
 
 DataView.prototype.getString = function(str_length, byteOffset) {
     var value = '';
