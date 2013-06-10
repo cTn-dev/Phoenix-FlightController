@@ -98,7 +98,17 @@ function configuration_restore() {
                 command_log('Read <span style="color: green;">SUCCESSFUL</span>');
                 console.log('Read SUCCESSFUL');
                 
-                deserialized_config_object = JSON.parse(e.target.result);
+                try { // check if string provided is a valid JSON
+                    var deserialized_config_object = JSON.parse(e.target.result);
+                    
+                    if (deserialized_config_object.version === undefined) throw 'no version parameter found';
+                } catch (e) {
+                    // data provided != valid json object
+                    command_log('Data provided <span style="color: red;">doesn\'t contain</span> valid JSON string -- <span style="color: red;">ABORTING</span>');
+                    console.log('Data provided != valid JSON string');
+                    
+                    return;
+                }
                 
                 // replacing "old configuration" with configuration from backup file
                 if (eepromConfig.version == deserialized_config_object.version) {
