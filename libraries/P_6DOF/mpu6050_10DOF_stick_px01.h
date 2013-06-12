@@ -286,7 +286,7 @@ class MPU6050 {
             accelSamples = 0;
         };
         
-        void readGyroTemperatutre() {
+        void readGyroTemperature() {
             Wire.beginTransmission(MPU6050_ADDRESS);
             Wire.write(MPUREG_TEMP_OUT_H);
             Wire.endTransmission();
