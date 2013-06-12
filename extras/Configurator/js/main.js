@@ -5,6 +5,15 @@ var connection_delay = 0; // delay which defines "when" will the configurator re
 
 var timers = new Array();
 
+function disable_timers() {
+    for (var i = 0; i < timers.length; i++) {
+        clearInterval(timers[i]);
+    }
+    
+    // kill all the refferences
+    timers = [];
+}  
+
 $(document).ready(function() { 
     port_picker = $('div#port-picker .port select');
     baud_picker = $('div#port-picker #baud');
@@ -131,16 +140,7 @@ function command_log(message) {
     
     $('div#command-log > div.wrapper').append('<p>' + time + ' -- ' + message + '</p>');
     $('div#command-log').scrollTop($('div#command-log div.wrapper').height());    
-};
-
-function disable_timers() {
-    for (var i = 0; i < timers.length; i++) {
-        clearInterval(timers[i]);
-    }
-    
-    // kill all the refferences
-    timers = [];
-}    
+}  
 
 function onOpen(openInfo) {
     connectionId = openInfo.connectionId;
@@ -171,7 +171,7 @@ function onOpen(openInfo) {
         console.log('There was a problem while opening the connection.');
         command_log('Could not join the serial bus -- <span style="color: red;">ERROR</span>');
     }    
-};
+}
 
 function onClosed(result) {
     if (result) { // All went as expected
