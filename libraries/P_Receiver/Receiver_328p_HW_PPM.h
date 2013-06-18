@@ -21,10 +21,7 @@
 
     Big thanks to kha from #aeroquad for setting up the shared timer.
 */
-
-// Defined by the user, can vary from 4 to 16 channels
-#define RX_USER_CHANNELS_OPERATIONAL 8
-#define RX_PPM_SYNCPULSE 8000 // 4ms >
+#define RX_PPM_SYNCPULSE 4500 // 2.5ms
 
 #define RX_CHANNELS 16 // dont change this
 volatile uint16_t RX[RX_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
@@ -48,7 +45,7 @@ ISR(TIMER1_CAPT_vect) {
     unsigned int pulseWidth = stopPulse - startPulse;
 
     // Error / Sanity check
-    // if pulseWidth < 900us or pulseWidth > 2100us and pulseWidth < 4000us
+    // if pulseWidth < 900us or pulseWidth > 2100us and pulseWidth < RX_PPM_SYNCPULSE
     if (pulseWidth < 1800 || (pulseWidth > 4200 && pulseWidth < RX_PPM_SYNCPULSE)) {
         PPM_error++;
         
@@ -56,8 +53,8 @@ ISR(TIMER1_CAPT_vect) {
         ppmCounter = RX_CHANNELS + 1;    
     }
     
-    if (pulseWidth > RX_PPM_SYNCPULSE) {  // Verify if this is the sync pulse
-        if (ppmCounter == RX_USER_CHANNELS_OPERATIONAL) {
+    if (pulseWidth >= RX_PPM_SYNCPULSE) {  // Verify if this is the sync pulse
+        if (ppmCounter <= RX_CHANNELS) {
             // This indicates that we received an correct frame = push to the "main" PPM array
             // if we received an broken frame, it will get ignored here and later get over-written
             // by new data, that will also be checked for sanity.

@@ -14,7 +14,7 @@
     
 */
 
-#define RX_CHANNELS 16 // dont change this
+#define RX_CHANNELS 16
 uint8_t PWM_PINS[RX_CHANNELS] = {2, 3, 4, 5, 6, 7, 8, 9};
 
 volatile uint16_t RX[RX_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
