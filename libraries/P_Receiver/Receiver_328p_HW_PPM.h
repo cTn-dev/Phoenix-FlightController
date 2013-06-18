@@ -21,7 +21,7 @@
 
     Big thanks to kha from #aeroquad for setting up the shared timer.
 */
-#define RX_PPM_SYNCPULSE 4500 // 2.5ms
+#define RX_PPM_SYNCPULSE 5000 // 2.5ms
 
 #define RX_CHANNELS 16 // dont change this
 volatile uint16_t RX[RX_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
