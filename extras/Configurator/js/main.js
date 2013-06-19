@@ -14,6 +14,16 @@ function disable_timers() {
     timers = [];
 }  
 
+// Get access to the background window object
+// This object is used to pass current connectionId to the backround page
+// so the onClosed event can close the port for us if it was left opened, without this
+// users can experience weird behavior if they would like to access the serial bus afterwards.
+var backgroundPage;
+chrome.runtime.getBackgroundPage(function(result) {
+    backgroundPage = result;
+    backgroundPage.connectionId = -1;
+});
+
 $(document).ready(function() { 
     port_picker = $('div#port-picker .port select');
     baud_picker = $('div#port-picker #baud');
@@ -156,6 +166,7 @@ function command_log(message) {
 
 function onOpen(openInfo) {
     connectionId = openInfo.connectionId;
+    backgroundPage.connectionId = connectionId; // pass latest connectionId to the background page
     
     if (connectionId != -1) {
         var selected_port = String($(port_picker).val());
@@ -210,6 +221,8 @@ function onClosed(result) {
         command_log('Connection closed -- <span style="color: green;">OK</span>');
         
         connectionId = -1; // reset connection id
+        backgroundPage.connectionId = connectionId; // pass latest connectionId to the background page
+        
         $('#content').empty(); // empty content
         $('#tabs > ul li').removeClass('active'); // de-select any selected tabs
         sensor_status(sensors_detected = 0x00); // reset active sensor indicators
