@@ -136,6 +136,25 @@ class MPU6050 {
             // Initial delay after proper configuration
             // let sensors heat up (especially gyro)
             delay(1500);
+            
+            // setup axis mapping
+            if (CONFIG.data.GYRO_AXIS_MAP.initialized == 0 || CONFIG.data.ACCEL_AXIS_MAP.initialized == 0) { // check if map was defined before, if not "save default" order set  
+                CONFIG.data.GYRO_AXIS_MAP.axis1 = 1; // y
+                CONFIG.data.GYRO_AXIS_MAP.axis2 = 0; // x
+                CONFIG.data.GYRO_AXIS_MAP.axis3 = 2; // z
+                
+                CONFIG.data.ACCEL_AXIS_MAP.axis1 = 1; // y
+                CONFIG.data.ACCEL_AXIS_MAP.axis1_sign = 1; // reverse force (*= -1);
+                CONFIG.data.ACCEL_AXIS_MAP.axis2 = 0; // x
+                CONFIG.data.ACCEL_AXIS_MAP.axis3 = 2; // z
+                
+                
+                CONFIG.data.GYRO_AXIS_MAP.initialized = 1;
+                CONFIG.data.ACCEL_AXIS_MAP.initialized = 1;
+                
+                // save default in eeprom
+                writeEEPROM();
+            }
         };
         
         // ~1280ms (in case of error ~ms = calibration sanity passed)
@@ -201,9 +220,9 @@ class MPU6050 {
             
             Wire.requestFrom(MPU6050_ADDRESS, 6);
             
-            gyroRaw[YAXIS] = (Wire.read() << 8) | Wire.read();
-            gyroRaw[XAXIS] = (Wire.read() << 8) | Wire.read();
-            gyroRaw[ZAXIS] = (Wire.read() << 8) | Wire.read();
+            gyroRaw[CONFIG.data.GYRO_AXIS_MAP.axis1] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.GYRO_AXIS_MAP.axis1_sign?-1:1);
+            gyroRaw[CONFIG.data.GYRO_AXIS_MAP.axis2] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.GYRO_AXIS_MAP.axis2_sign?-1:1);
+            gyroRaw[CONFIG.data.GYRO_AXIS_MAP.axis3] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.GYRO_AXIS_MAP.axis3_sign?-1:1);
         };
 
         // Order and +- signs of each axis depends on the chip orientation.
@@ -215,9 +234,9 @@ class MPU6050 {
             
             Wire.requestFrom(MPU6050_ADDRESS, 6);
             
-            accelRaw[YAXIS] = -((Wire.read() << 8) | Wire.read());
-            accelRaw[XAXIS] = (Wire.read() << 8) | Wire.read(); 
-            accelRaw[ZAXIS] = (Wire.read() << 8) | Wire.read();
+            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis1] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.GYRO_AXIS_MAP.axis1_sign?-1:1);
+            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis2] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.GYRO_AXIS_MAP.axis2_sign?-1:1);
+            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis3] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.GYRO_AXIS_MAP.axis3_sign?-1:1);
         };        
         
         void readGyroSum() {
@@ -300,6 +319,9 @@ class MPU6050 {
         
         float gyroScaleFactor;
         float accelScaleFactor; 
+        
+        uint8_t gyroMap[3];
+        uint8_t accelMap[3];
 
         int16_t gyroRaw[3];
         float gyroSum[3];

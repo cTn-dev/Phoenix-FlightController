@@ -1,4 +1,4 @@
-var version = 4; // configurator version to check against version number stored in eeprom
+var version = 5; // configurator version to check against version number stored in eeprom
 
 var connectionId = -1;
 var connection_delay = 0; // delay which defines "when" will the configurator request configurator data after connection was established
