@@ -132,6 +132,8 @@ $(document).ready(function() {
                 $('#content').load("./tabs/channel_assigner.html", tab_initialize_channel_assigner);
             } else if ($(this).parent().hasClass('tab_function_triggers')) {
                 $('#content').load("./tabs/function_triggers.html", tab_initialize_function_triggers);
+            } else if ($(this).parent().hasClass('tab_sensor_mapping')) {
+                $('#content').load("./tabs/sensor_mapping.html", tab_initialize_sensor_mapping);
             } else if ($(this).parent().hasClass('tab_sensor_data')) {
                 $('#content').load("./tabs/sensor_data.html", tab_initialize_sensor_data);
             } else if ($(this).parent().hasClass('tab_tx_rx')) {
