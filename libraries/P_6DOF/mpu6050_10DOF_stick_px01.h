@@ -143,11 +143,17 @@ class MPU6050 {
                 CONFIG.data.GYRO_AXIS_MAP.axis2 = 0; // x
                 CONFIG.data.GYRO_AXIS_MAP.axis3 = 2; // z
                 
+                CONFIG.data.GYRO_AXIS_MAP.axis1_sign = 0;
+                CONFIG.data.GYRO_AXIS_MAP.axis2_sign = 0;
+                CONFIG.data.GYRO_AXIS_MAP.axis3_sign = 0;
+                
                 CONFIG.data.ACCEL_AXIS_MAP.axis1 = 1; // y
-                CONFIG.data.ACCEL_AXIS_MAP.axis1_sign = 1; // reverse force (*= -1);
                 CONFIG.data.ACCEL_AXIS_MAP.axis2 = 0; // x
                 CONFIG.data.ACCEL_AXIS_MAP.axis3 = 2; // z
                 
+                CONFIG.data.ACCEL_AXIS_MAP.axis1_sign = 1; // reverse force (*= -1);
+                CONFIG.data.ACCEL_AXIS_MAP.axis2_sign = 0;
+                CONFIG.data.ACCEL_AXIS_MAP.axis3_sign = 0;
                 
                 CONFIG.data.GYRO_AXIS_MAP.initialized = 1;
                 CONFIG.data.ACCEL_AXIS_MAP.initialized = 1;
