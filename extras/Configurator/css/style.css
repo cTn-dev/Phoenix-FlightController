@@ -704,7 +704,7 @@ table.channel_assigner {
         float: left;
         
         width: 60px;
-        height: 330px;
+        height: 130px;
         
         margin-right: 10px;
         
@@ -713,52 +713,38 @@ table.channel_assigner {
     }
     .tab-motor_output .indicator {
         position: absolute;
-        margin-top: 330px;
+        margin-top: 130px;
         
         width: 60px;
         height: 0px;
     }
-.tab-motor_command {
-}
-    .tab-motor_command .names {
-        height: 20px;
-    }
-    .tab-motor_command .names li {
-        float: left;
-        width: 62px;
-        margin-right: 10px;
-        
-        text-align: center;
-    }
-        .tab-motor_command .names .active {
-            color: green;
-        }
-    .tab-motor_command .sliders {
+    .tab-motor_output .sliders {
+        margin-top: 15px;
         margin-left: -30px;
     }
-        .tab-motor_command .sliders li {
+        .tab-motor_output .sliders li {
             margin-top: 10px;
             float: left;
             width: 72px;
         }
-    .tab-motor_command input {
-        height: 290px;
+    .tab-motor_output input {
+        height: 130px;
         -webkit-appearance: slider-vertical;
     }
-    .tab-motor_command .values {
+    .tab-motor_output .values {
         height: 20px;
         margin-left: 3px;
     }
-        .tab-motor_command .values li {
+        .tab-motor_output .values li {
             float: left;
             width: 62px;
             margin-right: 10px;
             
             text-align: center;        
         }
-    .stop {
-        top: 300px;
-        left: 670px;
+    .tab-motor_output .stop {
+        top: 370px;
+        left: 690px;
         
         display: block;
         position: absolute;
@@ -770,21 +756,15 @@ table.channel_assigner {
         line-height: 100px;
         
         font-size: 16px;
+        font-weight: bold;
         
         border: 1px solid #848484;
         background-color: #d0d0d0;
     }
-    .stop:hover {
+    .tab-motor_output .stop:hover {
         background-color: #ff0000;
         text-decoration: none;
     }
-.tab-about .supporters {
-    height: 200px;
-    
-    line-height: 18px;
-    text-align: center;
-    font-weight: bold;
-}
 .tab-gps {
 }
     .tab-gps .gps-info, .tab-gps .gps-compass {
@@ -884,3 +864,10 @@ table.channel_assigner {
                         
                         background-color: black;
                     }
+.tab-about .supporters {
+    height: 200px;
+    
+    line-height: 18px;
+    text-align: center;
+    font-weight: bold;
+}
