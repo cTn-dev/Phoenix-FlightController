@@ -319,9 +319,6 @@ class MPU6050 {
         
         float gyroScaleFactor;
         float accelScaleFactor; 
-        
-        uint8_t gyroMap[3];
-        uint8_t accelMap[3];
 
         int16_t gyroRaw[3];
         float gyroSum[3];
