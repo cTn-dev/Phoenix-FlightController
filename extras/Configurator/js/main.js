@@ -151,7 +151,7 @@ $(document).ready(function() {
     });
     
     // used for development only
-    //$('#content').load("./tabs/motor_output.html", tab_initialize_motor_output);
+    //$('#content').load("./tabs/sensor_mapping.html", tab_initialize_sensor_mapping);
 });
 
 function command_log(message) {

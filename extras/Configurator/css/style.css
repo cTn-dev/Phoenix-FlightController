@@ -412,7 +412,7 @@ a:hover {
     }
 table.pid_tuning {
     width: 100%;
-    border-collapse:collapse;    
+    border-collapse: collapse;    
 }
     table.pid_tuning, table.pid_tuning th, table.pid_tuning td {
         padding: 5px;
@@ -558,7 +558,92 @@ table.channel_assigner {
         line-height: 16px;
         
         border: 1px dotted silver;
-    }       
+    } 
+.tab-sensor_mapping {
+}
+    .tab-sensor_mapping .sensor {
+        float: left;
+        
+        margin-right: 20px;
+    }
+    .tab-sensor_mapping .sensor > span {
+        display: block;
+        
+        width: 230px;
+        height: 20px;
+        line-height: 20px;
+        
+        text-align: center;
+        
+        font-weight: bold;
+    }
+    .tab-sensor_mapping table {
+        border-collapse: collapse; 
+        text-align: center;
+    }
+    .tab-sensor_mapping table, .tab-sensor_mapping table th, .tab-sensor_mapping table td {
+        padding: 5px;
+        border: 1px solid #8b8b8b;
+    }
+    .tab-sensor_mapping table th {
+        background-color: #ececec;
+    } 
+    .tab-sensor_mapping table input {
+        position: absolute;
+        margin-top: -6px;
+        margin-left: -6px;
+    }
+    .tab-sensor_mapping a.restore {
+        float: left;
+        display: block;
+        
+        margin-top: 35px;
+        margin-left: 30px;
+        
+        width: 80px;
+        height: 30px;
+        line-height: 30px;
+        
+        text-align: center;
+        color: white;
+        
+        background-color: #5569d0;
+        border: 1px solid silver;
+    }
+    .tab-sensor_mapping a.restore:hover {
+        text-decoration: none;
+        background-color: #424d84; 
+    }    
+    .tab-sensor_mapping a.update {
+        float: left;
+        display: block;
+        
+        margin-top: 10px;
+        margin-left: 30px;
+        
+        width: 80px;
+        height: 30px;
+        line-height: 30px;
+        
+        color: white;
+        text-align: center;
+        
+        border: 1px solid silver;
+        background-color: #078814;
+    }
+    .tab-sensor_mapping a.update:hover {
+        text-decoration: none;
+        background-color: #13b723; 
+    }
+    .tab-sensor_mapping p {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        
+        padding: 5px;
+        
+        border: 1px dotted silver;
+    }
+    
 .sensor_data #graph_gyro {
     width: 900px;
     height: 175px;
