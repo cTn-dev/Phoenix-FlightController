@@ -56,6 +56,22 @@ class ITG3200 {
             
             // Let the gyro heat up
             delay(1500);
+            
+            // setup axis mapping
+            if (CONFIG.data.GYRO_AXIS_MAP.initialized == 0) { // check if map was defined before, if not "save default" order set  
+                CONFIG.data.GYRO_AXIS_MAP.axis1 = 0; // x
+                CONFIG.data.GYRO_AXIS_MAP.axis2 = 1; // y
+                CONFIG.data.GYRO_AXIS_MAP.axis3 = 2; // z
+                
+                CONFIG.data.GYRO_AXIS_MAP.axis1_sign = 0;
+                CONFIG.data.GYRO_AXIS_MAP.axis2_sign = 1;
+                CONFIG.data.GYRO_AXIS_MAP.axis3_sign = 0;
+                
+                CONFIG.data.GYRO_AXIS_MAP.initialized = 1;
+                
+                // save default in eeprom
+                writeEEPROM();
+            }
         };
         
         // ~1280ms
@@ -96,9 +112,9 @@ class ITG3200 {
             
             Wire.requestFrom(ITG3200_ADDRESS, ITG3200_BUFFER_SIZE);  
 
-            gyroRaw[XAXIS] = (Wire.read() << 8) | Wire.read();
-            gyroRaw[YAXIS] = -((Wire.read() << 8) | Wire.read());
-            gyroRaw[ZAXIS] = (Wire.read() << 8) | Wire.read();      
+            gyroRaw[CONFIG.data.GYRO_AXIS_MAP.axis1] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.GYRO_AXIS_MAP.axis1_sign?-1:1);
+            gyroRaw[CONFIG.data.GYRO_AXIS_MAP.axis2] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.GYRO_AXIS_MAP.axis2_sign?-1:1);
+            gyroRaw[CONFIG.data.GYRO_AXIS_MAP.axis3] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.GYRO_AXIS_MAP.axis3_sign?-1:1);    
         };
         
         void readGyroSum() {
