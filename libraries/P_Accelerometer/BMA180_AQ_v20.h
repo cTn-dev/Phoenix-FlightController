@@ -82,6 +82,22 @@ class BMA180 {
             data &= 0xF1;
             data |= 0x08; // set range select bits for +/-4g
             sensors.i2c_write8(BMA180_ADDRESS, BMA180_OFFSET_REGISTER, data);
+            
+            // setup axis mapping
+            if (CONFIG.data.ACCEL_AXIS_MAP.initialized == 0) { // check if map was defined before, if not "save default" order set  
+                CONFIG.data.ACCEL_AXIS_MAP.axis1 = 0; // x
+                CONFIG.data.ACCEL_AXIS_MAP.axis2 = 1; // y
+                CONFIG.data.ACCEL_AXIS_MAP.axis3 = 2; // z
+                
+                CONFIG.data.ACCEL_AXIS_MAP.axis1_sign = 1;
+                CONFIG.data.ACCEL_AXIS_MAP.axis2_sign = 0;
+                CONFIG.data.ACCEL_AXIS_MAP.axis3_sign = 0;
+                
+                CONFIG.data.ACCEL_AXIS_MAP.initialized = 1;
+                
+                // save default in eeprom
+                writeEEPROM();
+            }
         };
         
         // ~1280ms (only runs when requested)
@@ -114,9 +130,9 @@ class BMA180 {
 
             Wire.requestFrom(BMA180_ADDRESS, BMA180_BUFFER_SIZE);
 
-            accelRaw[XAXIS] = -(Wire.read() | (Wire.read() << 8)) >> 2;
-            accelRaw[YAXIS] = (Wire.read() | (Wire.read() << 8)) >> 2;
-            accelRaw[ZAXIS] = (Wire.read() | (Wire.read() << 8)) >> 2;
+            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis1] = ((Wire.read() | (Wire.read() << 8)) >> 2) * (CONFIG.data.ACCEL_AXIS_MAP.axis1_sign?-1:1);
+            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis2] = ((Wire.read() | (Wire.read() << 8)) >> 2) * (CONFIG.data.ACCEL_AXIS_MAP.axis2_sign?-1:1);
+            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis3] = ((Wire.read() | (Wire.read() << 8)) >> 2) * (CONFIG.data.ACCEL_AXIS_MAP.axis3_sign?-1:1);
         };
         
         void readAccelSum() {

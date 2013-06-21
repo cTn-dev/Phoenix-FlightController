@@ -240,9 +240,9 @@ class MPU6050 {
             
             Wire.requestFrom(MPU6050_ADDRESS, 6);
             
-            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis1] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.GYRO_AXIS_MAP.axis1_sign?-1:1);
-            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis2] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.GYRO_AXIS_MAP.axis2_sign?-1:1);
-            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis3] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.GYRO_AXIS_MAP.axis3_sign?-1:1);
+            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis1] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.ACCEL_AXIS_MAP.axis1_sign?-1:1);
+            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis2] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.ACCEL_AXIS_MAP.axis2_sign?-1:1);
+            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis3] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.ACCEL_AXIS_MAP.axis3_sign?-1:1);
         };        
         
         void readGyroSum() {

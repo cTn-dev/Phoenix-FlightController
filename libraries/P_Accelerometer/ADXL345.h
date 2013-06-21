@@ -37,6 +37,22 @@ class ADXL345 {
             sensors.i2c_write8(ADXL345_ADDRESS, 0x2D, 0x08);  // set device to *measure*
             sensors.i2c_write8(ADXL345_ADDRESS, 0x31, 0x09);  // set full range and +/- 4G
             sensors.i2c_write8(ADXL345_ADDRESS, 0x2C, 0x0B);  // 200hz sampling
+            
+            // setup axis mapping
+            if (CONFIG.data.ACCEL_AXIS_MAP.initialized == 0) { // check if map was defined before, if not "save default" order set  
+                CONFIG.data.ACCEL_AXIS_MAP.axis1 = 0; // x
+                CONFIG.data.ACCEL_AXIS_MAP.axis2 = 1; // y
+                CONFIG.data.ACCEL_AXIS_MAP.axis3 = 2; // z
+                
+                CONFIG.data.ACCEL_AXIS_MAP.axis1_sign = 0;
+                CONFIG.data.ACCEL_AXIS_MAP.axis2_sign = 0;
+                CONFIG.data.ACCEL_AXIS_MAP.axis3_sign = 0;
+                
+                CONFIG.data.ACCEL_AXIS_MAP.initialized = 1;
+                
+                // save default in eeprom
+                writeEEPROM();
+            }
         };
 
         // ~1280ms (only runs when requested)
@@ -69,9 +85,9 @@ class ADXL345 {
 
             Wire.requestFrom(ADXL345_ADDRESS, 6);
 
-            accelRaw[XAXIS] = Wire.read() | (Wire.read() << 8);
-            accelRaw[YAXIS] = Wire.read() | (Wire.read() << 8);
-            accelRaw[ZAXIS] = Wire.read() | (Wire.read() << 8);
+            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis1] = (Wire.read() | (Wire.read() << 8)) * (CONFIG.data.ACCEL_AXIS_MAP.axis1_sign?-1:1);
+            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis2] = (Wire.read() | (Wire.read() << 8)) * (CONFIG.data.ACCEL_AXIS_MAP.axis2_sign?-1:1);
+            accelRaw[CONFIG.data.ACCEL_AXIS_MAP.axis3] = (Wire.read() | (Wire.read() << 8)) * (CONFIG.data.ACCEL_AXIS_MAP.axis3_sign?-1:1);
         };
 
         void readAccelSum() {
