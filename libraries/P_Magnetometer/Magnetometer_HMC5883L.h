@@ -57,7 +57,23 @@ class HMC5883L {
             sensors.i2c_write8(HMC5883L_ADDRESS, HMC5883L_RA_CONFIG_B, HMC5883L_GAIN_10);
             
             // Start in single mode
-            sensors.i2c_write8(HMC5883L_ADDRESS, HMC5883L_RA_MODE, HMC5883L_MODE_SINGLE);           
+            sensors.i2c_write8(HMC5883L_ADDRESS, HMC5883L_RA_MODE, HMC5883L_MODE_SINGLE);  
+
+            // setup axis mapping
+            if (CONFIG.data.MAG_AXIS_MAP.initialized == 0) { // check if map was defined before, if not "save default" order set  
+                CONFIG.data.MAG_AXIS_MAP.axis1 = 0; // x
+                CONFIG.data.MAG_AXIS_MAP.axis2 = 2; // z
+                CONFIG.data.MAG_AXIS_MAP.axis3 = 1; // y
+                
+                CONFIG.data.MAG_AXIS_MAP.axis1_sign = 0;
+                CONFIG.data.MAG_AXIS_MAP.axis2_sign = 0;
+                CONFIG.data.MAG_AXIS_MAP.axis3_sign = 0;
+
+                CONFIG.data.MAG_AXIS_MAP.initialized = 1;
+                
+                // save default in eeprom
+                writeEEPROM();
+            }            
         };
         
         void readMagRaw() {
@@ -67,9 +83,9 @@ class HMC5883L {
 
             Wire.requestFrom(HMC5883L_ADDRESS, 6);
             
-            magRaw[XAXIS] = (Wire.read() << 8) | Wire.read();
-            magRaw[ZAXIS] = (Wire.read() << 8) | Wire.read();
-            magRaw[YAXIS] = (Wire.read() << 8) | Wire.read();
+            magRaw[CONFIG.data.MAG_AXIS_MAP.axis1] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.MAG_AXIS_MAP.axis1_sign?-1:1);
+            magRaw[CONFIG.data.MAG_AXIS_MAP.axis2] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.MAG_AXIS_MAP.axis2_sign?-1:1);
+            magRaw[CONFIG.data.MAG_AXIS_MAP.axis3] = ((Wire.read() << 8) | Wire.read()) * (CONFIG.data.MAG_AXIS_MAP.axis3_sign?-1:1);
             
             // start single conversion
             sensors.i2c_write8(HMC5883L_ADDRESS, HMC5883L_RA_MODE, HMC5883L_MODE_SINGLE);            
