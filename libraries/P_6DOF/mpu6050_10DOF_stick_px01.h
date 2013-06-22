@@ -71,7 +71,7 @@
 
 float gyro[3];
 float accel[3];
-int16_t gyro_temperature;
+float gyro_temperature;
 
 class MPU6050 {
     public: 
@@ -311,6 +311,10 @@ class MPU6050 {
             accelSamples = 0;
         };
         
+        // The temperature sensor is -40 to +85 degrees Celsius.
+        // It is a signed integer.
+        // 340 per degrees Celsius, -512 at 35 degrees.
+        // At 0 degrees: -512 - (340 * 35) = -12412
         void readGyroTemperature() {
             Wire.beginTransmission(MPU6050_ADDRESS);
             Wire.write(MPUREG_TEMP_OUT_H);
@@ -318,7 +322,9 @@ class MPU6050 {
             
             Wire.requestFrom(MPU6050_ADDRESS, 2);
             
-            gyro_temperature = (Wire.read() << 8) | Wire.read();         
+            int16_t raw_temperature = (Wire.read() << 8) | Wire.read();
+
+            gyro_temperature = ((float) raw_temperature + 12412.0) / 340.0;
         };
     private:
         int16_t gyro_offset[3];
