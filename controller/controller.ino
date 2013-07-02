@@ -349,7 +349,14 @@ void process100HzTask() {
     
     // This is the place where the actual "force" gets applied
     if (armed) {
-        updateMotorsMix(); // Frame specific motor mix
+        if (TX_throttle >= CONFIG.data.minimumArmedThrottle) { // disable stabilization if throttle is very low
+            updateMotorsMix(); // Frame specific motor mix
+        } else {
+            // Set all motors to minimum armed throttle
+            for (uint8_t i = 0; i < MOTORS; i++) {
+                MotorOut[i] = CONFIG.data.minimumArmedThrottle;
+            }
+        }
         updateMotors(); // Update ESCs
     } 
 }
