@@ -123,6 +123,9 @@ function configuration_restore() {
                 
                 // Send updated UNION to the flight controller
                 sendUNION();
+                
+                // Refresh Initial UI
+                $('#content').load("./tabs/initial_setup.html", tab_initialize_initial_setup);
             };
 
             reader.readAsText(file);
