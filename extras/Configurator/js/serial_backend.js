@@ -20,9 +20,10 @@ var PSP = {
     PSP_SET_MAG_CALIBRATION:   104,
     PSP_SET_MOTOR_TEST_VALUE:  105,
     
-    PSP_INF_ACK:      201,
-    PSP_INF_REFUSED:  202,
-    PSP_INF_CRC_FAIL: 203
+    PSP_INF_ACK:       201,
+    PSP_INF_REFUSED:   202,
+    PSP_INF_CRC_FAIL:  203,
+    PSP_INF_BUFFER_OF: 204
 };
 
 var packet_state = 0;
@@ -279,6 +280,9 @@ function process_data(command, message_buffer) {
             break;
         case PSP.PSP_INF_CRC_FAIL:
             console.log('crc check failed, code: ' + message_buffer_uint8_view[0] + ' crc value: ' + message_buffer_uint8_view[1]);
+            break;
+        case PSP.PSP_INF_BUFFER_OF:
+            console.log('Flight Controller serial receive Buffer overflown !!!');
             break;
         default:
             console.log('Unknown command: ' + command);

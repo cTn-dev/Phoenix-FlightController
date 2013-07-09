@@ -232,7 +232,7 @@ function onClosed(result) {
             command_log('Connection closed -- <span style="color: red;">ERROR</span>');
         }
     }    
-};
+}
 
 function readPoll() {
     chrome.serial.read(connectionId, 64, onCharRead);

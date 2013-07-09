@@ -30,9 +30,10 @@
 #define PSP_SET_MAG_CALIBRATION   104
 #define PSP_SET_MOTOR_TEST_VALUE  105
 
-#define PSP_INF_ACK      201
-#define PSP_INF_REFUSED  202
-#define PSP_INF_CRC_FAIL 203
+#define PSP_INF_ACK       201
+#define PSP_INF_REFUSED   202
+#define PSP_INF_CRC_FAIL  203
+#define PSP_INF_BUFFER_OF 204
 
 
 class Configurator {
@@ -91,8 +92,17 @@ class Configurator {
                         break;
                     case 6:
                         if (message_crc == data) {
-                            // CRC is ok, process data
-                            process_data();
+                            if (payload_length_received > sizeof(data_buffer)) {
+                                // Buffer overflown
+                                protocol_head(PSP_INF_BUFFER_OF, 1);
+                                
+                                serialize_uint8(0x01);
+                                
+                                protocol_tail();
+                            } else {
+                                // CRC is ok, process data
+                                process_data();
+                            }
                         } else {
                             // respond that CRC failed
                             CRC_FAILED(code, message_crc);
@@ -338,7 +348,7 @@ class Configurator {
         uint16_t payload_length_expected;
         uint16_t payload_length_received;
         
-        uint8_t data_buffer[200];
+        uint8_t data_buffer[256];
 } configurator;
 
 void readSerial() {
