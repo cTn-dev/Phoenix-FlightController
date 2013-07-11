@@ -27,7 +27,6 @@ var PSP = {
 };
 
 var packet_state = 0;
-var command_buffer = new Array();
 var command;
 
 var message_length_expected = 0;
