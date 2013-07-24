@@ -21,7 +21,7 @@
 
     Big thanks to kha from #aeroquad for setting up the shared timer.
 */
-#define RX_PPM_SYNCPULSE 5000 // 2.5ms
+#define RX_PPM_MINIMUM_SYNCPULSE 5000 // 2.5ms
 
 #define RX_CHANNELS 16 // dont change this
 volatile uint16_t RX[RX_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
@@ -45,15 +45,15 @@ ISR(TIMER1_CAPT_vect) {
     unsigned int pulseWidth = stopPulse - startPulse;
 
     // Error / Sanity check
-    // if pulseWidth < 900us or pulseWidth > 2100us and pulseWidth < RX_PPM_SYNCPULSE
-    if (pulseWidth < 1800 || (pulseWidth > 4200 && pulseWidth < RX_PPM_SYNCPULSE)) {
+    // if pulseWidth < 900us or pulseWidth > 2100us and pulseWidth < RX_PPM_MINIMUM_SYNCPULSE
+    if (pulseWidth < 1800 || (pulseWidth > 4200 && pulseWidth < RX_PPM_MINIMUM_SYNCPULSE)) {
         PPM_error++;
         
         // set ppmCounter out of range so rest and (later on) whole frame is dropped
         ppmCounter = RX_CHANNELS + 1;    
     }
     
-    if (pulseWidth >= RX_PPM_SYNCPULSE) {  // Verify if this is the sync pulse
+    if (pulseWidth >= RX_PPM_MINIMUM_SYNCPULSE) {  // Verify if this is the sync pulse
         if (ppmCounter <= RX_CHANNELS) {
             // This indicates that we received an correct frame = push to the "main" PPM array
             // if we received an broken frame, it will get ignored here and later get over-written
@@ -91,7 +91,7 @@ void initializeReceiver() {
 void RX_failSafe() {
     RX_signalReceived++; // if this flag reaches 10, an auto-descent routine will be triggered.
     
-    if (RX_signalReceived > 10) {
+    if (RX_signalReceived >= 10) {
         RX_signalReceived = 10; // don't let the variable overflow
         failsafeEnabled = true; // this ensures that failsafe will operate in attitude mode
         

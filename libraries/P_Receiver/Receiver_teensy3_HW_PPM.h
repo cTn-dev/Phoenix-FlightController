@@ -28,7 +28,7 @@
     TODO: Sync pulse length varies among receivers, should probably provide a "define" style table for defining the
     sync pulse length.
 */
-#define RX_PPM_SYNCPULSE 7500 // 2.5ms
+#define RX_PPM_MINIMUM_SYNCPULSE 7500 // 2.5ms
 
 #define RX_CHANNELS 16
 volatile uint16_t RX[RX_CHANNELS] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
@@ -52,15 +52,15 @@ extern "C" void ftm1_isr(void) {
     uint16_t pulseWidth = stopPulse - startPulse;
 
     // Error / Sanity check
-    // if pulseWidth < 900us or pulseWidth > 2100us and pulseWidth < RX_PPM_SYNCPULSE
-    if (pulseWidth < 2700 || (pulseWidth > 6300 && pulseWidth < RX_PPM_SYNCPULSE)) {
+    // if pulseWidth < 900us or pulseWidth > 2100us and pulseWidth < RX_PPM_MINIMUM_SYNCPULSE
+    if (pulseWidth < 2700 || (pulseWidth > 6300 && pulseWidth < RX_PPM_MINIMUM_SYNCPULSE)) {
         PPM_error++;
         
         // set ppmCounter out of range so rest and (later on) whole frame is dropped
         ppmCounter = RX_CHANNELS + 1;
     }
     
-    if (pulseWidth >= RX_PPM_SYNCPULSE) {  // Verify if this is the sync pulse
+    if (pulseWidth >= RX_PPM_MINIMUM_SYNCPULSE) {  // Verify if this is the sync pulse
         if (ppmCounter <= RX_CHANNELS) {
             // This indicates that we received an correct frame = push to the "main" PPM array
             // if we received an broken frame, it will get ignored here and later get over-written
@@ -110,7 +110,7 @@ void initializeReceiver() {
 void RX_failSafe() {
     RX_signalReceived++; // if this flag reaches 10, an auto-descent routine will be triggered.
     
-    if (RX_signalReceived > 10) {
+    if (RX_signalReceived >= 10) {
         RX_signalReceived = 10; // don't let the variable overflow
         failsafeEnabled = true; // this ensures that failsafe will operate in attitude mode
         

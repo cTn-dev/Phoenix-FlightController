@@ -100,7 +100,7 @@ void RX_failSafe() {
         RX_signalReceived = 0;
     }
     
-    if (RX_signalReceived > 10) {
+    if (RX_signalReceived >= 10) {
         RX_signalReceived = 10; // don't let the variable overflow
         failsafeEnabled = true; // this ensures that failsafe will operate in attitude mode
         
