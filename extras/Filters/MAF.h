@@ -1,6 +1,6 @@
 /*  Moving Average Filter implementation
     Using ring buffer to store/swap between the received data.
-    SmoothFactor (parsed as int to the constructor) can never be higher then
+    SmoothFactor (passed as int to the constructor) can never be higher than
     MAF_ARRAYSIZE constant.
 */
 
@@ -44,3 +44,4 @@ class MAF {
         double data[MAF_ARRAYSIZE];
         uint8_t head;
 };
+
