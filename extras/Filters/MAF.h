@@ -11,8 +11,8 @@ class MAF {
         // Constructor
         MAF(uint8_t Size) {
             // Save array size
-            smoothFactor = Size;
-            
+            smoothFactor = Size > MAF_ARRAYSIZE ? MAF_ARRAYSIZE : Size;
+
             // Bear in mind that data[N] array is defined in private
             // but is not initialized.
             // For some reason the implementation works, but in case you encounter
@@ -44,4 +44,3 @@ class MAF {
         double data[MAF_ARRAYSIZE];
         uint8_t head;
 };
-
