@@ -11,7 +11,7 @@ class MAF {
         // Constructor
         MAF(uint8_t Size) {
             // Save array size
-            smoothFactor = Size > MAF_ARRAYSIZE ? MAF_ARRAYSIZE : Size;
+            buffer_size = Size > MAF_ARRAYSIZE ? MAF_ARRAYSIZE : Size;
 
             // Bear in mind that data[N] array is defined in private
             // but is not initialized.
@@ -28,19 +28,19 @@ class MAF {
             head++;
             
             // If we reached end of the array, return to beginning
-            if (head == smoothFactor) head = 0;
+            if (head == buffer_size) head = 0;
             
             double sum;
-            for (uint8_t i = 0; i < smoothFactor; i++) {
+            for (uint8_t i = 0; i < buffer_size; i++) {
                 sum += data[i];
             }
     
-            sum /= smoothFactor;
+            sum /= buffer_size;
             return sum;
         };
         
     private:
-        uint8_t smoothFactor;
+        uint8_t buffer_size;
         double data[MAF_ARRAYSIZE];
         uint8_t head;
 };
