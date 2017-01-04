@@ -1,6 +1,6 @@
 /*  Moving Average Filter implementation
     Using ring buffer to store/swap between the received data.
-    SmoothFactor (passed as int to the constructor) can never be higher than
+    buffer_size (passed as int to the constructor) can never be higher than
     MAF_ARRAYSIZE constant.
 */
 
@@ -18,33 +18,30 @@ class MAF {
                For some reason the implementation works, but in case you encounter
                "Weird behaviour", this is the place to look.
             
+            // Initialize data
             for (uint8_t i = 0; i < buffer_size; i++) {
-                data[i] = 0;
+                data[i] = 0.0;
             }*/
+        }
 
-            // Initialize head
-            head = 0;
-        };
-    
-        double update(double value) {           
-            // Store new value inside the array
+        double update(double value) {
+            // Subtract oldest value from sum
+            sum -= data[head];
+            // Add newest value to sum
+            sum += value;
+            // Store new value inside the array (overwrite oldest)
             data[head] = value;
+
             head++;
-            
             // If we reached end of the array, return to beginning
             if (head == buffer_size) head = 0;
-            
-            double sum;
-            for (uint8_t i = 0; i < buffer_size; i++) {
-                sum += data[i];
-            }
-    
-            sum /= buffer_size;
-            return sum;
-        };
-        
+
+            return sum / buffer_size;
+        }
+
     private:
         uint8_t buffer_size;
         double data[MAF_ARRAYSIZE];
-        uint8_t head;
+        uint8_t head = 0;
+        double sum = 0.0;
 };
