@@ -10,14 +10,18 @@ class MAF {
     public:
         // Constructor
         MAF(uint8_t Size) {
-            // Save array size
+            // Check and save array size
             buffer_size = Size > MAF_ARRAYSIZE ? MAF_ARRAYSIZE : Size;
 
-            // Bear in mind that data[N] array is defined in private
-            // but is not initialized.
-            // For some reason the implementation works, but in case you encounter
-            // "Weird behaviour", this is the place to look.
+            /* Bear in mind that data[N] array is defined in private
+               but is not initialized.
+               For some reason the implementation works, but in case you encounter
+               "Weird behaviour", this is the place to look.
             
+            for (uint8_t i = 0; i < buffer_size; i++) {
+                data[i] = 0;
+            }*/
+
             // Initialize head
             head = 0;
         };
